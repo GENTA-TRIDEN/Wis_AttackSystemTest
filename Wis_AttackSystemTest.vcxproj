@@ -184,6 +184,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="WISLib\GameObject\Component\WeaponComponent.h" />
     <ClInclude Include="WISLib\Common\NumberManager.h" />
     <ClInclude Include="WISLib\GameObject\Archetype\ArchetypeBase.h" />
     <ClInclude Include="Scene\WeaponCreateScene.h" />
@@ -229,6 +230,7 @@
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="WISLib\GameObject\Component\WeaponComponent.cpp" />
     <ClCompile Include="WISLib\Common\NumberManager.cpp" />
     <ClCompile Include="WISLib\GameObject\Archetype\ArchetypeBase.cpp" />
     <ClCompile Include="Scene\WeaponCreateScene.cpp" />
