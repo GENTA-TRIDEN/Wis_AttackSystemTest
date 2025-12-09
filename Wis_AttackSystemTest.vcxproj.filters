@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Common">
+      <UniqueIdentifier>54b5795b-0fed-41b4-8cf2-b57db2f915b9</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Assets">
+      <UniqueIdentifier>cb485dcf-40b6-489c-a7d1-26101c107fdc</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dds;dlg;fbx;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="Game.h" />
+    <ClInclude Include="StepTimer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="DeviceResources.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="UserResources.h" />
+    <ClInclude Include="ItoLib\SceneManager.h" />
+    <ClInclude Include="ItoLib\DebugDraw.h" />
+    <ClInclude Include="ItoLib\DebugFont.h" />
+    <ClInclude Include="ItoLib\GridFloor.h" />
+    <ClInclude Include="Scene\AttackScene.h" />
+    <ClInclude Include="WISLib\Camera\CameraManager.h" />
+    <ClInclude Include="WISLib\Camera\DebugCamera.h" />
+    <ClInclude Include="WISLib\Camera\FixedCamera.h" />
+    <ClInclude Include="WISLib\Camera\FPSCamera.h" />
+    <ClInclude Include="WISLib\Camera\FreeMoveCamera.h" />
+    <ClInclude Include="WISLib\Camera\TPSCamera.h" />
+    <ClInclude Include="WISLib\Camera\VehicleCamera.h" />
+    <ClInclude Include="WISLib\Camera\CameraBase.h" />
+    <ClInclude Include="WISLib\WISLibTags.h" />
+    <ClInclude Include="WISLib\Common\Animation.h" />
+    <ClInclude Include="WISLib\Common\CollisionManager.h" />
+    <ClInclude Include="WISLib\GameObject\Component\CollisionComponent.h" />
+    <ClInclude Include="WISLib\GameObject\GameObject.h" />
+    <ClInclude Include="WISLib\GameObject\ObjectManager.h" />
+    <ClInclude Include="WISLib\GameObject\Component\ComponentBase.h" />
+    <ClInclude Include="WISLib\GameObject\Component\TransformComponent.h" />
+    <ClInclude Include="WISLib\GameObject\Component\CharacterComponent.h" />
+    <ClInclude Include="WISLib\GameObject\Component\ModelComponent.h" />
+    <ClInclude Include="Scene\WeaponTestScene.h" />
+    <ClInclude Include="WISLib\GameObject\Component\AnimationComponent.h" />
+    <ClInclude Include="GameComponent\PlayerComponent.h" />
+    <ClInclude Include="WISLib\WisComponentHeader.h" />
+    <ClInclude Include="Scene\StackTestMain.h" />
+    <ClInclude Include="Scene\StackTestStack.h" />
+    <ClInclude Include="Scene\RenderTargetViewScene.h" />
+    <ClInclude Include="Scene\WeaponCreateScene.h" />
+    <ClInclude Include="WISLib\UserInterface\BinaryFile.h" />
+    <ClInclude Include="WISLib\UserInterface\Button.h" />
+    <ClInclude Include="WISLib\UserInterface\Particle.h" />
+    <ClInclude Include="WISLib\UserInterface\UserInterface.h" />
+    <ClInclude Include="InGameObject\Archetype\WeapoArchetype.h" />
+    <ClInclude Include="WISLib\GameObject\Archetype\ArchetypeBase.h" />
+    <ClInclude Include="WISLib\Common\NumberManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="DeviceResources.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ItoLib\DebugDraw.cpp" />
+    <ClCompile Include="ItoLib\DebugFont.cpp" />
+    <ClCompile Include="ItoLib\GridFloor.cpp" />
+    <ClCompile Include="Scene\AttackScene.cpp" />
+    <ClCompile Include="WISLib\Camera\CameraManager.cpp" />
+    <ClCompile Include="WISLib\Camera\DebugCamera.cpp" />
+    <ClCompile Include="WISLib\Camera\FixedCamera.cpp" />
+    <ClCompile Include="WISLib\Camera\FPSCamera.cpp" />
+    <ClCompile Include="WISLib\Camera\FreeMoveCamera.cpp" />
+    <ClCompile Include="WISLib\Camera\TPSCamera.cpp" />
+    <ClCompile Include="WISLib\Camera\VehicleCamera.cpp" />
+    <ClCompile Include="WISLib\Camera\CameraBase.cpp" />
+    <ClCompile Include="WISLib\Common\Animation.cpp" />
+    <ClCompile Include="WISLib\Common\CollisionManager.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\CollisionComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\GameObject.cpp" />
+    <ClCompile Include="WISLib\GameObject\ObjectManager.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\ComponentBase.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\TransformComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\CharacterComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\ModelComponent.cpp" />
+    <ClCompile Include="Scene\WeaponTestScene.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\AnimationComponent.cpp" />
+    <ClCompile Include="GameComponent\PlayerComponent.cpp" />
+    <ClCompile Include="Scene\StackTestMain.cpp" />
+    <ClCompile Include="Scene\StackTestStack.cpp" />
+    <ClCompile Include="Scene\RenderTargetViewScene.cpp" />
+    <ClCompile Include="Scene\WeaponCreateScene.cpp" />
+    <ClCompile Include="WISLib\UserInterface\BinaryFile.cpp" />
+    <ClCompile Include="WISLib\UserInterface\Button.cpp" />
+    <ClCompile Include="WISLib\UserInterface\Particle.cpp" />
+    <ClCompile Include="WISLib\UserInterface\UserInterface.cpp" />
+    <ClCompile Include="InGameObject\Archetype\WeapoArchetype.cpp" />
+    <ClCompile Include="WISLib\GameObject\Archetype\ArchetypeBase.cpp" />
+    <ClCompile Include="WISLib\Common\NumberManager.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Manifest Include="settings.manifest">
+      <Filter>Assets</Filter>
+    </Manifest>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Resources\Shaders\CircleShadowPS.hlsl" />
+    <FxCompile Include="Resources\Shaders\ParticleGS.hlsl" />
+    <FxCompile Include="Resources\Shaders\ParticlePS.hlsl" />
+    <FxCompile Include="Resources\Shaders\ParticleVS.hlsl" />
+    <FxCompile Include="Resources\Shaders\UIGS.hlsl" />
+    <FxCompile Include="Resources\Shaders\UIPS.hlsl" />
+    <FxCompile Include="Resources\Shaders\UIVS.hlsl" />
+  </ItemGroup>
+</Project>
