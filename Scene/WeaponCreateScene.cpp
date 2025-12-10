@@ -7,9 +7,13 @@
 #include "WISLib/GameObject/Component/CollisionComponent.h"
 #include "WISLib/GameObject/Component/CharacterComponent.h"
 #include "WISLib/GameObject/Component/ModelComponent.h"
+#include "WISLib/GameObject/Component/WeaponComponent.h"
+#include "WISLib/GameObject/Component/WeaponPartsComponent.h"
+#include "WISLib/GameObject/Component/PartStatsComponent.h"
 
 
 #include "Scene/AttackScene.h"
+#include "Scene/WeaponComponentTestScene.h"
 
 //
 
@@ -68,6 +72,7 @@ void WeaponCreateScene::Initialize()
 	auto weaponTransform = weapon->GetComponent<WIS::TransformComponent>();
 	auto weaponColl = weapon->AddComponent<WIS::CollisionComponent>();
 	auto weaponModel = weapon->AddComponent<WIS::ModelComponent>();
+	auto WeaponComponent = weapon->AddComponent<WIS::WeaponComponent>();
 	weaponColl->AddBoundingOrientedBox({ 2.7f,0.2f,0.2f }, { 3.0f,0.0f,0.0f });
 	weaponColl->SetDebugColor(DirectX::Colors::Red);
 	//we
@@ -117,11 +122,16 @@ void WeaponCreateScene::Update(float elapsedTime)
 		auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
 		auto fxFactory = GetUserResources()->GetEffectFactory();
 
+		auto Weapon = m_objectManager->GetObject(m_weaponText);
+		auto WeaponWeaponComponent = Weapon->GetComponent<WIS::WeaponComponent>();
 
 		auto weaponParts = m_objectManager->GetObject(m_weaponPartsText + std::to_string(clickCount));
 		auto weaponPartsTransform = weaponParts->GetComponent<WIS::TransformComponent>();
 		auto weaponPartsColl = weaponParts->AddComponent<WIS::CollisionComponent>();
 		auto weaponModel = weaponParts->AddComponent<WIS::ModelComponent>();
+
+		auto WeaponPartsComp = weaponParts->AddComponent<WIS::WeaponPartsComponent>(Weapon);
+		auto WeaponPartsStatsComp = weaponParts->AddComponent<WIS::PartStatsComponent>();
 
 		weaponPartsColl->AddBoundingOrientedBox({ 0.5f,0.5f,0.5f }, { 0.0f,0.0f,0.0f });
 		weaponPartsTransform->SetParent(m_objectManager->GetObject(m_weaponText)->GetComponent<WIS::TransformComponent>());
@@ -130,6 +140,9 @@ void WeaponCreateScene::Update(float elapsedTime)
 		weaponPartsTransform->SetRotation(rot);
 
 		int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/Gear.sdkmesh", fxFactory);
+
+
+		WeaponWeaponComponent->AddWeight(10.0f);
 
 	}
 	if (m_button->IsClick()) {
@@ -158,7 +171,7 @@ void WeaponCreateScene::Update(float elapsedTime)
 	
 
 	if (key_state.Space) {
-		this->ChangeScene<AttackScene>();
+		this->ChangeScene<WeaponComponentTestScene>();
 	}
 
 

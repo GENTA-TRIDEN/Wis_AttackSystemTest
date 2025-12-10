@@ -58,6 +58,9 @@
     <ClInclude Include="WISLib\GameObject\Archetype\ArchetypeBase.h" />
     <ClInclude Include="WISLib\Common\NumberManager.h" />
     <ClInclude Include="WISLib\GameObject\Component\WeaponComponent.h" />
+    <ClInclude Include="Scene\WeaponComponentTestScene.h" />
+    <ClInclude Include="WISLib\GameObject\Component\WeaponPartsComponent.h" />
+    <ClInclude Include="WISLib\GameObject\Component\PartStatsComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -102,6 +105,9 @@
     <ClCompile Include="WISLib\GameObject\Archetype\ArchetypeBase.cpp" />
     <ClCompile Include="WISLib\Common\NumberManager.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\WeaponComponent.cpp" />
+    <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\WeaponPartsComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\PartStatsComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

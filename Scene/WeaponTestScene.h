@@ -51,7 +51,7 @@ private:
 
 
 	//武器のオブジェクトの名前
-	std::string m_weaponName="weapon";
+	std::string m_weaponName="Weapon";
 	std::string m_weaponPartsText="weaponPart";
 	std::string m_EnemyText="enemy";
 

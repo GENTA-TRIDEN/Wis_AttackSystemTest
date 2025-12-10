@@ -6,6 +6,15 @@
 namespace WIS {
     class PlayerComponent : public WIS::ComponentBase
     {
+
+    private :
+		DirectX::SimpleMath::Vector3 m_moveDirection;
+
+		float m_moveSpeed = 5.0f; // ˆÚ“®‘¬“x
+
+        
+
+
     public:
 		PlayerComponent();
 		~PlayerComponent();

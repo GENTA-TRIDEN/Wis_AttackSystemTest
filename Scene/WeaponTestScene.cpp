@@ -7,6 +7,7 @@
 #include "WISLib/GameObject/Component/CollisionComponent.h"
 #include "WISLib/GameObject/Component/CharacterComponent.h"
 #include "WISLib/GameObject/Component/ModelComponent.h"
+#include "WISLib/GameObject/Component/WeaponComponent.h"
 
 WeaponTestScene::WeaponTestScene()
 {
@@ -62,6 +63,7 @@ void WeaponTestScene::Initialize()
 	auto weaponTransform = weapon->GetComponent<WIS::TransformComponent>();
 	auto weaponColl = weapon->AddComponent<WIS::CollisionComponent>();
 	auto weaponModel = weapon->AddComponent<WIS::ModelComponent>();
+	auto WeaponComp = weapon->AddComponent<WIS::WeaponComponent>();
 	weaponColl->AddBoundingOrientedBox({ 2.7f,0.2f,0.2f }, { 3.0f,0.0f,0.0f });
 	weaponColl->SetDebugColor(DirectX::Colors::Red);
 	//we
