@@ -184,6 +184,8 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameComponent\ItemComponent.h" />
+    <ClInclude Include="Scene\ItemGetScene.h" />
     <ClInclude Include="Scene\PlayerTestScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\PartStatsComponent.h" />
     <ClInclude Include="Scene\WeaponComponentTestScene.h" />
@@ -234,6 +236,8 @@
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameComponent\ItemComponent.cpp" />
+    <ClCompile Include="Scene\ItemGetScene.cpp" />
     <ClCompile Include="Scene\PlayerTestScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PartStatsComponent.cpp" />
     <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />

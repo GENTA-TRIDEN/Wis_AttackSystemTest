@@ -16,6 +16,12 @@ namespace WIS {
         CameraManager* p_cameraManager = CameraManager::GetInstance();
 
 
+        //@TODO:アイテムを保持する奴を作ってもいいかも
+        
+		//ItemListのなかのItemをそれぞれ何個持っているかの配列
+		std::unordered_map<WIS::ItemKinds, int> m_itemCountMap;
+        
+
     public:
 		PlayerComponent();
 		~PlayerComponent();
@@ -28,6 +34,18 @@ namespace WIS {
             const DirectX::SimpleMath::Matrix& view,
             const DirectX::SimpleMath::Matrix& proj) override;
         void OnRelease() override;
+
+
+		void AddItem(WIS::ItemKinds itemType) {
+			m_itemCountMap[itemType]++;
+		}
+
+        int GetItemCount(WIS::ItemKinds itemType) {
+			if (m_itemCountMap.find(itemType) == m_itemCountMap.end()) {
+				return 0;
+			}
+			return m_itemCountMap[itemType];
+        }
 
     };
 }

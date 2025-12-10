@@ -71,4 +71,15 @@ namespace WIS
 		BOTTOM_CENTER,
 		BOTTOM_RIGHT
 	};
+
+
+	enum class ItemKinds
+	{
+		NONE = 0,
+		BLADE,//ên
+		SHIELD,//èÇ
+		BOMB,//îöíe
+		ARROW,
+		GEAR//éïé‘
+	};
 }

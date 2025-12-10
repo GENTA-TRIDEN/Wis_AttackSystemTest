@@ -62,6 +62,8 @@
     <ClInclude Include="WISLib\GameObject\Component\WeaponPartsComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\PartStatsComponent.h" />
     <ClInclude Include="Scene\PlayerTestScene.h" />
+    <ClInclude Include="Scene\ItemGetScene.h" />
+    <ClInclude Include="GameComponent\ItemComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -110,6 +112,8 @@
     <ClCompile Include="WISLib\GameObject\Component\WeaponPartsComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PartStatsComponent.cpp" />
     <ClCompile Include="Scene\PlayerTestScene.cpp" />
+    <ClCompile Include="Scene\ItemGetScene.cpp" />
+    <ClCompile Include="GameComponent\ItemComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
