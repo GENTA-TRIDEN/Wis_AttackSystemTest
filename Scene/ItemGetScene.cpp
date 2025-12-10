@@ -39,8 +39,9 @@ void ItemGetScene::Initialize()
 	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
 	//GameObject‚Ì¶¬
-	m_objectManager->GenerateObject(m_PlayerText, WIS::SceneTag::GAMEPLAY_SCENE);
-	m_objectManager->GenerateObject(m_EnemyText, WIS::SceneTag::GAMEPLAY_SCENE);
+	
+	if(!m_objectManager->GetObject(m_PlayerText))m_objectManager->GenerateObject(m_PlayerText, WIS::SceneTag::GAMEPLAY_SCENE);
+	if (!m_objectManager->GetObject(m_EnemyText))m_objectManager->GenerateObject(m_EnemyText, WIS::SceneTag::GAMEPLAY_SCENE);
 
 	//player‚ÌÝ’è
 	auto player = m_objectManager->GetObject(m_PlayerText);

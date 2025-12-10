@@ -4,47 +4,47 @@
 #include <memory>
 #include <WISLib/GameObject/GameObject.h>
 #include <WISLib/GameObject/ObjectManager.h>
+#include "InGameObject/Archetype/ArchetypeDefManager.h"
 
 namespace WIS
 {
-class ArchetypeBase
-{
-private:
-	// Archetypeが保持するGameObjectの名前リスト
-	std::vector<std::string> m_gameObjectNames;
-	// 保持するオブジェクトのリスト
-	std::vector<std::shared_ptr<class WIS::GameObject>> m_HoldingObjects;
+	// GameObjectクラスの前方宣言 (m_HoldingObjectsのメンバ型として使用)
+	class GameObject;
+	class ArchetypeBase
+	{
+	private:
+		// どのArchetype定義を参照するかを示す一意なキー
+		std::string m_archetypeKey;
 
-public:
-	ArchetypeBase() {}
-	virtual ~ArchetypeBase() {}
+		// 保持するオブジェクトのリスト（これはランタイムデータとして保持し続けます）
+		std::vector<std::shared_ptr<class WIS::GameObject>> m_HoldingObjects;
 
+	public:
+		// コンストラクタでキーを受け取るように変更 (引数なしコンストラクタは削除)
+		ArchetypeBase(const std::string& key) : m_archetypeKey(key) {}
+		virtual ~ArchetypeBase() {}
 
+		// ArchetypeDefManagerを参照し、m_archetypeKeyに対応するオブジェクトの名前リストを取得する
+		const std::vector<std::string>* GetGameObjectNames() const {
+			// Managerから定義を取得
+			return WIS::ArchetypeDefManager::GetDefinition(m_archetypeKey);
+		}
 
-	void AddGameObjectName(const std::string& name) {
-		m_gameObjectNames.push_back(name);
-	}
-	const std::vector<std::string>& GetGameObjectNames() const {
-		return m_gameObjectNames;
-	}
+		void HoaldingObjects(WIS::ObjectManager* objectManager) {
+			m_HoldingObjects.clear();
+			// Managerから、このアーキタイプが保持すべきオブジェクトの名前リストを取得
+			const auto* names = GetGameObjectNames();
 
-	void HoaldingObjects(WIS::ObjectManager* objectManager) {
-		m_HoldingObjects.clear();
-		for (const auto& name : m_gameObjectNames) {
-			auto obj = objectManager->GetObject(name);
-			if (obj) {
-				m_HoldingObjects.push_back(obj);
+			if (names) {
+				for (const auto& name : *names) {
+					// ObjectManagerから名前を使ってオブジェクトのshared_ptrを取得
+					auto obj = objectManager->GetObject(name);
+					if (obj) {
+						// 取得したオブジェクトを内部リスト m_HoldingObjects に追加
+						m_HoldingObjects.push_back(obj);
+					}
+				}
 			}
 		}
-	}
-
-	void SetHoldingObject(WIS::ObjectManager* objectManager) {
-		for (const auto& obj : m_HoldingObjects) {
-			objectManager->AddObject(obj);
-		}
-	}
-
-
-};
+	};
 }
-

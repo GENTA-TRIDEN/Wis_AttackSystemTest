@@ -184,7 +184,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="InGameObject\Archetype\ArchetypeDefManager.h" />
     <ClInclude Include="GameComponent\ItemComponent.h" />
+    <ClInclude Include="Scene\ItemUsingScene.h" />
     <ClInclude Include="Scene\ItemGetScene.h" />
     <ClInclude Include="Scene\PlayerTestScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\PartStatsComponent.h" />
@@ -236,7 +238,9 @@
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InGameObject\Archetype\ArchetypeDefManager.cpp" />
     <ClCompile Include="GameComponent\ItemComponent.cpp" />
+    <ClCompile Include="Scene\ItemUsingScene.cpp" />
     <ClCompile Include="Scene\ItemGetScene.cpp" />
     <ClCompile Include="Scene\PlayerTestScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PartStatsComponent.cpp" />

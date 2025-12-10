@@ -62,12 +62,12 @@ private:
 	int clickCount = 0;
 	int WeaponPartsModelHandle = -1;
 
-	std::vector<std::string> WeaponPartsName;
+	static std::vector<std::string> WeaponPartsName;
+
 	bool isClick = false;
 	std::string m_weaponText = "Weapon";
 	std::string m_weaponPartsText = "WeaponParts";
 	int m_WeaponModelHandle = -1;
-
 
 	WIS::WeapoArchetype m_weaponArchetype;
 private:
@@ -75,4 +75,5 @@ private:
 	const int m_DebugCountMax = 60;
 
 };
+
 

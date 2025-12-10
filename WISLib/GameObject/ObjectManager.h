@@ -13,7 +13,7 @@ namespace WIS {
 }
 
 namespace WIS {
-
+    using Objects = std::vector< std::shared_ptr<WIS::GameObject>>;
     // 全てのGameObjectを管理するクラス
     class ObjectManager
     {
@@ -23,6 +23,9 @@ namespace WIS {
 
         std::shared_ptr<WIS::GameObject> GenerateObject(std::string a_name, WIS::SceneTag SceneTags);
         std::shared_ptr<WIS::GameObject> GetObject(std::string a_name);
+
+        //オブジェクトのＳｃｅｎｅタグを追加する関数
+		void AddObjectSceneTag(std::string a_name, WIS::SceneTag sceneTag);
 
         // 更新関数
         void Update(const float elapsedTime, UserResources* userResources);
@@ -80,6 +83,10 @@ namespace WIS {
         std::unordered_map<std::string, std::shared_ptr<WIS::GameObject>> m_umNameToObject;
 
 		WIS::SceneTag m_currentSceneTag;
+
+
+        //ObjectsをSceneタグごとに管理するためのマップ
+		std::unordered_map<WIS::SceneTag, Objects> m_sceneTagToObjects;
         
 
         //↓しないほうがいいため消す

@@ -27,6 +27,10 @@ std::shared_ptr<WIS::GameObject> WIS::ObjectManager::GenerateObject(std::string 
     m_lObjects.push_back(spNewObject);
     m_umNameToObject[objName] = spNewObject;
 
+    if (spNewObject) {
+        m_sceneTagToObjects[SceneTags].push_back(spNewObject);
+    }
+
     return spNewObject;
 }
 
@@ -38,6 +42,15 @@ std::shared_ptr<WIS::GameObject> WIS::ObjectManager::GetObject(std::string a_nam
         return itr->second;
     }
     return nullptr;
+}
+
+void WIS::ObjectManager::AddObjectSceneTag(std::string a_name, WIS::SceneTag sceneTag)
+{
+	auto object = GetObject(a_name);
+
+	if (object) {
+		m_sceneTagToObjects[sceneTag].push_back(object);
+	}
 }
 
 // XVŠÖ”
@@ -146,10 +159,16 @@ void WIS::ObjectManager::PostUpdateObjects(const float elapsedTime, UserResource
 
 void WIS::ObjectManager::RenderObjects(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
-    for (auto& object : m_lObjects) {
-        if (object) object->OnRender(userResources, view, proj);
-    }
+    //for (auto& object : m_lObjects) {
+    //    if (object) object->OnRender(userResources, view, proj);
+    //}
+  Objects CurrentObjects=  m_sceneTagToObjects[m_currentSceneTag];
 
+  for (auto& object : CurrentObjects) {
+	  if (object) object->OnRender(userResources, view, proj);
+  }
+
+    
 
 }
 
