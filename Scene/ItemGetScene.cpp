@@ -7,6 +7,7 @@
 #include "WISLib/GameObject/Component/CollisionComponent.h"
 #include "WISLib/GameObject/Component/CharacterComponent.h"
 #include "WISLib/GameObject/Component/WeaponComponent.h"
+#include "WISLib/GameObject/Component/ModelComponent.h"
 
 #include "GameComponent/PlayerComponent.h"
 #include "GameComponent/ItemComponent.h"
@@ -288,10 +289,20 @@ std::string ItemGetScene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::It
 	//Item‚ÌÝ’è
 
 	auto itemTransform = item->GetComponent<WIS::TransformComponent>();
+	auto itemColl = item->AddComponent<WIS::CollisionComponent>();
+	auto itemModel = item->AddComponent<WIS::ModelComponent>();
+
 	auto itemComp = item->AddComponent<WIS::ItemComponent>(WIS::ItemKinds::GEAR);
 	itemTransform->SetPosition(Pos);
 	itemComp->SetItemKinds(kinds);
+	itemColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 
+	int Handle=itemModel->AddModel(GetUserResources()->GetDeviceResources()->GetD3DDevice(),
+		GetUserResources()->GetDeviceResources()->GetD3DDeviceContext(),
+		L"Resources/Models/Weapon/Gear.sdkmesh",
+		GetUserResources()->GetEffectFactory());
+	itemModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+	itemModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
 
 
 

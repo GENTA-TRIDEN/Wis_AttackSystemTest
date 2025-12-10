@@ -22,20 +22,19 @@ void WIS::ItemComponent::OnStart(UserResources* userResources)
 	if (!CollisionComp)
 	{
 		CollisionComp = GetOwner()->AddComponent<WIS::CollisionComponent>();
+		CollisionComp->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 	}
 
-	CollisionComp->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 
 
 
 	if (!ModelComp) {
 		ModelComp = GetOwner()->AddComponent<WIS::ModelComponent>();
-
+		int Handle = ModelComp->AddModel(device, context, L"Resources/Models/Weapon/Gear.sdkmesh", fxFactory);
+		ModelComp->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+		ModelComp->SetScale(Handle, { 0.8f,0.8f,0.8f });
 	}
 
-	int Handle = ModelComp->AddModel(device, context, L"Resources/Models/Weapon/Gear.sdkmesh", fxFactory);
-	ModelComp->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
-	ModelComp->SetScale(Handle, { 0.8f,0.8f,0.8f });
 
 }
 
