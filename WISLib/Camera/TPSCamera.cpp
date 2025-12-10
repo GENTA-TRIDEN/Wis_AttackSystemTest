@@ -49,7 +49,7 @@ void WIS::TPSCamera::UniqueUpdate(DirectX::SimpleMath::Vector3& position, Direct
 	target = m_PlayerPos;
 
 	// カメラ位置 = ターゲット位置 - 前方ベクトル * 距離 + 上方ベクトル * 高さ
-	position = target - forward * 3.0f + up * 2.0f;
+	position = target - forward * 7.0f + up * 3.0f;
 
 }
 

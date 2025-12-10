@@ -43,6 +43,7 @@ void PlayerTestScene::Initialize()
 	auto player = m_objectManager->GetObject(m_PlayerText);
 	auto playerColl = player->AddComponent<WIS::CollisionComponent>();
 	auto PlayerComp = player->AddComponent<WIS::PlayerComponent>();
+	auto PlayerTransform = player->GetComponent<WIS::TransformComponent>();
 
 	playerColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 
@@ -77,6 +78,7 @@ void PlayerTestScene::Initialize()
 	auto Weapon = m_objectManager->GetObject("Weapon");
 	auto WeaponTransform = Weapon->GetComponent<WIS::TransformComponent>();
 	WeaponTransform->SetPosition({ 0.0f, 0.0f, 0.0f });
+	WeaponTransform->SetParent(PlayerTransform);
 
 }
 
