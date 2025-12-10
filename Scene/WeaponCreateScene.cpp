@@ -14,6 +14,7 @@
 
 #include "Scene/AttackScene.h"
 #include "Scene/WeaponComponentTestScene.h"
+#include "Scene/PlayerTestScene.h"
 
 //
 
@@ -171,7 +172,7 @@ void WeaponCreateScene::Update(float elapsedTime)
 	
 
 	if (key_state.Space) {
-		this->ChangeScene<WeaponComponentTestScene>();
+		this->ChangeScene<PlayerTestScene>();
 	}
 
 

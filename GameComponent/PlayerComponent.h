@@ -1,7 +1,7 @@
 #pragma once
 #include "WISLib/GameObject/Component/ComponentBase.h"
 #include "WISLib/WISLibTags.h"
-
+#include "WISLib/Camera/CameraManager.h"
 
 namespace WIS {
     class PlayerComponent : public WIS::ComponentBase
@@ -13,6 +13,7 @@ namespace WIS {
 		float m_moveSpeed = 5.0f; // ˆÚ“®‘¬“x
 
         
+        CameraManager* p_cameraManager = CameraManager::GetInstance();
 
 
     public:

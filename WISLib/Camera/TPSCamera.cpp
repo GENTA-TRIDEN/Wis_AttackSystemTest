@@ -5,9 +5,8 @@
 
 WIS::TPSCamera::TPSCamera(DirectX::SimpleMath::Vector3 position) :
 	CameraBase(position, WIS::CameraMode::MODE_FPSCAM),
-	m_yaw(0.0f),   // ヨー角を0で初期化
-	m_pitch(0.0f)  // ピッチ角を0で初期化
-
+	m_yaw(0.0f),
+	m_pitch(0.0f)
 {
 }
 
@@ -31,26 +30,25 @@ void WIS::TPSCamera::UniqueUpdate(DirectX::SimpleMath::Vector3& position, Direct
 
 	// 2. 垂直方向（上下）の回転に制限をかける
 	// -------------------------------------------------------------------
-	// 視点が真上や真下を通り越してひっくり返らないようにする
 	float limit = DirectX::XM_PI / 2.0f - 0.01f; // 約89.9度
 	m_pitch = std::max(-limit, std::min(limit, m_pitch));
 
 	// 3. ヨー角とピッチ角から最終的な回転行列を作成
 	// -------------------------------------------------------------------
+	// プレイヤー移動との一貫性を保つため -m_yaw を使用
 	DirectX::SimpleMath::Matrix rot = DirectX::SimpleMath::Matrix::CreateFromYawPitchRoll(-m_yaw, m_pitch, 0.0f);
 
 	// 4. 回転行列から「前方」と「上方」のベクトルを計算
 	// -------------------------------------------------------------------
-	// Z軸の正方向(0,0,1)を基準に、カメラが向いている「前方」を求める
 	DirectX::SimpleMath::Vector3 forward = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitZ, rot);
-
-	// Y軸の正方向(0,1,0)を基準に、カメラの「上方」を求める
-	// これを引数の up に設定
 	up = DirectX::SimpleMath::Vector3::Transform(DirectX::SimpleMath::Vector3::UnitY, rot);
 
 
 	//カメラの位置と向きを更新
-	target = position;
+	//追従ロジックの修正: メンバー変数から引数の target に位置をコピー
+	target = m_PlayerPos;
+
+	// カメラ位置 = ターゲット位置 - 前方ベクトル * 距離 + 上方ベクトル * 高さ
 	position = target - forward * 3.0f + up * 2.0f;
 
 }

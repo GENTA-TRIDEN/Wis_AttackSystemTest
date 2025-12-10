@@ -1,32 +1,36 @@
+// TPSCamera.h
 #pragma once
 #include "CameraBase.h"
+#include <DirectXMath.h>
+#include <SimpleMath.h>
+#include <Mouse.h>
 
-namespace WIS
-{
-	class TPSCamera :public WIS::CameraBase
-	{
-	private:
+namespace WIS {
+    // ... (必要な前方宣言などがあればここに追加)
 
-		float m_yaw;   // 水平方向（左右）の回転角度
-		float m_pitch; // 垂直方向（上下）の回転角度
-		DirectX::SimpleMath::Matrix m_transformMatrix; // カメラの変換行列
-	public:
-		TPSCamera(DirectX::SimpleMath::Vector3 position);
-		~TPSCamera();
-		//派生オブジェクト特有の動き
-		void UniqueInitialize()override;
-		void UniqueUpdate(DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3& target, DirectX::SimpleMath::Vector3& up, const DirectX::Mouse::State& state)override;
-		void UniqueRander()override;
-		void Uniquefinalize()override;
-		//カメラの種類を取得
+    class TPSCamera : public CameraBase
+    {
+    private:
+        float m_yaw;
+        float m_pitch;
 
+        // 追加: プレイヤーの位置を保持する変数
+        DirectX::SimpleMath::Vector3 m_PlayerPos;
 
+    public:
+        TPSCamera(DirectX::SimpleMath::Vector3 position);
+        ~TPSCamera();
 
-		float GetYaw() const { return m_yaw; }
+        // CameraBaseの仮想関数をオーバーライド
+        void UniqueInitialize() override;
+        void UniqueUpdate(DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3& target, DirectX::SimpleMath::Vector3& up, const DirectX::Mouse::State& state) override;
+        void UniqueRander() override;
+        void Uniquefinalize() override;
 
+        float GetYaw() const { return m_yaw; }
 
-	};
-
+        // 追加: 外部からプレイヤーの位置を設定するためのsetter
+        void SetPlayerPosition(const DirectX::SimpleMath::Vector3& pos) { m_PlayerPos = pos; }
+    };
 
 }
-

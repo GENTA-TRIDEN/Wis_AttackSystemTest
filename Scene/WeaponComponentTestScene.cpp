@@ -75,8 +75,6 @@ void WeaponComponentTestScene::Initialize()
 	auto WeaponTransform = Weapon->GetComponent<WIS::TransformComponent>();
 	WeaponTransform->SetPosition({ 0.0f, 0.0f, 0.0f });
 
-
-
 }
 
 void WeaponComponentTestScene::Update(float elapsedTime)
