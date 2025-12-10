@@ -91,6 +91,8 @@ void AttackScene::Update(float elapsedTime)
 	auto player = m_objectManager->GetObject(m_PlayerText);
 	auto playerTransform = player->GetComponent<WIS::TransformComponent>();
 	auto playerColl = player->GetComponent<WIS::CollisionComponent>();
+	
+
 
 	//UŒ‚”ÍˆÍ‚Ì’²®
 	if (key_state.Up) {
