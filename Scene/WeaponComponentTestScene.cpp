@@ -32,7 +32,7 @@ void WeaponComponentTestScene::Initialize()
 	p_cameraManager = WIS::CameraManager::GetInstance();
 	int handle = p_cameraManager->AddCamera({ 0.0f, 0.0f, 0.0f }, WIS::CameraMode::MODE_FREEMOVE, m_cameraHandle);
 	p_cameraManager->RequestCameraByHandle(handle);
-	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
+		SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
 	//GameObject‚Ì¶¬
 	m_objectManager->GenerateObject(m_PlayerText, WIS::SceneTag::GAMEPLAY_SCENE);

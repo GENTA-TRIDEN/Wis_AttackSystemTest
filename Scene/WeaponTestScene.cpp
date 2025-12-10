@@ -32,7 +32,7 @@ void WeaponTestScene::Initialize()
 	//m_blueprintManager = GetUserResources()->GetBlueprintManager();
 	p_cameraManager = WIS::CameraManager::GetInstance();
 	p_cameraManager->AddCamera({ 00.0f, 5.0f, 0.0f }, WIS::CameraMode::MODE_FREEMOVE, m_cameraHandle);
-	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
+		SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
 	//GameObject‚Ì¶¬
 	m_objectManager->GenerateObject(m_weaponName, WIS::SceneTag::GAMEPLAY_SCENE);

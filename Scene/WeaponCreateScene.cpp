@@ -51,7 +51,7 @@ void WeaponCreateScene::Initialize()
 	p_cameraManager->RequestFirstCameraInType(WIS::CameraMode::MODE_FIXED);
 	p_cameraManager->GetCamera(m_cameraHandle)->SetPosition({ 0.0f, 0.0f, 0.0f });
 
-	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
+		SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
 	DirectX::Mouse::Get().SetMode(DirectX::Mouse::Mode::MODE_RELATIVE);
 	DirectX::Mouse::Get().SetVisible(true);	
