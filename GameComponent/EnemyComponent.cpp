@@ -35,11 +35,10 @@ void WIS::EnemyComponent::OnStart(UserResources* userResources)
 	// 1. BasicEffect の作成
 	m_basicEffect = std::make_unique<DirectX::BasicEffect>(device);
 
-	// ★重要: DrawGrid は VertexPositionColor を使うので、頂点カラーを有効にする
+	// DrawGrid は VertexPositionColor を使うので、頂点カラーを有効にする
 	m_basicEffect->SetVertexColorEnabled(true);
 
-	// 2. Input Layout の作成
-	// エフェクトからシェーダーの情報を取得して、レイアウトを作成します
+	//
 	void const* shaderByteCode;
 	size_t byteCodeLength;
 	m_basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
@@ -180,7 +179,7 @@ void WIS::EnemyComponent::OnRender(UserResources* userResources, const DirectX::
 		DX::Draw(
 			primitiveBatch,
 			boundingSphere,
-			DirectX::Colors::Black); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+			DirectX::Colors::Black);
 
 
 
@@ -196,7 +195,7 @@ void WIS::EnemyComponent::OnRender(UserResources* userResources, const DirectX::
 	DX::Draw(
 		primitiveBatch,
 		boundingSphere,
-		DirectX::Colors::DarkBlue); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+		DirectX::Colors::DarkBlue); 
 
 
 

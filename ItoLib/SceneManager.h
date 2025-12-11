@@ -303,7 +303,6 @@ namespace Ito
 			m_stackScene->Initialize();
 		}
 
-		// ★修正点: アクティブなシーンのみ更新する
 		if (m_stackScene)
 		{
 			// スタックシーンが存在すれば、それだけを更新する

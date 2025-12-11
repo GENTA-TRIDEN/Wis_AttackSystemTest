@@ -1,7 +1,7 @@
 //--------------------------------------------------------------------------------------
-// File: Magazine.cpp
+// File: Button.cpp
 //
-// 弾倉クラス
+// Button class
 //
 //-------------------------------------------------------------------------------------
 
@@ -79,15 +79,13 @@ void WIS::Button::Update()
 
 	DirectX::SimpleMath::Vector2 buttonPos = m_button->GetPosition();
 
-	// ★ 修正箇所: 固定値 {200, 200} を動的に計算したサイズに置き換え
+
 	DirectX::SimpleMath::Vector2 textureSize = m_button->GetTextureSize(); // UserInterface.hに追加した関数
 	DirectX::SimpleMath::Vector2 scaleFactor = m_button->GetScale();
 
 	DirectX::SimpleMath::Vector2 buttonScale = textureSize * scaleFactor;
 
-	//アンカー左上
-	//if (m_button->GetAnchor() == kHorikawa::ANCHOR::TOP_LEFT)
-	//{
+
 		// 判定には計算された buttonScale を使用
 	if (mousePos.x >= buttonPos.x && mousePos.x <= buttonPos.x + buttonScale.x
 		&& mousePos.y >= buttonPos.y && mousePos.y <= buttonPos.y + buttonScale.y)

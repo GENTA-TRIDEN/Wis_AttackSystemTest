@@ -103,7 +103,6 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 		return;
 	}
 
-	// ★ ワールド行列の上書きが削除され、オブジェクトのワールド行列が正しく設定されています
 	DirectX::FXMMATRIX value = Trans->GetWorldMatrix();
 	m_basicEffect->SetWorld(value);
 
@@ -124,7 +123,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 			DX::Draw(
 				primitiveBatch,
 				*m_boundingOrientedBox.get(),
-				m_color); // 色は適宜見やすいもの (Red, Yellowなど) に変更してください
+				m_color); 
 		}
 		break;
 
@@ -134,7 +133,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 			DX::Draw(
 				primitiveBatch,
 				*m_boundingSphere.get(),
-				m_color); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+				m_color);
 		}
 		break;
 
@@ -144,7 +143,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 			DX::Draw(
 				primitiveBatch,
 				*m_boundingBox.get(),
-				m_color); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+				m_color);
 		}
 		break;
 
@@ -154,7 +153,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 			DX::Draw(
 				primitiveBatch,
 				*m_boundingFrustum.get(),
-				m_color); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+				m_color);
 		}
 		break;
 
@@ -237,7 +236,7 @@ void CollisionComponent::OnRelease()
 		if (auto owner = GetOwner()) {
 			m_pCollisionManager->RemoveCollisionObject(owner);
 		}
-		m_pCollisionManager = nullptr; // OnRelease後は何もしないように
+		m_pCollisionManager = nullptr; // OnRelease後は何もしない
 	}
 
 	m_boundingOrientedBox = nullptr;
