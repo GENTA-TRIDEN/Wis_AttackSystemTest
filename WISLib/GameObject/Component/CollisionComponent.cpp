@@ -107,6 +107,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 	DirectX::FXMMATRIX value = Trans->GetWorldMatrix();
 	m_basicEffect->SetWorld(value);
 
+
 	m_basicEffect->SetView(view);
 	m_basicEffect->SetProjection(proj);
 	m_basicEffect->Apply(context);
@@ -133,7 +134,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 			DX::Draw(
 				primitiveBatch,
 				*m_boundingSphere.get(),
-				DirectX::Colors::Yellow); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+				m_color); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
 		}
 		break;
 
@@ -153,7 +154,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 			DX::Draw(
 				primitiveBatch,
 				*m_boundingFrustum.get(),
-				DirectX::Colors::Yellow); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
+				m_color); // 色は適宜見やすいもの (Red, Blueなど) に変更してください
 		}
 		break;
 

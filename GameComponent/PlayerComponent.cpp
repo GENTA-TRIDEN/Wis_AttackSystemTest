@@ -19,18 +19,14 @@ void WIS::PlayerComponent::OnStart(UserResources* userResources)
 	// ‰Šú‰»ˆ—
 	m_moveSpeed = 2.2f;
 
-	(void)userResources; // C4100 Œx‘Î‰
 }
 
 void WIS::PlayerComponent::OnPreUpdate(const float elapsedTime, UserResources* userResources)
 {
-	(void)elapsedTime; // C4100 Œx‘Î‰
-	(void)userResources; // C4100 Œx‘Î‰
 }
 
 void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
 {
-	(void)userResources; // C4100 Œx‘Î‰
 
 	auto keyboard = DirectX::Keyboard::Get().GetState();
 
@@ -86,15 +82,10 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
 
 void WIS::PlayerComponent::OnPostUpdate(const float elapsedTime, UserResources* userResources)
 {
-	(void)elapsedTime; // C4100 Œx‘Î‰
-	(void)userResources; // C4100 Œx‘Î‰
 }
 
 void WIS::PlayerComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
-	(void)userResources; // C4100 Œx‘Î‰
-	(void)view; // C4100 Œx‘Î‰
-	(void)proj; // C4100 Œx‘Î‰
 }
 
 void WIS::PlayerComponent::OnRelease()

@@ -11,6 +11,7 @@
 #include "Scene/StackTestMain.h"
 #include "Scene/WeaponCreateScene.h"
 #include "Scene/ItemGetScene.h"
+#include "Scene/EnemyScene.h"
 
 #include "Scene/RenderTargetViewScene.h"
 
@@ -69,7 +70,8 @@ void Game::Initialize(HWND window, int width, int height)
     //m_sceneManager->SetScene<WeaponTestScene>();
     //m_sceneManager->SetScene<StackTestMain>();
     //m_sceneManager->SetScene<RenderTargetViewScene>();
-    m_sceneManager->SetScene<ItemGetScene>();
+    //m_sceneManager->SetScene<ItemGetScene>();
+    m_sceneManager->SetScene<EnemyScene>();
 
 
 }
