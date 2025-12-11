@@ -10,7 +10,6 @@ using namespace WIS;
 
 WeaponComponent::WeaponComponent()
 {
-    // ‰Šúó‘Ô‚Åˆê“xŒvZ‚µ‚Ä‚¨‚­
     CalculateFinalStats();
 }
 

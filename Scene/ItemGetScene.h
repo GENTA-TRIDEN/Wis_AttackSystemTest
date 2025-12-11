@@ -50,7 +50,7 @@ private:
 	std::string m_EnemyText = "Enemy";
 
 
-	std::string m_weaponName = "weapon";
+	std::string m_weaponName = "Weapon";
 
 	std::vector <std::string> m_itemNames;
 

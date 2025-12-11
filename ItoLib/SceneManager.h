@@ -75,6 +75,9 @@ namespace Ito
 		template <class U, typename... Args>
 		void StackScene(Args&&... args);
 
+		// シーンの切り替え関数
+		void ClauseStackScene();
+
 		// スタックシーンの切り替え関数
 		void DetachStackScene();
 
@@ -197,6 +200,13 @@ namespace Ito
 	void Scene<T>::StackScene(Args&&... args)
 	{
 		m_sceneManager->SetStackScene<U>(std::forward<Args>(args)...);
+	}
+
+	template<class T>
+	inline void Scene<T>::ClauseStackScene()
+	{
+
+		m_sceneManager->DeleteStackScene();
 	}
 
 	template<class T>

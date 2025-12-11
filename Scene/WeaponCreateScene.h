@@ -52,6 +52,8 @@ private:
 
 
 	int m_cameraHandle;
+	//‚à‚Æ‚ÌScene‚ÌƒJƒƒ‰‚ÌHandle
+	int m_ReturnCameraHandle;
 
 	std::unique_ptr <WIS::Button> m_button;
 	std::unique_ptr<WIS::Button> m_UpButton;
@@ -66,10 +68,15 @@ private:
 	bool isClick = false;
 	std::string m_weaponText = "Weapon";
 	std::string m_weaponPartsText = "WeaponParts";
+	std::string m_playerText = "Player";
 	int m_WeaponModelHandle = -1;
 
 
 	WIS::WeapoArchetype m_weaponArchetype;
+
+	DirectX::SimpleMath::Vector3 WeaponPos;
+	DirectX::SimpleMath::Matrix WeaponMat;
+
 private:
 	int m_DebugCountUp = 0;
 	const int m_DebugCountMax = 60;

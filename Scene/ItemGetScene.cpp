@@ -12,6 +12,8 @@
 #include "GameComponent/PlayerComponent.h"
 #include "GameComponent/ItemComponent.h"
 
+#include "Scene/WeaponCreateScene.h"
+
 ItemGetScene::ItemGetScene()
 {
 }
@@ -29,6 +31,7 @@ void ItemGetScene::Initialize()
 	CreateWindowSizeDependentResources();
 	auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
 	auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
+	auto fxFactory = GetUserResources()->GetEffectFactory();
 
 	// --- マネージャーの初期化 ---
 	m_objectManager = GetUserResources()->GetObjectManager();
@@ -79,10 +82,8 @@ void ItemGetScene::Initialize()
 		//}
 		});
 
-	auto Weapon = m_objectManager->GetObject("Weapon");
-	auto WeaponTransform = Weapon->GetComponent<WIS::TransformComponent>();
-	WeaponTransform->SetPosition({ 0.0f, 0.0f, 0.0f });
-	WeaponTransform->SetParent(PlayerTransform);
+
+	
 
 	for (int i = 0; i < 5; i++) {
 
@@ -90,6 +91,22 @@ void ItemGetScene::Initialize()
 
 	}
 
+	auto weapon = m_objectManager->GetObject(m_weaponName);
+	if (!weapon)weapon = m_objectManager->GenerateObject(m_weaponName, WIS::SceneTag::GAMEPLAY_SCENE);
+
+	m_objectManager->AddObjectSceneTag(m_weaponName, WIS::SceneTag::STACK_SCENE);
+
+	auto weaponColl = weapon->AddComponent<WIS::CollisionComponent>();
+	auto weaponModel = weapon->AddComponent<WIS::ModelComponent>();
+	auto WeaponComponent = weapon->AddComponent<WIS::WeaponComponent>();
+	auto WeaponTransform = weapon->GetComponent<WIS::TransformComponent>();
+	weaponColl->AddBoundingOrientedBox({ 2.7f,0.2f,0.2f }, { 3.0f,0.0f,0.0f });
+	weaponColl->SetDebugColor(DirectX::Colors::Red);
+
+	int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/stick.sdkmesh", fxFactory);
+	weaponModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+	weaponModel->SetScale(Handle, { 2.3f,2.3f,2.3f });
+	WeaponTransform->SetParent(PlayerTransform);
 
 }
 
@@ -108,7 +125,9 @@ void ItemGetScene::Update(float elapsedTime)
 		m_DebugCountUp = 0;
 	}
 
-	auto Weapon = m_objectManager->GetObject("Weapon");
+	auto Weapon = m_objectManager->GetObject(m_weaponName);
+	if(Weapon){
+
 	auto WeaponTransform = Weapon->GetComponent<WIS::TransformComponent>();
 	auto WeaponWeaponComp = Weapon->GetComponent<WIS::WeaponComponent>();
 
@@ -133,8 +152,9 @@ void ItemGetScene::Update(float elapsedTime)
 
 
 		}
-	}
 
+
+	}
 
 	if (mouse_state.leftButton && !m_isAttack) {
 		m_isAttack = true;
@@ -143,8 +163,12 @@ void ItemGetScene::Update(float elapsedTime)
 	}
 
 
+}
 
 
+	if (key_state.Tab) {
+		this->StackScene<WeaponCreateScene>();
+	}
 
 
 

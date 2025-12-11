@@ -19,7 +19,7 @@ namespace WIS {
 
         // パフォーマンス最適化のためのキャッシュ
         mutable DirectX::SimpleMath::Matrix m_worldMatrix;
-        mutable bool m_isDirty; // ワールド行列の再計算が必要かを示すフラグ
+        mutable bool m_isDirty; 
 
         void SetDirty(); // 自分とすべての子をダーティに設定する
 
@@ -38,6 +38,7 @@ namespace WIS {
         void SetPosition(const DirectX::SimpleMath::Vector3& position);
         void SetRotation(const DirectX::SimpleMath::Quaternion& rotation);
         void SetScale(const DirectX::SimpleMath::Vector3& scale);
+        void SetWorld(const DirectX::SimpleMath::Matrix mat);
 
         void Translate(const DirectX::SimpleMath::Vector3& offset);
 

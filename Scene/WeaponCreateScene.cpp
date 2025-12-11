@@ -47,14 +47,16 @@ void WeaponCreateScene::Initialize()
 	m_objectManager = GetUserResources()->GetObjectManager();
 	//m_blueprintManager = GetUserResources()->GetBlueprintManager();
 	p_cameraManager = WIS::CameraManager::GetInstance();
+	m_ReturnCameraHandle = p_cameraManager->GetCurrentCameraHandle();
 	p_cameraManager->AddCamera({ 00.0f, 5.0f, 0.0f }, WIS::CameraMode::MODE_FIXED, m_cameraHandle);
-	p_cameraManager->RequestFirstCameraInType(WIS::CameraMode::MODE_FIXED);
+	p_cameraManager->RequestCameraByHandle(m_cameraHandle);
 	p_cameraManager->GetCamera(m_cameraHandle)->SetPosition({ 0.0f, 0.0f, 0.0f });
 
-		SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
+	SetCurrentSceneTag(WIS::SceneTag::STACK_SCENE);
+	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::STACK_SCENE);
 
 	DirectX::Mouse::Get().SetMode(DirectX::Mouse::Mode::MODE_RELATIVE);
-	DirectX::Mouse::Get().SetVisible(true);	
+	DirectX::Mouse::Get().SetVisible(true);
 	//GameObjectの生成
 	auto fxFactory = GetUserResources()->GetEffectFactory();
 
@@ -65,25 +67,36 @@ void WeaponCreateScene::Initialize()
 
 
 	//オブジェクトの生成
-	m_objectManager->GenerateObject(m_weaponText, WIS::SceneTag::GAMEPLAY_SCENE);
 
+
+	auto player = m_objectManager->GetObject(m_playerText);
+	if (player) {
+
+	}
 
 	//Weaponの生成
 	auto weapon = m_objectManager->GetObject(m_weaponText);
-	m_weaponArchetype.AddGameObjectName(m_weaponText);
-	auto weaponTransform = weapon->GetComponent<WIS::TransformComponent>();
-	auto weaponColl = weapon->AddComponent<WIS::CollisionComponent>();
-	auto weaponModel = weapon->AddComponent<WIS::ModelComponent>();
-	auto WeaponComponent = weapon->AddComponent<WIS::WeaponComponent>();
-	weaponColl->AddBoundingOrientedBox({ 2.7f,0.2f,0.2f }, { 3.0f,0.0f,0.0f });
-	weaponColl->SetDebugColor(DirectX::Colors::Red);
-	//we
-	weaponTransform->SetPosition({ -4.0f, 0.0f, 0.0f });
-	DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, 0.0f);
-	weaponTransform->SetRotation(rot);
-	int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/stick.sdkmesh", fxFactory);
-	weaponModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
-	weaponModel->SetScale(Handle, { 2.3f,2.3f,2.3f });
+	if (weapon){
+
+		m_weaponArchetype.AddGameObjectName(m_weaponText);
+		auto weaponTransform = weapon->GetComponent<WIS::TransformComponent>();
+		auto weaponColl = weapon->GetComponent<WIS::CollisionComponent>();
+		auto weaponModel = weapon->GetComponent<WIS::ModelComponent>();
+		auto WeaponComponent = weapon->GetComponent<WIS::WeaponComponent>();
+
+		//we
+
+		//SetParentにnullptrを入れて親子関係を切る
+		weaponTransform->SetParent(nullptr);
+		WeaponMat = weaponTransform->GetWorldMatrix();
+		WeaponPos = weaponTransform->GetPosition();
+		weaponTransform->SetPosition({ -4.0f, 0.0f, 0.0f });
+		DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, 0.0f);
+		weaponTransform->SetRotation(rot);
+		weaponModel->SetRotate(0, { 0,0,DirectX::XMConvertToRadians(0) });
+
+		
+	}
 	
 	m_button->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/GearSilhouette.png");
 }
@@ -92,6 +105,9 @@ void WeaponCreateScene::Update(float elapsedTime)
 {
 
 	DirectX::Mouse::Get().SetMode(DirectX::Mouse::Mode::MODE_ABSOLUTE);
+	DirectX::Mouse::Get().SetVisible(true);
+
+
 
 	auto key_state = DirectX::Keyboard::Get().GetState();
 	auto mouse_state = DirectX::Mouse::Get().GetState();
@@ -114,12 +130,16 @@ void WeaponCreateScene::Update(float elapsedTime)
 	m_DownButton->Update();
 	m_RightButton->Update();
 	m_LeftButton->Update();
-
+	std::string name;
 
 	if (m_button->IsClick() && isClick == false) {
 		clickCount++;
-		m_objectManager->GenerateObject(m_weaponPartsText + std::to_string(clickCount), WIS::SceneTag::GAMEPLAY_SCENE);
-		m_weaponArchetype.AddGameObjectName(m_weaponPartsText + std::to_string(clickCount));
+
+		auto weaponParts=m_objectManager->GenerateObject(m_weaponPartsText + std::to_string(clickCount), WIS::SceneTag::GAMEPLAY_SCENE);
+		name = weaponParts->GetName();
+
+		m_objectManager->AddObjectSceneTag(name, WIS::SceneTag::STACK_SCENE);
+		m_weaponArchetype.AddGameObjectName(name);
 		auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
 		auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
 		auto fxFactory = GetUserResources()->GetEffectFactory();
@@ -127,7 +147,7 @@ void WeaponCreateScene::Update(float elapsedTime)
 		auto Weapon = m_objectManager->GetObject(m_weaponText);
 		auto WeaponWeaponComponent = Weapon->GetComponent<WIS::WeaponComponent>();
 
-		auto weaponParts = m_objectManager->GetObject(m_weaponPartsText + std::to_string(clickCount));
+		m_objectManager->GetObject(name);
 		auto weaponPartsTransform = weaponParts->GetComponent<WIS::TransformComponent>();
 		auto weaponPartsColl = weaponParts->AddComponent<WIS::CollisionComponent>();
 		auto weaponModel = weaponParts->AddComponent<WIS::ModelComponent>();
@@ -145,6 +165,11 @@ void WeaponCreateScene::Update(float elapsedTime)
 
 
 		WeaponWeaponComponent->AddWeight(10.0f);
+		WeaponWeaponComponent->AttachPart(weaponParts);
+		WeaponWeaponComponent->AggregateAndCalculateStats();
+
+
+		WeaponPartsName.push_back(weaponParts->GetName());
 
 	}
 	if (m_button->IsClick()) {
@@ -154,12 +179,16 @@ void WeaponCreateScene::Update(float elapsedTime)
 	else {
 		isClick = false;
 	}
+
 	//WeaponPartsの移動
-	auto weaponParts = m_objectManager->GetObject(m_weaponPartsText + std::to_string(clickCount));
-	if (weaponParts) {
-		WeaponPartsName.push_back(weaponParts->GetName());
+
+	if (WeaponPartsName.size()>0&&m_objectManager->GetObject(WeaponPartsName.back())) {
+
+		name = WeaponPartsName.back();
+		auto weaponParts = m_objectManager->GetObject(name);
 		auto weaponPartsTransform = weaponParts->GetComponent<WIS::TransformComponent>();
 		DirectX::SimpleMath::Vector3 pos = weaponPartsTransform->GetPosition();
+
 		if (m_RightButton->IsClick()) {
 			pos.x -= 0.1f;
 			weaponPartsTransform->SetPosition(pos);
@@ -170,10 +199,12 @@ void WeaponCreateScene::Update(float elapsedTime)
 		}
 	}
 
+
+
 	
 
 	if (key_state.Space) {
-		this->ChangeScene<ItemGetScene>();
+		this->DetachStackScene();
 	}
 
 
@@ -263,6 +294,18 @@ void WeaponCreateScene::Render()
 void WeaponCreateScene::Finalize()
 {
 
+	p_cameraManager->RequestCameraByHandle(m_ReturnCameraHandle);
+	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
+	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
+
+	auto Player = m_objectManager->GetObject(m_playerText);
+	auto PlayerTransform= Player->GetComponent<WIS::TransformComponent>();
+	auto Weapon = m_objectManager->GetObject(m_weaponText);
+	auto weaponTransform = Weapon->GetComponent<WIS::TransformComponent>();
+
+	weaponTransform->SetParent(PlayerTransform);
+	weaponTransform->SetPosition(WeaponPos);
+	weaponTransform->SetWorld(WeaponMat);
 	////残しておくゲームオブジェクトを除いて削除
 	//std::vector<std::shared_ptr<WIS::GameObject>> holdObjects;
 
@@ -278,9 +321,9 @@ void WeaponCreateScene::Finalize()
 	//holdObjects.push_back(weapon);
 	//}
 
-	m_weaponArchetype.HoaldingObjects(m_objectManager);
-	m_objectManager->Finalize();
-	m_weaponArchetype.SetHoldingObject(m_objectManager);
+	//m_weaponArchetype.HoaldingObjects(m_objectManager);
+	//m_objectManager->Finalize();
+	//m_weaponArchetype.SetHoldingObject(m_objectManager);
 	//for (auto& obj : holdObjects) {
 	//	m_objectManager->AddObject(obj);
 	//}

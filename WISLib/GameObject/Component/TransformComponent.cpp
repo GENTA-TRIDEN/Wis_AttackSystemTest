@@ -38,6 +38,13 @@ void TransformComponent::SetScale(const Vector3& scale)
     SetDirty();
 }
 
+void WIS::TransformComponent::SetWorld(const DirectX::SimpleMath::Matrix mat)
+{
+    m_worldMatrix = mat;
+    SetDirty();
+
+}
+
 void TransformComponent::Translate(const Vector3& offset)
 {
     m_position += offset;
