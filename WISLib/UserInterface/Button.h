@@ -54,8 +54,12 @@ namespace WIS
 
 		//テキストを中央に入れる
 		const wchar_t* m_text = L"Button";
-		
 
+		//当たった時に実行される関数を格納
+		std::vector<std::function<void(void)>> m_onClickCallbacks;
+
+		//Clickしたときに一回だけ実行される
+		bool OnClick;
 
 		//	関数
 	public:
@@ -73,6 +77,18 @@ namespace WIS
 
 		bool IsClick() {
 			return m_state == STATE::Push;
+		}
+
+
+		//コールバック関数の登録
+		void SetOnCnClickCallbacks(std::function<void(void)> func) {
+			m_onClickCallbacks.push_back(func);
+		}
+
+
+		//コールバック関数のクリア
+		void ClearOnClickCallbacks() {
+			m_onClickCallbacks.clear();
 		}
 
 

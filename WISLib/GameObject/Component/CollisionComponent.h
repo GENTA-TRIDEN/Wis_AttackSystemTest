@@ -41,7 +41,7 @@ namespace WIS {
 		std::vector<std::function<void(std::shared_ptr<GameObject>)>> m_onCollisionCallbacks;
 
 
-		// ★追加: 入力レイアウト (これがないと描画できません)
+		//入力レイアウト (これがないと描画できません)
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 
 		//debugびょうがのcolorを保持

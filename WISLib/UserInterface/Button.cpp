@@ -98,13 +98,21 @@ void WIS::Button::Update()
 			//押された
 			m_state = Push;
 			m_button->LoadTexture(StateTexturePath[Push]);
+			
+			if (OnClick == false) {
+
+				for (std::function<void()> func: m_onClickCallbacks) {
+					func();
+				}
+				OnClick = true;
+			}
 		}
 		else if (m_state != Push || !mouse.leftButton)
 		{
 			//ホバー
 			m_state = Hover;
 			m_button->LoadTexture(StateTexturePath[Hover]);
-
+			OnClick = false;
 		}
 	}
 	else
@@ -112,10 +120,8 @@ void WIS::Button::Update()
 		//通常
 		m_state = Normal;
 		m_button->LoadTexture(StateTexturePath[Normal]);
-
+		OnClick = false;
 	}
-
-
 
 
 
@@ -140,10 +146,6 @@ void WIS::Button::Render()
 
 
 
-
-
-
-	// デバッグ用にボタンの位置に
 
 
 

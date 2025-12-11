@@ -6,6 +6,8 @@
 #include "PartStatsComponent.h"
 #include "WISLib/GameObject/GameObject.h" // GetComponentのために必要
 
+#include "UserResources.h"
+
 using namespace WIS;
 
 WeaponComponent::WeaponComponent()
@@ -42,6 +44,18 @@ void WeaponComponent::OnUpdate(const float elapsedTime, UserResources* userResou
             m_hasDealtDamageThisSwing = false; // 次の振りのためにリセット
         }
     }
+}
+
+void WIS::WeaponComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
+{
+    auto font = userResources->GetDebugFont();
+
+
+
+    font->AddString((L"currentAddedWeight:" + std::to_wstring(m_currentAddedWeight)).c_str(), { 500.0f, 20.0f });
+    font->AddString((L"attackPower:" + std::to_wstring(m_attackPower)).c_str(), { 500.0f, 50.0f });
+    font->AddString((L"currentCenterOfMass:" + std::to_wstring(m_currentCenterOfMass)).c_str(), { 500.0f, 80.0f });
+
 }
 
 void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)

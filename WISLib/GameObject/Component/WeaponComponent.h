@@ -47,6 +47,8 @@ namespace WIS {
 		//--- ComponentBaseのオーバーライド関数 ---
 		void OnStart(UserResources* userResources) override;
 		void OnUpdate(const float elapsedTime, UserResources* userResources) override;
+
+		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)override;
 		void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) override;
 
 		void AddWeight(float weight) {

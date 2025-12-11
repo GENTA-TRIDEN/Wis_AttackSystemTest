@@ -61,15 +61,30 @@ private:
 	std::unique_ptr<WIS::Button> m_RightButton;
 	std::unique_ptr<WIS::Button> m_LeftButton;
 
+
+	std::unique_ptr<WIS::Button> m_SelectButton;
+
 	int clickCount = 0;
 	int WeaponPartsModelHandle = -1;
 
 	std::vector<std::string> WeaponPartsName;
 	bool isClick = false;
-	std::string m_weaponText = "Weapon";
-	std::string m_weaponPartsText = "WeaponParts";
-	std::string m_playerText = "Player";
+
+	const std::string m_weaponText = "Weapon";
+	const std::string m_weaponPartsText = "WeaponParts";
+	const std::string m_playerText = "Player";
+
+	//Œ»İ‘I‘ğ‚³‚ê‚Ä‚¢‚éParts‚Ì–¼‘O;
+	int m_currentWeaponPartsNameIndex;
 	int m_WeaponModelHandle = -1;
+
+
+private:
+	//Select‚µ‚Ä‚¢‚éWeaponParts‚ğİ’è‚·‚é
+
+	void ChangeNextWeaponParts();
+
+
 
 
 	WIS::WeapoArchetype m_weaponArchetype;

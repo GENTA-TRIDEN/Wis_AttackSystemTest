@@ -12,6 +12,9 @@
 #include "WISLib/GameObject/Component/PartStatsComponent.h"
 
 
+#include "GameComponent/PlayerComponent.h"
+
+
 #include "Scene/AttackScene.h"
 #include "Scene/WeaponComponentTestScene.h"
 #include "Scene/PlayerTestScene.h"
@@ -51,7 +54,6 @@ void WeaponCreateScene::Initialize()
 	p_cameraManager->AddCamera({ 00.0f, 5.0f, 0.0f }, WIS::CameraMode::MODE_FIXED, m_cameraHandle);
 	p_cameraManager->RequestCameraByHandle(m_cameraHandle);
 	p_cameraManager->GetCamera(m_cameraHandle)->SetPosition({ 0.0f, 0.0f, 0.0f });
-
 	SetCurrentSceneTag(WIS::SceneTag::STACK_SCENE);
 	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::STACK_SCENE);
 
@@ -63,12 +65,16 @@ void WeaponCreateScene::Initialize()
 
 
 	m_button->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	m_UpButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	m_DownButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	m_RightButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	m_LeftButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	m_SelectButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+
 
 
 
 	//オブジェクトの生成
-
-
 	auto player = m_objectManager->GetObject(m_playerText);
 	if (player) {
 
@@ -99,7 +105,17 @@ void WeaponCreateScene::Initialize()
 	}
 	
 	m_button->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/GearSilhouette.png");
+
+	m_currentWeaponPartsNameIndex = -1;
+
+	//↓これを直したい
+	m_SelectButton->SetOnCnClickCallbacks([this]() {
+		this->ChangeNextWeaponParts();
+		});
+	
+
 }
+
 
 void WeaponCreateScene::Update(float elapsedTime)
 {
@@ -130,13 +146,23 @@ void WeaponCreateScene::Update(float elapsedTime)
 	m_DownButton->Update();
 	m_RightButton->Update();
 	m_LeftButton->Update();
+	m_SelectButton->Update();
 	std::string name;
 
+	//@TODOここら辺を関数にする
 	if (m_button->IsClick() && isClick == false) {
-		clickCount++;
+		auto player = m_objectManager->GetObject(m_playerText)->GetComponent<WIS::PlayerComponent>();
+		
+		int itemCount=player->GetItemCount(WIS::ItemKinds::GEAR);
+		if (itemCount > 0) {
 
+
+		clickCount++;
+		itemCount--;
+		player->SetItemCount(WIS::ItemKinds::GEAR, itemCount);
 		auto weaponParts=m_objectManager->GenerateObject(m_weaponPartsText + std::to_string(clickCount), WIS::SceneTag::GAMEPLAY_SCENE);
 		name = weaponParts->GetName();
+		m_currentWeaponPartsNameIndex++;
 
 		m_objectManager->AddObjectSceneTag(name, WIS::SceneTag::STACK_SCENE);
 		m_weaponArchetype.AddGameObjectName(name);
@@ -166,11 +192,11 @@ void WeaponCreateScene::Update(float elapsedTime)
 
 		WeaponWeaponComponent->AddWeight(10.0f);
 		WeaponWeaponComponent->AttachPart(weaponParts);
-		WeaponWeaponComponent->AggregateAndCalculateStats();
 
 
 		WeaponPartsName.push_back(weaponParts->GetName());
 
+		}
 	}
 	if (m_button->IsClick()) {
 		
@@ -182,9 +208,10 @@ void WeaponCreateScene::Update(float elapsedTime)
 
 	//WeaponPartsの移動
 
-	if (WeaponPartsName.size()>0&&m_objectManager->GetObject(WeaponPartsName.back())) {
+	if (WeaponPartsName.size()>0&&m_objectManager->GetObject(WeaponPartsName[m_currentWeaponPartsNameIndex])) {
 
-		name = WeaponPartsName.back();
+		name = WeaponPartsName[m_currentWeaponPartsNameIndex];
+
 		auto weaponParts = m_objectManager->GetObject(name);
 		auto weaponPartsTransform = weaponParts->GetComponent<WIS::TransformComponent>();
 		DirectX::SimpleMath::Vector3 pos = weaponPartsTransform->GetPosition();
@@ -200,6 +227,9 @@ void WeaponCreateScene::Update(float elapsedTime)
 	}
 
 
+	if (m_SelectButton->IsClick()) {
+		
+	}
 
 	
 
@@ -278,7 +308,7 @@ void WeaponCreateScene::Render()
 	m_DownButton->Render();
 	m_RightButton->Render();
 	m_LeftButton->Render();
-
+	m_SelectButton->Render();
 	m_objectManager->Render(
 		GetUserResources(),
 		*p_cameraManager->GetView(),
@@ -287,7 +317,8 @@ void WeaponCreateScene::Render()
 
 
 	font->AddString((L"clickCount:" + std::to_wstring(clickCount)).c_str(), { 10.0f, 90.0f });
-	font->AddString((L"isClick:" + std::to_wstring(isClick)).c_str(), { 10.0f, 100.0f });
+	font->AddString((L"isClick:" + std::to_wstring(isClick)).c_str(), { 10.0f, 110.0f });
+	font->AddString((L"CurrentWeaponPartsNameIndex:" + std::to_wstring(m_currentWeaponPartsNameIndex)).c_str(), { 10.0f,130.0f });
 	
 }
 
@@ -409,10 +440,35 @@ void WeaponCreateScene::CreateWindowSizeDependentResources()
 
 
 
+	m_SelectButton = std::make_unique<WIS::Button>();
+	m_SelectButton->Initialize(GetUserResources()->GetDeviceResources(), rect.right, rect.bottom);
+	m_SelectButton->Add(L"Resources/Textures/Bullet.png",
+		{ 100, 500 },
+		{ 1.0f, 1.0f },
+		kHorikawa::ANCHOR::TOP_LEFT);
+
+
 
 }
 
 void WeaponCreateScene::OnDeviceLost()
 {
+}
+
+void WeaponCreateScene::ChangeNextWeaponParts()
+{
+	//WeaponPartsNameがあることが前提
+	if (WeaponPartsName.size() > 0) {
+
+
+		//Indexを加算する
+		m_currentWeaponPartsNameIndex++;
+
+
+		//Sizeを超えた場合は0に戻す
+		m_currentWeaponPartsNameIndex = (m_currentWeaponPartsNameIndex > WeaponPartsName.size()-1) ? 0: m_currentWeaponPartsNameIndex;
+
+
+	}
 }
 

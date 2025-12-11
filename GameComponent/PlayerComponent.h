@@ -47,6 +47,11 @@ namespace WIS {
 			return m_itemCountMap[itemType];
         }
 
+        void SetItemCount(WIS::ItemKinds itemType, int ItemCount) {
+
+            m_itemCountMap[itemType] = ItemCount;
+        }
+
     };
 }
 
