@@ -44,7 +44,7 @@ void WIS::CollisionManager::Update()
 
 void WIS::CollisionManager::CheckCollisionObjects()
 {
-    // 1. 破棄されたオブジェクトを除去し、有効なオブジェクトのリストを作成
+    //破棄されたオブジェクトを除去し、有効なオブジェクトのリストを作成
     m_CollisionObjects.erase(
         std::remove_if(m_CollisionObjects.begin(), m_CollisionObjects.end(),
             [](const std::weak_ptr<GameObject>& obj) {
@@ -61,7 +61,7 @@ void WIS::CollisionManager::CheckCollisionObjects()
         }
     }
 
-    // 2. オブジェクトを「床」と「動くオブジェクト」にグループ分けする
+    //オブジェクトを「床」と「動くオブジェクト」にグループ分けする
     std::vector<std::shared_ptr<GameObject>> floorObjects;
     std::vector<std::shared_ptr<GameObject>> movableObjects;
 
@@ -95,7 +95,7 @@ void WIS::CollisionManager::CheckCollisionObjects()
         }
     }
 
-    // 4. 【通常判定】動くオブジェクト同士
+    //動くオブジェクト同士
     for (size_t i = 0; i < movableObjects.size(); ++i)
     {
         for (size_t j = i + 1; j < movableObjects.size(); ++j)
@@ -164,7 +164,7 @@ bool WIS::CollisionManager::CheckHit(const std::shared_ptr<GameObject>& obj1, co
         auto sphere2 = obj2Comp->GetBoundingSphere();
         return CheckBoundingCollision(*sphere1, worldMatrix1, *sphere2, worldMatrix2);
     }
-    // --- 3. AABB 同士 (AABB | AABB) --- [追加]
+    // --- 3. AABB 同士 (AABB | AABB) --- 
     else if (pairValue == static_cast<int>(BoundingType::AABB))
     {
         auto aabb1 = obj1Comp->GetBoundingBox();
@@ -183,7 +183,7 @@ bool WIS::CollisionManager::CheckHit(const std::shared_ptr<GameObject>& obj1, co
 
         return CheckBoundingCollision(*spherePtr, sphereMat, *obbPtr, obbMat);
     }
-    // --- 5. Sphere と AABB の混合 (SPHERE | AABB) --- [追加]
+    // --- 5. Sphere と AABB の混合 (SPHERE | AABB) --- 
     else if (pairValue == (static_cast<int>(BoundingType::SPHERE) | static_cast<int>(BoundingType::AABB)))
     {
         // ビット積(&)で判定
@@ -195,7 +195,7 @@ bool WIS::CollisionManager::CheckHit(const std::shared_ptr<GameObject>& obj1, co
 
         return CheckBoundingCollision(*spherePtr, sphereMat, *aabbPtr, aabbMat);
     }
-    // --- 6. OBB と AABB の混合 (OBB | AABB) --- [追加]
+    // --- 6. OBB と AABB の混合 (OBB | AABB) --- 
     else if (pairValue == (static_cast<int>(BoundingType::OBB) | static_cast<int>(BoundingType::AABB)))
     {
         // ビット積(&)で判定

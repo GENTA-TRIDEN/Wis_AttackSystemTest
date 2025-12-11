@@ -175,13 +175,13 @@ void CollisionComponent::OnStart(UserResources* userResources)
 	}
 	auto device = userResources->GetDeviceResources()->GetD3DDevice();
 
-	// 1. BasicEffect の作成
+	//BasicEffect の作成
 	m_basicEffect = std::make_unique<DirectX::BasicEffect>(device);
 
-	// ★重要: DrawGrid は VertexPositionColor を使うので、頂点カラーを有効にする
+	//DrawGrid は VertexPositionColor を使うので、頂点カラーを有効にする
 	m_basicEffect->SetVertexColorEnabled(true);
 
-	// 2. Input Layout の作成
+	//Input Layout の作成
 	// エフェクトからシェーダーの情報を取得して、レイアウトを作成します
 	void const* shaderByteCode;
 	size_t byteCodeLength;
@@ -199,8 +199,7 @@ void CollisionComponent::OnStart(UserResources* userResources)
 
 void CollisionComponent::OnPostUpdate(const float /*elapsedTime*/, UserResources* /*userResources*/)
 {
-	// この関数が、当たり判定(OBB)の座標と回転を
-	// オーナーのTransformComponentのワールド座標と一致させる役割を担います。
+
 	if (m_boundingOrientedBox)
 	{
 		auto owner = GetOwner();
@@ -240,4 +239,10 @@ void CollisionComponent::OnRelease()
 		}
 		m_pCollisionManager = nullptr; // OnRelease後は何もしないように
 	}
+
+	m_boundingOrientedBox = nullptr;
+	m_boundingSphere = nullptr;
+	m_boundingBox = nullptr;
+	m_boundingFrustum = nullptr;
+
 }

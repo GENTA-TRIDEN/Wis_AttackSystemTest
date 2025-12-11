@@ -105,6 +105,9 @@ void WeaponCreateScene::Initialize()
 	}
 	
 	m_button->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/GearSilhouette.png");
+	m_LeftButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/LeftArrowButton.png");
+	m_RightButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/RightArrowButton.png");
+	m_SelectButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/SelectButton.png");
 
 	m_currentWeaponPartsNameIndex = -1;
 
@@ -142,8 +145,8 @@ void WeaponCreateScene::Update(float elapsedTime)
 
 
 	m_button->Update();
-	m_UpButton->Update();
-	m_DownButton->Update();
+	//m_UpButton->Update();
+	//m_DownButton->Update();
 	m_RightButton->Update();
 	m_LeftButton->Update();
 	m_SelectButton->Update();
@@ -215,13 +218,13 @@ void WeaponCreateScene::Update(float elapsedTime)
 		auto weaponParts = m_objectManager->GetObject(name);
 		auto weaponPartsTransform = weaponParts->GetComponent<WIS::TransformComponent>();
 		DirectX::SimpleMath::Vector3 pos = weaponPartsTransform->GetPosition();
-
+		
 		if (m_RightButton->IsClick()) {
-			pos.x -= 0.1f;
+			pos.x += 0.1f;
 			weaponPartsTransform->SetPosition(pos);
 		}
 		if (m_LeftButton->IsClick()) {
-			pos.x += 0.1f;
+			pos.x -= 0.1f;
 			weaponPartsTransform->SetPosition(pos);
 		}
 	}
@@ -304,8 +307,8 @@ void WeaponCreateScene::Render()
 	primitiveBatch->End();
 
 	m_button->Render();
-	m_UpButton->Render();
-	m_DownButton->Render();
+	//m_UpButton->Render();
+	//m_DownButton->Render();
 	m_RightButton->Render();
 	m_LeftButton->Render();
 	m_SelectButton->Render();
@@ -428,13 +431,13 @@ void WeaponCreateScene::CreateWindowSizeDependentResources()
 	m_RightButton = std::make_unique<WIS::Button>();
 	m_RightButton->Initialize(GetUserResources()->GetDeviceResources(), rect.right, rect.bottom);
 	m_RightButton->Add(L"Resources/Textures/Bullet.png",
-		{800, 500 },
+		{1000, 500 },
 		{ 1.0f, 1.0f },
 		kHorikawa::ANCHOR::TOP_LEFT);
 	m_LeftButton = std::make_unique<WIS::Button>();
 	m_LeftButton->Initialize(GetUserResources()->GetDeviceResources(), rect.right, rect.bottom);
 	m_LeftButton->Add(L"Resources/Textures/Bullet.png",
-		{ 1200, 500 },
+		{ 800, 500 },
 		{ 1.0f, 1.0f },
 		kHorikawa::ANCHOR::TOP_LEFT);
 

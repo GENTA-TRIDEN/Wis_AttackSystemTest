@@ -66,6 +66,8 @@
     <ClInclude Include="GameComponent\ItemComponent.h" />
     <ClInclude Include="Scene\EnemyScene.h" />
     <ClInclude Include="GameComponent\EnemyComponent.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
+    <ClInclude Include="Scene\ResultScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -118,6 +120,8 @@
     <ClCompile Include="GameComponent\ItemComponent.cpp" />
     <ClCompile Include="Scene\EnemyScene.cpp" />
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
+    <ClCompile Include="Scene\ResultScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

@@ -14,6 +14,12 @@
 #include "GameComponent/EnemyComponent.h"
 
 #include "Scene/WeaponCreateScene.h"
+#include "Scene/TitleScene.h"
+
+#include "Scene/ResultScene.h"
+
+
+
 
 EnemyScene::EnemyScene()
 {
@@ -183,8 +189,14 @@ void EnemyScene::Update(float elapsedTime)
 	auto player = m_objectManager->GetObject(m_PlayerText);
 	auto playerTranc = player->GetComponent<WIS::TransformComponent>();
 	auto enemy = m_objectManager->GetObject(m_EnemyText);
-	auto enemyEnemy = enemy->GetComponent<WIS::EnemyComponent>();
-	enemyEnemy->SetPlayerPos(playerTranc->GetPosition());
+
+	if (enemy) {
+		auto enemyEnemy = enemy->GetComponent<WIS::EnemyComponent>();
+		enemyEnemy->SetPlayerPos(playerTranc->GetPosition());
+	}
+	else {
+		ChangeScene<ResultScene>();
+	}
 
 
 
@@ -241,9 +253,12 @@ void EnemyScene::Render()
 
 	int enemyHP = 0;
 	auto enemy = m_objectManager->GetObject(m_EnemyText);
-	auto enemyCharacter = enemy->GetComponent<WIS::CharacterComponent>();
-	enemyHP = enemyCharacter->GetHP();
-
+	if (enemy)
+	{
+		auto enemyCharacter = enemy->GetComponent<WIS::CharacterComponent>();
+		enemyHP = enemyCharacter->GetHP();
+		font->AddString((L"enemyHP:" + std::to_wstring(enemyHP)).c_str(), { 10.0f, 90.0f });
+	}
 
 	int PlayerHP = 0;
 	auto player = m_objectManager->GetObject(m_PlayerText);
@@ -252,7 +267,6 @@ void EnemyScene::Render()
 
 	//void DebugFont::AddString(const wchar_t* string, DirectX::SimpleMath::Vector2 pos, FXMVECTOR color, float scale)
 	font->AddString((L"PlayerHP:" + std::to_wstring(PlayerHP)).c_str(), { 10.0f, 50.0f });
-	font->AddString((L"enemyHP:" + std::to_wstring(enemyHP)).c_str(), { 10.0f, 90.0f });
 	font->AddString((L"PlayerAttackLength:" + std::to_wstring(m_PlayerAttackLength)).c_str(), { 10.0f, 120.0f });
 	font->AddString((L"PlayerAttackLength:" + std::to_wstring(m_PlayerAttackLength)).c_str(), { 10.0f, 120.0f });
 
@@ -260,7 +274,7 @@ void EnemyScene::Render()
 	font->AddString((L"m_WeaponAttackTime:" + std::to_wstring(m_WeaponAttackTime)).c_str(), { 10.0f, 250.0f });
 
 
-	font->AddString(L"EnemyScene:", { 0.0f, 0.0f });
+	font->AddString(L"GamePlayScene(EnemyScene):", { 0.0f, 0.0f });
 
 	auto PlayerComp = player->GetComponent<WIS::PlayerComponent>();
 	PlayerComp->GetItemCount(WIS::ItemKinds::GEAR);
@@ -273,6 +287,9 @@ void EnemyScene::Render()
 void EnemyScene::Finalize()
 {
 	m_objectManager->Finalize();
+
+	p_cameraManager->RequestFirstCamera();
+
 }
 
 void EnemyScene::CreateDeviceDependentResources()

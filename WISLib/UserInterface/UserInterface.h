@@ -113,6 +113,7 @@ namespace kHorikawa
 			return DirectX::SimpleMath::Vector2(static_cast<float>(m_textureWidth), static_cast<float>(m_textureHeight));
 		}
 
+
 		// ウィンドウサイズを取得 (UIの位置計算に使うため)
 		DirectX::SimpleMath::Vector2 GetWindowSize() const {
 			return DirectX::SimpleMath::Vector2(static_cast<float>(m_windowWidth), static_cast<float>(m_windowHeight));

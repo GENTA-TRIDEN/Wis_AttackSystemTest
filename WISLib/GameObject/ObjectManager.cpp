@@ -112,49 +112,32 @@ void WIS::ObjectManager::StartObjects(UserResources* userResources)
 
 void WIS::ObjectManager::PreUpdateObjects(const float elapsedTime, UserResources* userResources)
 {
-    int a = 0;
-    for (auto& object : m_lObjects) {
+    Objects CurrentObjects = m_sceneTagToObjects[m_currentSceneTag];
 
-        if (object) {
-
-            std::vector<WIS::SceneTag>* bsceneTags = object->GetSceneTags();
-            if (std::find(bsceneTags->begin(), bsceneTags->end(), m_currentSceneTag) != bsceneTags->end()) {
-                object->PreUpdate(elapsedTime, userResources);
-            }
-            else {
-                int a = 5;
-            }
-        }
+    for (auto& object : CurrentObjects) {
+        object->PreUpdate(elapsedTime, userResources);
     }
 }
 
 void WIS::ObjectManager::UpdateObjects(const float elapsedTime, UserResources* userResources)
 {
-    int a = 5;
-    for (auto& object : m_lObjects) {
-        if (object) object->Update(elapsedTime, userResources);
+    Objects CurrentObjects = m_sceneTagToObjects[m_currentSceneTag];
 
-        //std::vector<WIS::SceneTag>* bsceneTags = object->GetSceneTags();
-        //if (std::find(bsceneTags->begin(), bsceneTags->end(), m_currentSceneTag) != bsceneTags->end()) {
-        //    if (object) object->Update(elapsedTime, userResources);
-        //}
-        //else {
-        //    int a = 5;
-        //}
+    for (auto& object : CurrentObjects) {
+        if (object) object->Update(elapsedTime, userResources);
     }
+
 }
 
 void WIS::ObjectManager::PostUpdateObjects(const float elapsedTime, UserResources* userResources)
 {
-    for (auto& object : m_lObjects) {
-        std::vector<WIS::SceneTag>* bsceneTags = object->GetSceneTags();
-        if (std::find(bsceneTags->begin(), bsceneTags->end(), m_currentSceneTag) != bsceneTags->end()) {
-            if (object) object->PostUpdate(elapsedTime, userResources);
-        }
-        else {
-            int a = 5;
-        }
+    Objects CurrentObjects = m_sceneTagToObjects[m_currentSceneTag];
+
+    for (auto& object : CurrentObjects) {
+        if (object) object->PostUpdate(elapsedTime, userResources);
     }
+
+
 }
 
 void WIS::ObjectManager::RenderObjects(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
@@ -196,13 +179,27 @@ void WIS::ObjectManager::RemoveUnActiveObjects()
 void WIS::ObjectManager::FinalizeObjects()
 {
 
+    //‘“–‚½‚è
+    for (auto itr = m_sceneTagToObjects.begin(); itr != m_sceneTagToObjects.end(); ++itr)
+    {
+        WIS::Objects obj = itr->second;
+        for (std::shared_ptr<WIS::GameObject> sharedObj : obj) {
+            sharedObj->OnRelease();
+            sharedObj.reset();
+        }
+
+    }
+
     m_lObjects.clear();
+
     for (auto& object : m_lObjects) {
         if (object) object->OnRelease();
     }
 
+
     m_lObjects.clear();
     m_umNameToObject.clear();
+
 
 
 }

@@ -14,35 +14,35 @@ bool AnimationComponent::LoadAnimation(const std::wstring& fileName, const std::
     auto owner = GetOwner();
     if (!owner) return false;
 
-    // 1. ModelComponentをweak_ptrとして保持
+    //ModelComponentをweak_ptrとして保持
     m_targetModelComponent = owner->GetComponent<ModelComponent>();
 
     // lock()で有効なポインタ（shared_ptr）が取得できるか確認
     auto modelComp = m_targetModelComponent.lock();
     if (!modelComp) return false;
 
-    // 2. ModelComponentから対象のモデルを取得
+    //ModelComponentから対象のモデルを取得
     Model* model = modelComp->GetModel(targetModelIndex);
     if (!model || model->bones.empty()) return false;
 
     m_targetModelIndex = targetModelIndex;
 
-    // 3. アニメーションをロード
+    //アニメーションをロード
     auto newAnimation = std::make_unique<DX::AnimationSDKMESH>();
     if (FAILED(newAnimation->Load(fileName.c_str(), isLoop))) { // isLoop引数付きのLoadを呼び出し
         return false;
     }
 
-    // 4. アニメーションとモデルのボーンをバインド
+    //アニメーションとモデルのボーンをバインド
     if (!newAnimation->Bind(*model)) {
         // バインド失敗（モデルとアニメーションのボーン名が一致しないなど）
         return false;
     }
 
-    // 5. ボーン行列を格納する配列を確保
+    //ボーン行列を格納する配列を確保
     m_boneTransforms = ModelBone::MakeArray(model->bones.size());
 
-    // 6. マップにアニメーションを格納
+    //マップにアニメーションを格納
     m_animations[animName] = std::move(newAnimation);
 
     // 最初のアニメーションを現在のアニメーションとして設定

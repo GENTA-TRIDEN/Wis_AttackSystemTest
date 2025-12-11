@@ -17,10 +17,10 @@ namespace WIS {
 
 
 		// BoundingOrientedBox (OBB)
-		std::unique_ptr<DirectX::BoundingOrientedBox> m_boundingOrientedBox = nullptr;
-		std::unique_ptr<DirectX::BoundingSphere> m_boundingSphere = nullptr;
-		std::unique_ptr<DirectX::BoundingBox> m_boundingBox = nullptr;
-		std::unique_ptr<DirectX::BoundingFrustum> m_boundingFrustum = nullptr;
+		std::unique_ptr<DirectX::BoundingOrientedBox>		m_boundingOrientedBox = nullptr;
+		std::unique_ptr<DirectX::BoundingSphere>			m_boundingSphere = nullptr;
+		std::unique_ptr<DirectX::BoundingBox>				m_boundingBox = nullptr;
+		std::unique_ptr<DirectX::BoundingFrustum>			m_boundingFrustum = nullptr;
 
 		// デバッグ描画用のBasicEffect
 		std::unique_ptr<DirectX::BasicEffect> m_basicEffect = nullptr;

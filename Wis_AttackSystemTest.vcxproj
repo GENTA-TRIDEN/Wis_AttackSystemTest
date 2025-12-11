@@ -185,10 +185,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameComponent\EnemyComponent.h" />
+    <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\EnemyScene.h" />
     <ClInclude Include="GameComponent\ItemComponent.h" />
     <ClInclude Include="Scene\ItemGetScene.h" />
     <ClInclude Include="Scene\PlayerTestScene.h" />
+    <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\PartStatsComponent.h" />
     <ClInclude Include="Scene\WeaponComponentTestScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\WeaponPartsComponent.h" />
@@ -239,10 +241,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
+    <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\EnemyScene.cpp" />
     <ClCompile Include="GameComponent\ItemComponent.cpp" />
     <ClCompile Include="Scene\ItemGetScene.cpp" />
     <ClCompile Include="Scene\PlayerTestScene.cpp" />
+    <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PartStatsComponent.cpp" />
     <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\WeaponPartsComponent.cpp" />

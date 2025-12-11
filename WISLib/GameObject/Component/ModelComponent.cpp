@@ -315,81 +315,6 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
 
     }
 
-    // --- Debug Normal Visualization ---
-    //if ((m_showNormals || m_showFaceNormals) && !m_vertexNormals.empty())
-    //{
-    //    m_lineEffect->SetWorld(m_localMatrices[0] * world);
-    //    m_lineEffect->SetView(view);
-    //    m_lineEffect->SetProjection(proj);
-    //    m_lineEffect->Apply(context);
-    //    context->IASetInputLayout(m_lineInputLayout.Get());
-    //    primitiveBatch->Begin();
-
-    //    if (m_showNormals)
-    //    {
-    //        const float lineLength = 0.1f;
-    //        const Color normalColor(1.0f, 1.0f, 0.0f);
-    //        Matrix worldInverseTranspose = world.Invert().Transpose();
-    //        for (const auto& vn : m_vertexNormals)
-    //        {
-    //            Vector3 startPos = vn.first;
-    //            Vector3 localNormal = vn.second;
-    //            Vector3 transformedNormal = Vector3::TransformNormal(localNormal, m_localMatrices[0] * worldInverseTranspose);
-    //            transformedNormal.Normalize();
-    //            Vector3 endPos = startPos + transformedNormal * lineLength;
-    //            primitiveBatch->DrawLine(VertexPositionColor(startPos, normalColor), VertexPositionColor(endPos, normalColor));
-    //        }
-    //    }
-    //    if (m_showFaceNormals)
-    //    {
-    //        const float lineLength = 0.1f;
-    //        const Color faceNormalColor(0.0f, 1.0f, 1.0f);
-    //        for (size_t i = 0; i < m_vertexNormals.size(); i += 3)
-    //        {
-    //            if (i + 2 >= m_vertexNormals.size()) break;
-    //            Vector3 p0 = m_vertexNormals[i + 0].first;
-    //            Vector3 p1 = m_vertexNormals[i + 1].first;
-    //            Vector3 p2 = m_vertexNormals[i + 2].first;
-    //            Vector3 v1 = p1 - p0;
-    //            Vector3 v2 = p2 - p0;
-    //            Vector3 faceNormal = v1.Cross(v2);
-    //            faceNormal.Normalize();
-    //            Vector3 center = (p0 + p1 + p2) / 3.0f;
-    //            Vector3 startPos = center;
-    //            Vector3 endPos = startPos + faceNormal * lineLength;
-    //            primitiveBatch->DrawLine(VertexPositionColor(startPos, faceNormalColor), VertexPositionColor(endPos, faceNormalColor));
-    //        }
-    //    }
-    //    primitiveBatch->End();
-    //}
-
-    // --- Static Bone Visualization ---
-    //if (m_showBones && !m_boneHierarchy.empty())
-    //{
-    //    std::vector<Matrix> boneWorldTransforms;
-    //    CalculateStaticBoneWorldTransforms(boneWorldTransforms, m_localMatrices[0] * world);
-
-    //    m_lineEffect->SetWorld(Matrix::Identity);
-    //    m_lineEffect->SetView(view);
-    //    m_lineEffect->SetProjection(proj);
-    //    m_lineEffect->Apply(context);
-    //    context->IASetInputLayout(m_lineInputLayout.Get());
-    //    primitiveBatch->Begin();
-
-    //    const Color boneColor(1.0f, 0.0f, 0.0f); // Red
-
-    //    for (size_t i = 0; i < m_boneHierarchy.size(); ++i)
-    //    {
-    //        int parentIndex = m_boneHierarchy[i].parentIndex;
-    //        if (parentIndex != -1)
-    //        {
-    //            Vector3 childPos = boneWorldTransforms[i].Translation();
-    //            Vector3 parentPos = boneWorldTransforms[parentIndex].Translation();
-    //            primitiveBatch->DrawLine(VertexPositionColor(childPos, boneColor), VertexPositionColor(parentPos, boneColor));
-    //        }
-    //    }
-    //    primitiveBatch->End();
-    //}
 }
 
 void WIS::ModelComponent::OnRelease()
@@ -401,6 +326,7 @@ void WIS::ModelComponent::OnRelease()
     m_localMatrices.clear();
     m_vertexNormals.clear();
     m_boneHierarchy.clear();
+
 }
 
 void WIS::ModelComponent::CalculateStaticBoneWorldTransforms(

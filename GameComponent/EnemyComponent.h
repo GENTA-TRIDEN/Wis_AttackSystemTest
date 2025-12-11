@@ -31,10 +31,6 @@ namespace WIS {
             Search = 0,//プレイヤーを探している
             Chase=1,//プレイヤーを追いかける
             Attack=2//プレイヤーを攻撃する
-
-
-
-
         };
         //現在のステート
         state m_currentState;

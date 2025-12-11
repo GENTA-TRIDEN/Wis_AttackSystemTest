@@ -210,6 +210,7 @@ void WIS::EnemyComponent::OnRender(UserResources* userResources, const DirectX::
 
 void WIS::EnemyComponent::OnRelease()
 {
+
 }
 
 void WIS::EnemyComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
