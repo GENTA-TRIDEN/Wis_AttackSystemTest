@@ -24,7 +24,8 @@ namespace WIS {
 
 		// デバッグ描画用のBasicEffect
 		std::unique_ptr<DirectX::BasicEffect> m_basicEffect = nullptr;
-
+		//入力レイアウト
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 
 		// CollisionManagerのインスタンス
 		CollisionManager* m_pCollisionManager = CollisionManager::GetInstance();
@@ -41,8 +42,7 @@ namespace WIS {
 		std::vector<std::function<void(std::shared_ptr<GameObject>)>> m_onCollisionCallbacks;
 
 
-		//入力レイアウト
-		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+
 
 		//debugびょうがのcolorを保持
 		DirectX::XMVECTOR m_color;
@@ -52,12 +52,20 @@ namespace WIS {
 
 
 		bool IsHit;
+
+
+		bool m_IsDrawCollision;
+
+
+
+		static bool m_IsDrawCollisions;
 	public:
 		CollisionComponent();
 		~CollisionComponent();
 
 		void OnStart(UserResources* userResources) override;
 		void OnPostUpdate(const float elapsedTime, UserResources* userResources) override;
+		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)override;
 
 		//  OnCollisionの引数を shared_ptr に変更
 		void OnCollision(std::shared_ptr<GameObject> otherObject) override;
@@ -106,7 +114,14 @@ namespace WIS {
 		void OnPreUpdate(const float, UserResources*) override {}
 		void OnUpdate(const float, UserResources*) override {}
 
-		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)override;
+
+		void SetDebugDraw(bool IsDraw) { m_IsDrawCollision = IsDraw; };
+		bool GetDebugDraw() { return m_IsDrawCollision; };
+
+
+
+		static void SetAllCollisionDebugDraw(bool IsDraw) { m_IsDrawCollisions = IsDraw; };
+		static bool GetAllCollisionDebugDraw() { return m_IsDrawCollisions; };
 
 
 

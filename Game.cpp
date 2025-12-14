@@ -19,6 +19,8 @@
 // WISlib (Manager)
 #include "WISLib/Camera/CameraManager.h"
 
+#include "WISLib/GameObject/Component/CollisionComponent.h"
+
 
 
 extern void ExitGame() noexcept;
@@ -106,6 +108,12 @@ void Game::Update(DX::StepTimer const& timer)
 
     // Update the current scene
     m_sceneManager->Update(elapsedTime);
+
+
+    if (m_kbTracker.released.P) {
+        WIS::CollisionComponent::SetAllCollisionDebugDraw(!WIS::CollisionComponent::GetAllCollisionDebugDraw());
+    }
+
 }
 #pragma endregion
 

@@ -9,12 +9,15 @@
 
 using namespace WIS;
 
+bool CollisionComponent::m_IsDrawCollisions = true;
+
+
 CollisionComponent::CollisionComponent() :
 	m_boundingType(WIS::BoundingType::NONE)
 {
 	//UniqueNumber‚Ì‰Šú‰»
 	CollisionUniqueNumber = rand();
-
+	m_IsDrawCollision = true;
 }
 
 CollisionComponent::~CollisionComponent()
@@ -80,6 +83,12 @@ void WIS::CollisionComponent::AddBoundingFrustum(float nearPlane, float farPlane
 
 void WIS::CollisionComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
+
+	//‚Ü‚Æ‚ß‚Ä•`‰æ‚·‚é‚©‚Ç‚¤‚©
+	if (!m_IsDrawCollisions)return;
+	//ŒÂ•Ê‚Å•`‰æ‚·‚é‚©‚Ç‚¤‚©
+	if(!m_IsDrawCollision)return;
+
 	auto font = userResources->GetDebugFont();
 	auto context = userResources->GetDeviceResources()->GetD3DDeviceContext();
 	auto device = userResources->GetDeviceResources()->GetD3DDevice();

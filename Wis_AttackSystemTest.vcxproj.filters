@@ -68,6 +68,7 @@
     <ClInclude Include="GameComponent\EnemyComponent.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
+    <ClInclude Include="WISLib\GameObject\Component\RigidBodyComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -122,6 +123,7 @@
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\RigidBodyComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

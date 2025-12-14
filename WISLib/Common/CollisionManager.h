@@ -53,6 +53,8 @@ namespace WIS {
         //  オブジェクトのリストを weak_ptr で保持 
         // 所有権は持たず、オブジェクトを監視するだけ
         std::vector<std::weak_ptr<GameObject>> m_CollisionObjects;
+
+        bool m_IsDrawCollision;
     };
 
 

@@ -185,6 +185,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameComponent\EnemyComponent.h" />
+    <ClInclude Include="WISLib\GameObject\Component\RigidBodyComponent.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\EnemyScene.h" />
     <ClInclude Include="GameComponent\ItemComponent.h" />
@@ -241,6 +242,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\RigidBodyComponent.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\EnemyScene.cpp" />
     <ClCompile Include="GameComponent\ItemComponent.cpp" />

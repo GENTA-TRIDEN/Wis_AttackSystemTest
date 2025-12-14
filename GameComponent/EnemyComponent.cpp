@@ -109,10 +109,8 @@ void WIS::EnemyComponent::OnUpdate(const float elapsedTime, UserResources* userR
 		transform->SetRotation(Qrot);
 	}
 		//Œ»Ý‚ÌˆÊ’u‚©‚çm_PlayerPos‚Ö‚ÌŒü‚«‚ð‹‚ß‚é
+		transform->Translate(m_moveDirection);
 
-
-		NowPos += m_moveDirection;
-		transform->SetPosition(NowPos);
 
 		if (NowPos.Distance(m_PlayerPos, NowPos) <= m_PlayerAttackLength) {
 			m_currentState = state::Attack;
