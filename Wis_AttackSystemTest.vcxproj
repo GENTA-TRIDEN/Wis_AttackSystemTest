@@ -184,7 +184,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="WISLib\GameObject\Component\FloorComponent.h" />
     <ClInclude Include="GameComponent\EnemyComponent.h" />
+    <ClInclude Include="Scene\RigidBodyScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\RigidBodyComponent.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="Scene\EnemyScene.h" />
@@ -205,7 +207,6 @@
     <ClInclude Include="Scene\StackTestMain.h" />
     <ClInclude Include="Scene\StackTestStack.h" />
     <ClInclude Include="InGameObject\Archetype\WeapoArchetype.h" />
-    <ClInclude Include="WISLib\GameObject\Component\AnimationComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\CharacterComponent.h" />
     <ClInclude Include="Scene\AttackScene.h" />
     <ClInclude Include="DeviceResources.h" />
@@ -241,7 +242,9 @@
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="WISLib\GameObject\Component\FloorComponent.cpp" />
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
+    <ClCompile Include="Scene\RigidBodyScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\RigidBodyComponent.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="Scene\EnemyScene.cpp" />
@@ -262,7 +265,6 @@
     <ClCompile Include="Scene\StackTestMain.cpp" />
     <ClCompile Include="Scene\StackTestStack.cpp" />
     <ClCompile Include="InGameObject\Archetype\WeapoArchetype.cpp" />
-    <ClCompile Include="WISLib\GameObject\Component\AnimationComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\CharacterComponent.cpp" />
     <ClCompile Include="Scene\AttackScene.cpp" />
     <ClCompile Include="DeviceResources.cpp" />

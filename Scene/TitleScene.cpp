@@ -9,6 +9,8 @@
 
 
 #include "Scene/EnemyScene.h"
+#include "Scene/RigidBodyScene.h"
+
 TitleScene::TitleScene()
 {
 }
@@ -59,7 +61,7 @@ void TitleScene::Update(float elapsedTime)
 	m_button->Update();
 
 	if (m_button->IsClick() && count >= 1) {
-		ChangeScene<EnemyScene>();
+		ChangeScene<RigidBodyScene>();
 	}
 
 }

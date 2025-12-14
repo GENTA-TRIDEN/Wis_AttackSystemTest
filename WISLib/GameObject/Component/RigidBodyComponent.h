@@ -34,6 +34,8 @@ namespace WIS {
 		//入力レイアウト
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 
+		bool m_isGrounded;
+
 	public:
 		RigidBodyComponent();
 		~RigidBodyComponent();
@@ -42,18 +44,29 @@ namespace WIS {
 		void OnStart(UserResources* userResources) override;
 		void OnUpdate(const float elapsedTime, UserResources* userResources) override;
 
-		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)override;
-		// 衝突処理は親武器のWeaponComponentに任せることが多いため、ここではロジックを持たない
+
 		void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) override;
+		//void OnPostUpdate(const float elapsedTime, UserResources* userResources) override;
+
+		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)override;
 		//力を加算する
-		void AddForce(DirectX::SimpleMath::Vector3 addForce);
+		void AddForce(DirectX::SimpleMath::Vector3 addForce) {
+			m_force += addForce;
+		}
 		//直接Velocityを指定する
-		void ChangeVelocity(DirectX::SimpleMath::Vector3 NewVelocity);
+		void ChangeVelocity(DirectX::SimpleMath::Vector3 NewVelocity) {
+			m_velocity = NewVelocity;
+		}
 
 
 		//瞬間的な力を掛ける
-		void AddImpulse(DirectX::SimpleMath::Vector3 impulse);
+		void AddImpulse(DirectX::SimpleMath::Vector3 impulse) {
+			m_velocity += impulse;
+		}
 
+		DirectX::SimpleMath::Vector3 GetVelocity() { return m_velocity; }
 
+		void SetIsGrounded(bool isGrounded) {
+			m_isGrounded = isGrounded;}
 	};
 }

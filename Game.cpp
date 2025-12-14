@@ -13,6 +13,7 @@
 #include "Scene/ItemGetScene.h"
 #include "Scene/EnemyScene.h"
 #include "Scene/TitleScene.h"
+#include "Scene/RigidBodyScene.h"
 
 #include "Scene/RenderTargetViewScene.h"
 
