@@ -112,6 +112,8 @@ void RigidBodyScene::Initialize()
 	weaponColl->AddBoundingOrientedBox({ 2.7f,0.2f,0.2f }, { 3.0f,0.0f,0.0f });
 	weaponColl->SetDebugColor(DirectX::Colors::Red);
 
+
+
 	int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/stick.sdkmesh", fxFactory);
 	weaponModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
 	weaponModel->SetScale(Handle, { 2.3f,2.3f,2.3f });
@@ -146,6 +148,14 @@ void RigidBodyScene::Initialize()
 	pos2.y = floorFloor->GetHeight(pos2);
 	pos3.y = floorFloor->GetHeight(pos3);
 	pos4.y = floorFloor->GetHeight(pos4);
+
+	auto enemyModel = enemy->AddComponent<WIS::ModelComponent>();
+
+
+	int enemyHandle = enemyModel->AddModel(device, context, L"Resources/Models/Enemy.sdkmesh", fxFactory);
+	enemyModel->SetRotate(enemyHandle, { 0,DirectX::XMConvertToRadians(90),0 });
+	enemyModel->SetScale(enemyHandle, { 1.0f,1.0f,1.0f });
+	enemyModel->SetPosition(enemyHandle, { 0.0f,1.0f,0.0f });
 
 	auto enemyEnemy = enemy->AddComponent<WIS::EnemyComponent>(pos1,pos2);
 	enemyEnemy->AddPatrolPoint(pos3);
