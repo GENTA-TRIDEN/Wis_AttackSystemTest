@@ -60,6 +60,7 @@ namespace WIS {
         //ÉÇÉfÉãÇ≤Ç∆ÇÃê›íË
         void SetScale(int index, const DirectX::SimpleMath::Vector3& scale);
         void SetRotate(int index, const DirectX::SimpleMath::Vector3& rotate);
+        void SetPosition(int index, const DirectX::SimpleMath::Vector3& position);
 
 
         void SetLocalMatrix(int index, const DirectX::SimpleMath::Matrix& localMatrix)
@@ -97,6 +98,9 @@ namespace WIS {
             return m_localMatrices[index];
         }
 
+
+        std::vector<DirectX::VertexPositionColor>& GetVertices() { return VertexList; }
+        std::vector<uint16_t>& GetIndices() { return IndexList; }
     public:
         void OnStart(UserResources* userResources) override;
         void OnPreUpdate(const float elapsedTime, UserResources* userResources) override;

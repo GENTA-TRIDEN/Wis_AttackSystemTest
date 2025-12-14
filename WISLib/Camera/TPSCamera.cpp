@@ -47,7 +47,7 @@ void WIS::TPSCamera::UniqueUpdate(DirectX::SimpleMath::Vector3& position, Direct
 	//カメラの位置と向きを更新
 	//追従ロジックの修正: メンバー変数から引数の target に位置をコピー
 	target = m_PlayerPos;
-
+	target.y += 3;
 	// カメラ位置 = ターゲット位置 - 前方ベクトル * 距離 + 上方ベクトル * 高さ
 	position = target - forward * 7.0f + up * 3.0f;
 

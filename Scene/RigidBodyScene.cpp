@@ -46,7 +46,7 @@ void RigidBodyScene::Initialize()
 	m_objectManager = GetUserResources()->GetObjectManager();
 	//m_blueprintManager = GetUserResources()->GetBlueprintManager();
 	p_cameraManager = WIS::CameraManager::GetInstance();
-	int handle = p_cameraManager->AddCamera({ 0.0f, 0.0f, 0.0f }, WIS::CameraMode::MODE_TPSCAM, m_cameraHandle);
+	int handle = p_cameraManager->AddCamera({ 0.0f, 2.0f, 0.0f }, WIS::CameraMode::MODE_TPSCAM, m_cameraHandle);
 	p_cameraManager->RequestCameraByHandle(handle);
 	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
@@ -62,27 +62,20 @@ void RigidBodyScene::Initialize()
 	auto PlayerComp = player->AddComponent<WIS::PlayerComponent>();
 	auto PlayerCharacter = player->AddComponent<WIS::CharacterComponent>();
 	auto PlayerRigidBody= player->AddComponent<WIS::RigidBodyComponent>();
+	auto PlayerModel = player->AddComponent<WIS::ModelComponent>();
+
+
+	int playerHandle = PlayerModel->AddModel(device, context, L"Resources/Models/Player.sdkmesh", fxFactory);
+	PlayerModel->SetRotate(playerHandle, { 0,DirectX::XMConvertToRadians(-90),0 });
+	PlayerModel->SetScale(playerHandle, { 1.0f,1.0f,1.0f });
+	PlayerModel->SetPosition(playerHandle, { 0.0f,1.0f,0.0f });
+
 
 
 	auto PlayerTransform = player->GetComponent<WIS::TransformComponent>();
 	PlayerTransform->SetPosition({ 0,3,0 });
 	playerColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 	PlayerCharacter->SetObjectType(WIS::ObjectType::PLAYER);
-
-	//enemy‚ÌÝ’è
-	auto enemy = m_objectManager->GetObject(m_EnemyText);
-	auto enemyColl = enemy->AddComponent<WIS::CollisionComponent>();
-	auto enemyCharacter = enemy->AddComponent<WIS::CharacterComponent>();
-	auto enemyEnemy = enemy->AddComponent<WIS::EnemyComponent>(DirectX::SimpleMath::Vector3{ -5.0f,0.0f,-5.0f }, DirectX::SimpleMath::Vector3{ 5.0f,0.0f,5.0f });
-	enemyColl->AddBoundingSphere(2.0f, { 0.0f,0.0f,0.0f });
-
-	enemyCharacter->SetObjectType(WIS::ObjectType::ENEMY);
-
-	//enemyTransform
-	auto enemyTransform = enemy->GetComponent<WIS::TransformComponent>();
-	enemyTransform->SetPosition({ 0.0f,0.0f,5.0f });
-	DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(30.0f), 0.0f, 0.0f);
-	enemyTransform->SetRotation(rot);
 
 	m_PlayerAttackLength = 1.0f;
 
@@ -103,7 +96,7 @@ void RigidBodyScene::Initialize()
 
 	for (int i = 0; i < 5; i++) {
 
-		ItemGenerate({ static_cast<float>(rand() % 10 - 5),0.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
+		ItemGenerate({ static_cast<float>(rand() % 10 - 5),2.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
 
 	}
 
@@ -130,12 +123,43 @@ void RigidBodyScene::Initialize()
 	auto floorFloor = floor->AddComponent<WIS::FloorComponent>();
 	auto FloorColl = floor->AddComponent<WIS::CollisionComponent>();
 	FloorColl->AddBoundingOrientedBox({ 30.0f,5.0f,30.0f }, { -15.0f,-2.0f,-15.0f });
-
+	
 	int floorHandle = floorModel->AddModel(device, context, L"Resources/Models/Floor.sdkmesh", fxFactory);
 	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(90),0,0 });
 	floorModel->SetScale(floorHandle, { 15.0f,15.0f,15.0f });
+	floorFloor->SetMeshData(floorModel->GetVertices(), floorModel->GetIndices());
 
 
+
+	//‚Ä‚«‚Ì‡˜H‚ð°‚Ì‚‚³‚É‡‚í‚¹‚é
+	//enemy‚ÌÝ’è
+	auto enemy = m_objectManager->GetObject(m_EnemyText);
+	auto enemyColl = enemy->AddComponent<WIS::CollisionComponent>();
+	auto enemyCharacter = enemy->AddComponent<WIS::CharacterComponent>();
+	auto enemyRigid = enemy->AddComponent<WIS::RigidBodyComponent>();
+	
+	DirectX::SimpleMath::Vector3 pos1 = { -5.0f,5.0f,-5.0f };
+	DirectX::SimpleMath::Vector3 pos2 = { 5.0f,5.0f,-5.0f };
+	DirectX::SimpleMath::Vector3 pos3 = { 5.0f,5.0f,5.0f };
+	DirectX::SimpleMath::Vector3 pos4 = { -5.0f,5.0f,5.0f };
+	pos1.y = floorFloor->GetHeight(pos1);
+	pos2.y = floorFloor->GetHeight(pos2);
+	pos3.y = floorFloor->GetHeight(pos3);
+	pos4.y = floorFloor->GetHeight(pos4);
+
+	auto enemyEnemy = enemy->AddComponent<WIS::EnemyComponent>(pos1,pos2);
+	enemyEnemy->AddPatrolPoint(pos3);
+	enemyEnemy->AddPatrolPoint(pos4);
+
+	enemyColl->AddBoundingSphere(2.0f, { 0.0f,0.0f,0.0f });
+
+	enemyCharacter->SetObjectType(WIS::ObjectType::ENEMY);
+
+	//enemyTransform
+	auto enemyTransform = enemy->GetComponent<WIS::TransformComponent>();
+	enemyTransform->SetPosition({ 0.0f,2.0f,5.0f });
+	DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(30.0f), 0.0f, 0.0f);
+	enemyTransform->SetRotation(rot);
 
 }
 
@@ -375,7 +399,7 @@ std::string RigidBodyScene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::
 	auto itemTransform = item->GetComponent<WIS::TransformComponent>();
 	auto itemColl = item->AddComponent<WIS::CollisionComponent>();
 	auto itemModel = item->AddComponent<WIS::ModelComponent>();
-
+	item->AddComponent<WIS::RigidBodyComponent>();
 	auto itemComp = item->AddComponent<WIS::ItemComponent>(WIS::ItemKinds::GEAR);
 	itemTransform->SetPosition(Pos);
 	itemComp->SetItemKinds(kinds);

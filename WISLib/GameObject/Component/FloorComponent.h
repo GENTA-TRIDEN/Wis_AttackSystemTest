@@ -33,6 +33,8 @@ namespace WIS {
 		std::vector<uint16_t>& GetIndices() { return IndexList; }
 
 
+
+		float GetHeight(DirectX::SimpleMath::Vector3);
 	};
 }
 

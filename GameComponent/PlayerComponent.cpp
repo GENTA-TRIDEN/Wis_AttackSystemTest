@@ -62,23 +62,26 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
     // RigidBodyがないと動かせないのでチェック
     if (rigidBody)
     {
-        // A. 現在の物理速度を取得 (重力落下中の速度などを知るため)
-        // ※ RigidBodyに GetVelocity() 関数がある前提です
+        //いまの速度を取得重力などを調べるため
         DirectX::SimpleMath::Vector3 currentVelocity = rigidBody->GetVelocity();
 
-        // B. 次のフレームで目指す速度 (Target Velocity) を計算
+        //次のフレームの速度
         DirectX::SimpleMath::Vector3 finalVelocity = DirectX::SimpleMath::Vector3::Zero;
 
+        //入力がある場合
         if (m_moveDirection.LengthSquared() > 0)
         {
-            // 入力がある場合：移動方向 × スピード
+            // 移動方向 × スピード
+
+            //正規化
             m_moveDirection.Normalize();
+
 
             // カメラの向きに合わせてベクトルを回転
             DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(correctYaw);
             DirectX::SimpleMath::Vector3 worldMoveVec = DirectX::SimpleMath::Vector3::TransformNormal(m_moveDirection, rotationMatrix);
 
-            // Y軸（上下）の入力成分は除去して水平移動のみにする
+            // Y軸の入力成分はなくし水平移動のみにする
             worldMoveVec.y = 0.0f;
             if (worldMoveVec.LengthSquared() > 0) {
                 worldMoveVec.Normalize();
@@ -89,7 +92,7 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
         }
         else
         {
-            // 入力がない場合：水平速度はゼロ（ピタッと止まる）
+            // 入力がない場合：水平速度はゼロ
             finalVelocity = DirectX::SimpleMath::Vector3::Zero;
         }
 
@@ -111,61 +114,6 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
 
     }
 }
-
-//void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
-//{
-//
-//	auto keyboard = DirectX::Keyboard::Get().GetState();
-//
-//	m_moveDirection = DirectX::SimpleMath::Vector3::Zero;
-//
-//	//WASDで移動
-//	if (keyboard.W) { m_moveDirection.z += 1.0f; }
-//	if (keyboard.S) { m_moveDirection.z-= 1.0f; }
-//	if (keyboard.A) { m_moveDirection.x += 1.0f; }
-//	if (keyboard.D) { m_moveDirection.x -= 1.0f; }
-//
-//
-//	auto cam = p_cameraManager->GetCamera();
-//
-//	if (auto tpsCam = dynamic_cast<WIS::TPSCamera*>(cam)) {
-//
-//		// プレイヤーの最新位置を取得
-//		auto transform = this->GetOwner()->GetComponent<WIS::TransformComponent>();
-//
-//		// GetWorldPosition を推奨
-//		DirectX::SimpleMath::Vector3 currentPos = transform->GetPosition();
-//
-//		// カメラにプレイヤーの最新位置を設定する (アプローチ 1)
-//		tpsCam->SetPlayerPosition(currentPos);
-//
-//		float cameraYaw = tpsCam->GetYaw();
-//
-//		// 修正: 移動方向の反転を解決するため、ヨー角の符号を反転させる
-//		float correctYaw = -cameraYaw;
-//
-//		// プレイヤーの回転をカメラのヨー角に合わせる
-//		DirectX::SimpleMath::Quaternion targetRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, correctYaw);
-//		transform->SetRotation(targetRotation);
-//
-//		if (m_moveDirection.LengthSquared() > 0) {
-//			m_moveDirection.Normalize();
-//
-//			// ローカル移動ベクトルをワールド空間へ変換
-//			DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(correctYaw);
-//			DirectX::SimpleMath::Vector3 worldMoveVec = DirectX::SimpleMath::Vector3::TransformNormal(m_moveDirection, rotationMatrix);
-//
-//			// Y方向を無視 (地面と平行な移動を保証)
-//			worldMoveVec.y = 0.0f;
-//			if (worldMoveVec.LengthSquared() > 0) {
-//				worldMoveVec.Normalize();
-//			}
-//
-//			// 実際に移動
-//			transform->Translate(worldMoveVec * m_moveSpeed * elapsedTime);
-//		}
-//	}
-//}
 
 void WIS::PlayerComponent::OnPostUpdate(const float elapsedTime, UserResources* userResources)
 {

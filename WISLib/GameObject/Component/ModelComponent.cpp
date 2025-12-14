@@ -150,6 +150,16 @@ void WIS::ModelComponent::SetRotate(int index, const DirectX::SimpleMath::Vector
     m_localMatrices[index] *= Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(rotate.y, rotate.x, rotate.z));
 }
 
+void WIS::ModelComponent::SetPosition(int index, const DirectX::SimpleMath::Vector3& position)
+{
+    if (index < 0 || index >= m_localMatrices.size())
+    {
+        return;
+    }
+    m_localMatrices[index] *= Matrix::CreateTranslation(position);
+
+}
+
 void WIS::ModelComponent::OnStart(UserResources* userResources)
 {
     auto device = userResources->GetDeviceResources()->GetD3DDevice();

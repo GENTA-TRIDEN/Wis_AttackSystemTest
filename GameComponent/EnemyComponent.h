@@ -76,7 +76,7 @@ namespace WIS {
             m_PlayerPos = pos;
         }
 
-
+        void AddPatrolPoint(DirectX::SimpleMath::Vector3 newPoint) { m_patrolPoints.push_back(newPoint); }
 
 
     };
