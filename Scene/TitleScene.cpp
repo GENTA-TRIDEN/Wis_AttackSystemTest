@@ -61,7 +61,9 @@ void TitleScene::Update(float elapsedTime)
 	m_button->Update();
 
 	if (m_button->IsClick() && count >= 1) {
+
 		ChangeScene<RigidBodyScene>();
+
 	}
 
 }

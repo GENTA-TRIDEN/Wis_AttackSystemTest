@@ -43,7 +43,6 @@
     <ClInclude Include="WISLib\GameObject\Component\CharacterComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\ModelComponent.h" />
     <ClInclude Include="Scene\WeaponTestScene.h" />
-    <ClInclude Include="WISLib\GameObject\Component\AnimationComponent.h" />
     <ClInclude Include="GameComponent\PlayerComponent.h" />
     <ClInclude Include="WISLib\WisComponentHeader.h" />
     <ClInclude Include="Scene\StackTestMain.h" />
@@ -69,6 +68,8 @@
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\RigidBodyComponent.h" />
+    <ClInclude Include="WISLib\GameObject\Component\FloorComponent.h" />
+    <ClInclude Include="Scene\RigidBodyScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -99,7 +100,6 @@
     <ClCompile Include="WISLib\GameObject\Component\CharacterComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\ModelComponent.cpp" />
     <ClCompile Include="Scene\WeaponTestScene.cpp" />
-    <ClCompile Include="WISLib\GameObject\Component\AnimationComponent.cpp" />
     <ClCompile Include="GameComponent\PlayerComponent.cpp" />
     <ClCompile Include="Scene\StackTestMain.cpp" />
     <ClCompile Include="Scene\StackTestStack.cpp" />
@@ -124,6 +124,8 @@
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\RigidBodyComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\FloorComponent.cpp" />
+    <ClCompile Include="Scene\RigidBodyScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -140,6 +142,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Resources\Shaders\Particle.hlsli" />
+    <None Include="Resources\Shaders\UI.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\CircleShadowPS.hlsl" />

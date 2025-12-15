@@ -97,6 +97,8 @@ void Game::Tick()
 void Game::Update(DX::StepTimer const& timer)
 {
     float elapsedTime = float(timer.GetElapsedSeconds());
+
+    
     auto mouse_state = m_mouse->GetState();
     m_kbTracker.Update(m_keyboard->GetState());
     m_mouseTracker.Update(mouse_state);
