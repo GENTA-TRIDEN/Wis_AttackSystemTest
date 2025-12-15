@@ -15,6 +15,12 @@
 #include "GameComponent/ItemComponent.h"
 #include "GameComponent/EnemyComponent.h"
 
+
+#include "InGameObject/Archetype/PlayerArchetype.h"
+#include "InGameObject/Archetype/EnemyArchetype.h"
+#include "InGameObject/Archetype/FloorArchetype.h"
+#include "InGameObject/Archetype/WeapoArchetype.h"
+
 #include "Scene/WeaponCreateScene.h"
 #include "Scene/TitleScene.h"
 
@@ -51,48 +57,20 @@ void RigidBodyScene::Initialize()
 	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
-	//GameObjectの生成
-	m_objectManager->GenerateObject(m_PlayerText, WIS::SceneTag::GAMEPLAY_SCENE);
-	m_objectManager->GenerateObject(m_EnemyText, WIS::SceneTag::GAMEPLAY_SCENE);
-	m_objectManager->GenerateObject(m_floorText, WIS::SceneTag::GAMEPLAY_SCENE);
-
-	//playerの設定
-	auto player = m_objectManager->GetObject(m_PlayerText);
-	auto playerColl = player->AddComponent<WIS::CollisionComponent>();
-	auto PlayerComp = player->AddComponent<WIS::PlayerComponent>();
-	auto PlayerCharacter = player->AddComponent<WIS::CharacterComponent>();
-	auto PlayerRigidBody= player->AddComponent<WIS::RigidBodyComponent>();
-	auto PlayerModel = player->AddComponent<WIS::ModelComponent>();
 
 
-	int playerHandle = PlayerModel->AddModel(device, context, L"Resources/Models/Player.sdkmesh", fxFactory);
-	PlayerModel->SetRotate(playerHandle, { 0,DirectX::XMConvertToRadians(-90),0 });
-	PlayerModel->SetScale(playerHandle, { 1.0f,1.0f,1.0f });
-	PlayerModel->SetPosition(playerHandle, { 0.0f,1.0f,0.0f });
+	WIS::PlayerArchetype playerArchetype = WIS::PlayerArchetype();
+	playerArchetype.Create(m_objectManager, GetUserResources(), m_PlayerText, m_PlayerModelHandle);
 
-
-
-	auto PlayerTransform = player->GetComponent<WIS::TransformComponent>();
-	PlayerTransform->SetPosition({ 0,3,0 });
-	playerColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
-	PlayerCharacter->SetObjectType(WIS::ObjectType::PLAYER);
-
+		
+		
 	m_PlayerAttackLength = 1.0f;
 
 	//Attack()を追加
 
-	//Playerの当たり判定にコールバックを設定
-	playerColl->SetOnCollisionCallback([player](std::shared_ptr<WIS::GameObject> other) {
-		//auto Character=other->GetComponent<WIS::CharacterComponent>();
-		//if (Character) {
-		//	if (Character->GetObjectType() == WIS::ObjectType::ENEMY) {
-		//		Character->TakeAttack(10);
-		//	}
-		//}
-		});
 
-
-
+	auto player = m_objectManager->GetObject(m_PlayerText);
+	auto PlayerTransform = player->GetComponent<WIS::TransformComponent>();
 
 	for (int i = 0; i < 5; i++) {
 
@@ -100,76 +78,25 @@ void RigidBodyScene::Initialize()
 
 	}
 
-	auto weapon = m_objectManager->GetObject(m_weaponName);
-	if (!weapon)weapon = m_objectManager->GenerateObject(m_weaponName, WIS::SceneTag::GAMEPLAY_SCENE);
 
-	m_objectManager->AddObjectSceneTag(m_weaponName, WIS::SceneTag::STACK_SCENE);
-
-	auto weaponColl = weapon->AddComponent<WIS::CollisionComponent>();
-	auto weaponModel = weapon->AddComponent<WIS::ModelComponent>();
-	auto WeaponComponent = weapon->AddComponent<WIS::WeaponComponent>();
-	auto WeaponTransform = weapon->GetComponent<WIS::TransformComponent>();
-	weaponColl->AddBoundingOrientedBox({ 2.7f,0.2f,0.2f }, { 3.0f,0.0f,0.0f });
-	weaponColl->SetDebugColor(DirectX::Colors::Red);
+	WIS::WeapoArchetype weaponArchetype = WIS::WeapoArchetype();
+	m_weaponName = weaponArchetype.Create(m_objectManager, GetUserResources(), m_weaponName, m_WeaponModelHandle, m_PlayerText).lock()->GetName();
 
 
 
-	int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/stick.sdkmesh", fxFactory);
-	weaponModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
-	weaponModel->SetScale(Handle, { 2.3f,2.3f,2.3f });
-	WeaponTransform->SetParent(PlayerTransform);
 
-	//地面
-	auto floor = m_objectManager->GetObject(m_floorText);
-	auto floorModel = floor->AddComponent<WIS::ModelComponent>();
-	auto floorFloor = floor->AddComponent<WIS::FloorComponent>();
-	auto FloorColl = floor->AddComponent<WIS::CollisionComponent>();
-	FloorColl->AddBoundingOrientedBox({ 30.0f,5.0f,30.0f }, { -15.0f,-2.0f,-15.0f });
+
+	WIS::FloorArchetype floorArchetype = WIS::FloorArchetype();
+	auto floor = floorArchetype.Create(m_objectManager, GetUserResources(), m_floorText, m_FloorModelHandle, m_PlayerText);
+	std::string floorName = floor.lock()->GetName();
+
+
+	WIS::EnemyArchetype enemyArchetype = WIS::EnemyArchetype();
+	m_EnemyText=enemyArchetype.Create(m_objectManager, GetUserResources(), m_EnemyText, m_EnemyModelHandle, floorName).lock()->GetName();
 	
-	int floorHandle = floorModel->AddModel(device, context, L"Resources/Models/Floor.sdkmesh", fxFactory);
-	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(90),0,0 });
-	floorModel->SetScale(floorHandle, { 15.0f,15.0f,15.0f });
-	floorFloor->SetMeshData(floorModel->GetVertices(), floorModel->GetIndices());
 
 
 
-	//てきの順路を床の高さに合わせる
-	//enemyの設定
-	auto enemy = m_objectManager->GetObject(m_EnemyText);
-	auto enemyColl = enemy->AddComponent<WIS::CollisionComponent>();
-	auto enemyCharacter = enemy->AddComponent<WIS::CharacterComponent>();
-	auto enemyRigid = enemy->AddComponent<WIS::RigidBodyComponent>();
-	
-	DirectX::SimpleMath::Vector3 pos1 = { -5.0f,5.0f,-5.0f };
-	DirectX::SimpleMath::Vector3 pos2 = { 5.0f,5.0f,-5.0f };
-	DirectX::SimpleMath::Vector3 pos3 = { 5.0f,5.0f,5.0f };
-	DirectX::SimpleMath::Vector3 pos4 = { -5.0f,5.0f,5.0f };
-	pos1.y = floorFloor->GetHeight(pos1);
-	pos2.y = floorFloor->GetHeight(pos2);
-	pos3.y = floorFloor->GetHeight(pos3);
-	pos4.y = floorFloor->GetHeight(pos4);
-
-	auto enemyModel = enemy->AddComponent<WIS::ModelComponent>();
-
-
-	int enemyHandle = enemyModel->AddModel(device, context, L"Resources/Models/Enemy.sdkmesh", fxFactory);
-	enemyModel->SetRotate(enemyHandle, { 0,DirectX::XMConvertToRadians(90),0 });
-	enemyModel->SetScale(enemyHandle, { 1.0f,1.0f,1.0f });
-	enemyModel->SetPosition(enemyHandle, { 0.0f,1.0f,0.0f });
-
-	auto enemyEnemy = enemy->AddComponent<WIS::EnemyComponent>(pos1,pos2);
-	enemyEnemy->AddPatrolPoint(pos3);
-	enemyEnemy->AddPatrolPoint(pos4);
-
-	enemyColl->AddBoundingSphere(2.0f, { 0.0f,0.0f,0.0f });
-
-	enemyCharacter->SetObjectType(WIS::ObjectType::ENEMY);
-
-	//enemyTransform
-	auto enemyTransform = enemy->GetComponent<WIS::TransformComponent>();
-	enemyTransform->SetPosition({ 0.0f,2.0f,5.0f });
-	DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(30.0f), 0.0f, 0.0f);
-	enemyTransform->SetRotation(rot);
 
 }
 
@@ -209,13 +136,13 @@ void RigidBodyScene::Update(float elapsedTime)
 			WeaponTransform->SetRotation(rot);
 
 
+
 			if (m_WeaponAttackTime >= 1.0f) {
 				m_isAttack = false;
 				m_WeaponAttackTime = 0.0f;
 				//回転をリセット
 				DirectX::SimpleMath::Quaternion resetRot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, 0.0f);
 				WeaponTransform->SetRotation(resetRot);
-
 
 			}
 

@@ -184,6 +184,9 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="InGameObject\Archetype\FloorArchetype.h" />
+    <ClInclude Include="InGameObject\Archetype\EnemyArchetype.h" />
+    <ClInclude Include="InGameObject\Archetype\PlayerArchetype.h" />
     <ClInclude Include="WISLib\GameObject\Component\FloorComponent.h" />
     <ClInclude Include="GameComponent\EnemyComponent.h" />
     <ClInclude Include="Scene\RigidBodyScene.h" />
@@ -242,6 +245,9 @@
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="InGameObject\Archetype\FloorArchetype.cpp" />
+    <ClCompile Include="InGameObject\Archetype\EnemyArchetype.cpp" />
+    <ClCompile Include="InGameObject\Archetype\PlayerArchetype.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\FloorComponent.cpp" />
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
     <ClCompile Include="Scene\RigidBodyScene.cpp" />

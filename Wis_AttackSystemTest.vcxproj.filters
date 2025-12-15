@@ -70,6 +70,9 @@
     <ClInclude Include="WISLib\GameObject\Component\RigidBodyComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\FloorComponent.h" />
     <ClInclude Include="Scene\RigidBodyScene.h" />
+    <ClInclude Include="InGameObject\Archetype\PlayerArchetype.h" />
+    <ClInclude Include="InGameObject\Archetype\EnemyArchetype.h" />
+    <ClInclude Include="InGameObject\Archetype\FloorArchetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -126,6 +129,9 @@
     <ClCompile Include="WISLib\GameObject\Component\RigidBodyComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\FloorComponent.cpp" />
     <ClCompile Include="Scene\RigidBodyScene.cpp" />
+    <ClCompile Include="InGameObject\Archetype\PlayerArchetype.cpp" />
+    <ClCompile Include="InGameObject\Archetype\EnemyArchetype.cpp" />
+    <ClCompile Include="InGameObject\Archetype\FloorArchetype.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

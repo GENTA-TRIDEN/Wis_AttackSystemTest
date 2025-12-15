@@ -60,6 +60,11 @@ private:
 	int m_cameraHandle = -1;
 
 	float m_PlayerAttackLength = 1;
+	int m_PlayerModelHandle;
+
+	int m_EnemyModelHandle;
+	int m_FloorModelHandle;
+	int m_WeaponModelHandle;
 
 
 	int m_DebugCountUp = 0;
