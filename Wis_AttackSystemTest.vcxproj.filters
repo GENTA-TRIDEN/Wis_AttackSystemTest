@@ -23,7 +23,6 @@
     <ClInclude Include="ItoLib\DebugDraw.h" />
     <ClInclude Include="ItoLib\DebugFont.h" />
     <ClInclude Include="ItoLib\GridFloor.h" />
-    <ClInclude Include="Scene\AttackScene.h" />
     <ClInclude Include="WISLib\Camera\CameraManager.h" />
     <ClInclude Include="WISLib\Camera\DebugCamera.h" />
     <ClInclude Include="WISLib\Camera\FixedCamera.h" />
@@ -42,7 +41,6 @@
     <ClInclude Include="WISLib\GameObject\Component\TransformComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\CharacterComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\ModelComponent.h" />
-    <ClInclude Include="Scene\WeaponTestScene.h" />
     <ClInclude Include="GameComponent\PlayerComponent.h" />
     <ClInclude Include="WISLib\WisComponentHeader.h" />
     <ClInclude Include="Scene\StackTestMain.h" />
@@ -57,13 +55,9 @@
     <ClInclude Include="WISLib\GameObject\Archetype\ArchetypeBase.h" />
     <ClInclude Include="WISLib\Common\NumberManager.h" />
     <ClInclude Include="WISLib\GameObject\Component\WeaponComponent.h" />
-    <ClInclude Include="Scene\WeaponComponentTestScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\WeaponPartsComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\PartStatsComponent.h" />
-    <ClInclude Include="Scene\PlayerTestScene.h" />
-    <ClInclude Include="Scene\ItemGetScene.h" />
     <ClInclude Include="GameComponent\ItemComponent.h" />
-    <ClInclude Include="Scene\EnemyScene.h" />
     <ClInclude Include="GameComponent\EnemyComponent.h" />
     <ClInclude Include="Scene\TitleScene.h" />
     <ClInclude Include="Scene\ResultScene.h" />
@@ -73,6 +67,12 @@
     <ClInclude Include="InGameObject\Archetype\PlayerArchetype.h" />
     <ClInclude Include="InGameObject\Archetype\EnemyArchetype.h" />
     <ClInclude Include="InGameObject\Archetype\FloorArchetype.h" />
+    <ClInclude Include="Scene\WeaponTestScene.h" />
+    <ClInclude Include="Scene\WeaponComponentTestScene.h" />
+    <ClInclude Include="Scene\AttackScene.h" />
+    <ClInclude Include="Scene\EnemyScene.h" />
+    <ClInclude Include="Scene\ItemGetScene.h" />
+    <ClInclude Include="Scene\PlayerTestScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -84,7 +84,6 @@
     <ClCompile Include="ItoLib\DebugDraw.cpp" />
     <ClCompile Include="ItoLib\DebugFont.cpp" />
     <ClCompile Include="ItoLib\GridFloor.cpp" />
-    <ClCompile Include="Scene\AttackScene.cpp" />
     <ClCompile Include="WISLib\Camera\CameraManager.cpp" />
     <ClCompile Include="WISLib\Camera\DebugCamera.cpp" />
     <ClCompile Include="WISLib\Camera\FixedCamera.cpp" />
@@ -102,7 +101,6 @@
     <ClCompile Include="WISLib\GameObject\Component\TransformComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\CharacterComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\ModelComponent.cpp" />
-    <ClCompile Include="Scene\WeaponTestScene.cpp" />
     <ClCompile Include="GameComponent\PlayerComponent.cpp" />
     <ClCompile Include="Scene\StackTestMain.cpp" />
     <ClCompile Include="Scene\StackTestStack.cpp" />
@@ -116,13 +114,9 @@
     <ClCompile Include="WISLib\GameObject\Archetype\ArchetypeBase.cpp" />
     <ClCompile Include="WISLib\Common\NumberManager.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\WeaponComponent.cpp" />
-    <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\WeaponPartsComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PartStatsComponent.cpp" />
-    <ClCompile Include="Scene\PlayerTestScene.cpp" />
-    <ClCompile Include="Scene\ItemGetScene.cpp" />
     <ClCompile Include="GameComponent\ItemComponent.cpp" />
-    <ClCompile Include="Scene\EnemyScene.cpp" />
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
     <ClCompile Include="Scene\TitleScene.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
@@ -132,6 +126,12 @@
     <ClCompile Include="InGameObject\Archetype\PlayerArchetype.cpp" />
     <ClCompile Include="InGameObject\Archetype\EnemyArchetype.cpp" />
     <ClCompile Include="InGameObject\Archetype\FloorArchetype.cpp" />
+    <ClCompile Include="Scene\WeaponTestScene.cpp" />
+    <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />
+    <ClCompile Include="Scene\AttackScene.cpp" />
+    <ClCompile Include="Scene\EnemyScene.cpp" />
+    <ClCompile Include="Scene\ItemGetScene.cpp" />
+    <ClCompile Include="Scene\PlayerTestScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

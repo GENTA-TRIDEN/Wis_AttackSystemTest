@@ -89,6 +89,9 @@ namespace Ito
 			m_sceneManager->SetCurrentSceneTag(tag);
 		}
 
+		bool IsStack() { return m_sceneManager->IsStack(); }
+
+
 
 	};
 
@@ -183,6 +186,8 @@ namespace Ito
 
 		void SetCurrentSceneTag(WIS::SceneTag tag) { m_CurrentSceneTag = tag; }
 
+
+		bool IsStack() { return m_stackScene; }
 
 	};
 

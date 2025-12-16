@@ -10,6 +10,7 @@
 
 #include "Scene/EnemyScene.h"
 #include "Scene/RigidBodyScene.h"
+#include "Scene/RenderTargetViewScene.h"
 
 TitleScene::TitleScene()
 {
@@ -62,7 +63,7 @@ void TitleScene::Update(float elapsedTime)
 
 	if (m_button->IsClick() && count >= 1) {
 
-		ChangeScene<RigidBodyScene>();
+		ChangeScene<RenderTargetViewScene>();
 
 	}
 
