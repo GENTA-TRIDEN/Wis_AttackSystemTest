@@ -185,6 +185,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
+    <ClInclude Include="Scene\SkyDomeScene.h" />
     <ClInclude Include="WISLib\UserInterface\HitEffect.h" />
     <ClInclude Include="Scene\EffectScene.h" />
     <ClInclude Include="GameComponent\EnemyState\EnemyAttackState.h" />
@@ -255,6 +256,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
+    <ClCompile Include="Scene\SkyDomeScene.cpp" />
     <ClCompile Include="WISLib\UserInterface\HitEffect.cpp" />
     <ClCompile Include="Scene\EffectScene.cpp" />
     <ClCompile Include="GameComponent\EnemyState\EnemyAttackState.cpp" />

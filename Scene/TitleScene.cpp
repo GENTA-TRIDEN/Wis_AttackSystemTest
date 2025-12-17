@@ -12,6 +12,7 @@
 #include "Scene/RigidBodyScene.h"
 #include "Scene/RenderTargetViewScene.h"
 #include "Scene/EffectScene.h"
+#include "Scene/SkyDomeScene.h"
 
 TitleScene::TitleScene()
 {
@@ -64,7 +65,7 @@ void TitleScene::Update(float elapsedTime)
 
 	if (m_button->IsClick() && count >= 1) {
 
-		ChangeScene<RenderTargetViewScene>();
+		ChangeScene<SkyDomeScene>();
 
 	}
 
