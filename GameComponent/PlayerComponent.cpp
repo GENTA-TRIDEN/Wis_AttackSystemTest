@@ -109,7 +109,7 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
 
         if (keyboard.Space && rigidBody->GetVelocity().y == 0.0f)
         {
-            rigidBody->AddImpulse(DirectX::SimpleMath::Vector3{ 5,5,0 });
+            rigidBody->AddImpulse(DirectX::SimpleMath::Vector3{ 0,5,0 });
         }
 
     }

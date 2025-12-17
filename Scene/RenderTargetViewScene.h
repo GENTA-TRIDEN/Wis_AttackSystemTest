@@ -3,7 +3,7 @@
 #include "ItoLib/SceneManager.h"
 #include "../UserResources.h"
 
-#include "WISLib/Camera/CameraManager.h"
+#include "WISLib/Camera/CameraManager.h",
 #include "WISLib/UserInterface/HitEffect.h"
 
 

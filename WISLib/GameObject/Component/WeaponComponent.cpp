@@ -116,11 +116,15 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
 
             //“G‚ÆƒvƒŒƒCƒ„[
             DirectX::SimpleMath::Vector3 force = playerTrans->GetPosition() - enemyTrans->GetPosition();
+            
             force.Normalize();
-            force *= -20;
+            force.y -= 2;
+            force.Normalize();
+            force *=-10;
 
 
-            enemyRigid->AddForce(force);
+
+            enemyRigid->AddImpulse(force);
 
         }
     }
