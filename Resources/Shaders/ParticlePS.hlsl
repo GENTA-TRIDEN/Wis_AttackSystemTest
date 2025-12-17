@@ -33,6 +33,24 @@ float4 sepia(float4 col)
 float4 main(PS_INPUT input) : SV_TARGET
 {
     
+    		//	if•¶‚Å’†‰›‚©‚çŠÛ‚­Ø‚è”²‚­
+    float aspect = 720.0f / 720.0f;
+    float2 uv = input.Tex;
+    float scales = 0.5f;
+
+    float4 output2 = input.Color;
+
+    
+    output2 = float4(output2.xyz, distance(
+		uv * scales,
+		float2(0.5f * scales * aspect,
+			0.5f * scales))< 0.01f);
+
+    return output2;
+
+    
+    
+    return input.Color;
     return float4(0.1f, 0.1f, 0.1f, 0.8f);
 
 }

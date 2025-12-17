@@ -184,6 +184,12 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
+    <ClInclude Include="WISLib\UserInterface\HitEffect.h" />
+    <ClInclude Include="Scene\EffectScene.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemyAttackState.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemyChaseState.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemySearchState.h" />
     <ClInclude Include="InGameObject\Archetype\FloorArchetype.h" />
     <ClInclude Include="InGameObject\Archetype\EnemyArchetype.h" />
     <ClInclude Include="InGameObject\Archetype\PlayerArchetype.h" />
@@ -193,6 +199,8 @@
     <ClInclude Include="Scene\PlayerTestScene.h" />
     <ClInclude Include="Scene\WeaponComponentTestScene.h" />
     <ClInclude Include="Scene\WeaponTestScene.h" />
+    <ClInclude Include="WISLib\GameObject\State\State.h" />
+    <ClInclude Include="WISLib\GameObject\Component\StateMachineComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\FloorComponent.h" />
     <ClInclude Include="GameComponent\EnemyComponent.h" />
     <ClInclude Include="Scene\RigidBodyScene.h" />
@@ -240,11 +248,18 @@
     <ClInclude Include="WISLib\UserInterface\BinaryFile.h" />
     <ClInclude Include="WISLib\UserInterface\Button.h" />
     <ClInclude Include="WISLib\UserInterface\Particle.h" />
+    <ClInclude Include="WISLib\UserInterface\ParticleUtility.h" />
     <ClInclude Include="WISLib\UserInterface\UserInterface.h" />
     <ClInclude Include="WISLib\WisComponentHeader.h" />
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
+    <ClCompile Include="WISLib\UserInterface\HitEffect.cpp" />
+    <ClCompile Include="Scene\EffectScene.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemyAttackState.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemyChaseState.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemySearchState.cpp" />
     <ClCompile Include="InGameObject\Archetype\FloorArchetype.cpp" />
     <ClCompile Include="InGameObject\Archetype\EnemyArchetype.cpp" />
     <ClCompile Include="InGameObject\Archetype\PlayerArchetype.cpp" />
@@ -254,6 +269,8 @@
     <ClCompile Include="Scene\PlayerTestScene.cpp" />
     <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />
     <ClCompile Include="Scene\WeaponTestScene.cpp" />
+    <ClCompile Include="WISLib\GameObject\State\State.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\StateMachineComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\FloorComponent.cpp" />
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
     <ClCompile Include="Scene\RigidBodyScene.cpp" />
@@ -304,6 +321,7 @@
     <ClCompile Include="WISLib\UserInterface\BinaryFile.cpp" />
     <ClCompile Include="WISLib\UserInterface\Button.cpp" />
     <ClCompile Include="WISLib\UserInterface\Particle.cpp" />
+    <ClCompile Include="WISLib\UserInterface\ParticleUtility.cpp" />
     <ClCompile Include="WISLib\UserInterface\UserInterface.cpp" />
   </ItemGroup>
   <ItemGroup>

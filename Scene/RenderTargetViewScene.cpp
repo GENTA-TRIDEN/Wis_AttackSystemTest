@@ -81,8 +81,8 @@ void RenderTargetViewScene::Initialize()
 
 	WIS::WeapoArchetype weaponArchetype = WIS::WeapoArchetype();
 	m_weaponName = weaponArchetype.Create(m_objectManager, GetUserResources(), m_weaponName, m_WeaponModelHandle, m_PlayerText).lock()->GetName();
-
-
+	m_objectManager->GetObject(m_weaponName)->GetComponent<WIS::WeaponComponent>()->SetEffect(m_effect.get());
+	
 
 
 
@@ -110,6 +110,7 @@ void RenderTargetViewScene::Update(float elapsedTime)
 		elapsedTime,
 		GetUserResources()
 	);
+	m_effect->Update(elapsedTime);
 	m_DebugCountUp++;
 	if (m_DebugCountMax <= m_DebugCountUp)
 	{
@@ -206,11 +207,12 @@ void RenderTargetViewScene::Render()
 		float clearColor[4] = { 0.0f, 0.1f, 0.2f, 1.0f };
 		context->ClearRenderTargetView(m_renderTargetView.Get(), clearColor);
 		context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-		m_objectManager->Render(GetUserResources(), *p_cameraManager->GetView(), m_proj);
 	}
 	else {
 
 	}
+
+	m_objectManager->Render(GetUserResources(), *p_cameraManager->GetView(), m_proj);
 
 
 
@@ -226,13 +228,14 @@ void RenderTargetViewScene::Render()
 	//Stack’†‚Í‚Í‚¢‚¯‚¢‚ðˆÃ‚­‚·‚é
 	if (!this->IsStack()) {
 		outputColor = DirectX::Colors::White;
+		m_spriteBatch->Draw(m_shaderResourceView.Get(), DirectX::XMFLOAT2(0, 0), nullptr);
 	}
 	else {
 		outputColor = DirectX::Colors::Gray;
+		m_spriteBatch->Draw(m_shaderResourceView.Get(), DirectX::XMFLOAT2(0, 0), nullptr, outputColor);
 	}
 
 
-	m_spriteBatch->Draw(m_shaderResourceView.Get(), DirectX::XMFLOAT2(0, 0), nullptr, outputColor);
 
 	m_spriteBatch->End();
 
@@ -247,6 +250,13 @@ void RenderTargetViewScene::Render()
 		enemyHP = enemyCharacter->GetHP();
 		font->AddString((L"enemyHP:" + std::to_wstring(enemyHP)).c_str(), { 10.0f, 90.0f });
 	}
+
+	auto cam = p_cameraManager->GetCamera();
+
+
+	m_effect->CreateBillboard(cam->GetDirection(), cam->GetPosition(), DirectX::SimpleMath::Vector3::Up);
+	m_effect->Render(*p_cameraManager->GetView(),
+		m_proj);
 
 	int PlayerHP = 0;
 	auto player = m_objectManager->GetObject(m_PlayerText);
@@ -287,89 +297,6 @@ void RenderTargetViewScene::Render()
 	if (oldDSV) oldDSV->Release();
 }
 
-//void RenderTargetViewScene::Render()
-//{
-//	auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
-//	auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
-//	auto font = GetUserResources()->GetDebugFont();
-//	auto primitiveBatch = GetUserResources()->GetPrimitiveBatch();
-//	auto world = DirectX::SimpleMath::Matrix::Identity;
-//	m_basicEffect->SetWorld(world);
-//	m_basicEffect->SetView(*p_cameraManager->GetView());
-//	m_basicEffect->SetProjection(m_proj);
-//
-//	m_basicEffect->Apply(context);
-//	context->IASetInputLayout(m_inputLayout.Get());
-//	//void XM_CALLCONV DX::DrawGrid(PrimitiveBatch<VertexPositionColor>*batch,
-//	//	FXMVECTOR xAxis,
-//	//	FXMVECTOR yAxis,
-//	//	FXMVECTOR origin,
-//	//	size_t xdivs,
-//	//	size_t ydivs,
-//	//	GXMVECTOR color)
-//	primitiveBatch->Begin();
-//
-//
-//
-//	//debug•\Ž¦
-//	DX::DrawGrid(
-//		primitiveBatch,
-//		DirectX::XMVectorSet(10.0f, 0.0f, 0.0f, 0.0f),
-//		DirectX::XMVectorSet(0.0f, 0.0f, 10.0f, 0.0f),
-//		DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f),
-//		20,
-//		20,
-//		DirectX::Colors::White
-//	);
-//
-//
-//
-//	primitiveBatch->End();
-//
-//	m_objectManager->Render(
-//		GetUserResources(),
-//		*p_cameraManager->GetView(),
-//		m_proj
-//	);
-//
-//	int enemyHP = 0;
-//	auto enemy = m_objectManager->GetObject(m_EnemyText);
-//	if (enemy)
-//	{
-//		auto enemyCharacter = enemy->GetComponent<WIS::CharacterComponent>();
-//		enemyHP = enemyCharacter->GetHP();
-//		font->AddString((L"enemyHP:" + std::to_wstring(enemyHP)).c_str(), { 10.0f, 90.0f });
-//	}
-//
-//	int PlayerHP = 0;
-//	auto player = m_objectManager->GetObject(m_PlayerText);
-//	auto playerTrans = player->GetComponent<WIS::TransformComponent>();
-//	auto playerCharacter = player->GetComponent<WIS::CharacterComponent>();
-//	PlayerHP = playerCharacter->GetHP();
-//	DirectX::SimpleMath::Vector3 pos = playerTrans->GetPosition();
-//
-//	font->AddString((L"PlayerPosX:" + std::to_wstring(pos.x)).c_str(), { 150.0f, 350.0f });
-//	font->AddString((L"PlayerPosY:" + std::to_wstring(pos.y)).c_str(), { 150.0f, 380.0f });
-//	font->AddString((L"PlayerPosZ:" + std::to_wstring(pos.z)).c_str(), { 150.0f, 410.0f });
-//
-//	//void DebugFont::AddString(const wchar_t* string, DirectX::SimpleMath::Vector2 pos, FXMVECTOR color, float scale)
-//	font->AddString((L"PlayerHP:" + std::to_wstring(PlayerHP)).c_str(), { 10.0f, 50.0f });
-//	font->AddString((L"PlayerAttackLength:" + std::to_wstring(m_PlayerAttackLength)).c_str(), { 10.0f, 120.0f });
-//	font->AddString((L"PlayerAttackLength:" + std::to_wstring(m_PlayerAttackLength)).c_str(), { 10.0f, 120.0f });
-//
-//	font->AddString((L"DebugCount:" + std::to_wstring(m_DebugCountUp)).c_str(), { 10.0f, 200.0f });
-//	font->AddString((L"m_WeaponAttackTime:" + std::to_wstring(m_WeaponAttackTime)).c_str(), { 10.0f, 250.0f });
-//
-//
-//	font->AddString(L"GamePlayScene(RenderTargetViewScene):", { 0.0f, 0.0f });
-//
-//	auto PlayerComp = player->GetComponent<WIS::PlayerComponent>();
-//	PlayerComp->GetItemCount(WIS::ItemKinds::GEAR);
-//	//ItemKinds‚Ì’†g‚ð•\Ž¦
-//	font->AddString((L"GEAR Count:" + std::to_wstring(PlayerComp->GetItemCount(WIS::ItemKinds::GEAR))).c_str(), { 10.0f, 300.0f });
-//
-//
-//}
 
 void RenderTargetViewScene::Finalize()
 {
@@ -402,6 +329,11 @@ void RenderTargetViewScene::CreateDeviceDependentResources()
 		byteCodeLength,
 		m_inputLayout.ReleaseAndGetAddressOf()
 	);
+
+	m_effect = std::make_unique<WIS::HitEffect>();
+	m_effect->Create(GetUserResources()->GetDeviceResources());
+
+
 }
 
 void RenderTargetViewScene::CreateWindowSizeDependentResources()
@@ -418,6 +350,8 @@ void RenderTargetViewScene::CreateWindowSizeDependentResources()
 		0.1f,
 		100.0f
 	);
+
+
 
 
 	D3D11_TEXTURE2D_DESC textureDesc = {};

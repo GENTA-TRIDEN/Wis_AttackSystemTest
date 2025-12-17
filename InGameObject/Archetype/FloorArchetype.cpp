@@ -25,10 +25,10 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
 	auto floorFloor = floor->AddComponent<WIS::FloorComponent>();
 	auto FloorColl = floor->AddComponent<WIS::CollisionComponent>();
 
-	FloorColl->AddBoundingOrientedBox({ 30.0f,5.0f,30.0f }, { -15.0f,-2.0f,-15.0f });
+	FloorColl->AddBoundingOrientedBox({ 50.0f,50.0f,50.0f }, { -15.0f,-2.0f,-15.0f });
 
 	int floorHandle = floorModel->AddModel(device, context, floorModelPath, fxFactory);
-	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(-90),0,0 });
+	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(0),0,0 });
 	floorModel->SetScale(floorHandle, ModelScale);
 	floorFloor->SetMeshData(floorModel->GetVertices(), floorModel->GetIndices());
 

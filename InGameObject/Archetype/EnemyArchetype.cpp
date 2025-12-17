@@ -2,6 +2,10 @@
 #include "EnemyArchetype.h"
 
 
+
+#include "WISLib/GameObject/Component/StateMachineComponent.h"
+
+
 #include "WISLib/GameObject/Component/TransformComponent.h"
 #include "WISLib/GameObject/Component/CollisionComponent.h"
 #include "WISLib/GameObject/Component/CharacterComponent.h"
@@ -30,6 +34,7 @@ std::weak_ptr<WIS::GameObject> WIS::EnemyArchetype::Create(ObjectManager* p_obje
 	auto enemyColl = enemy->AddComponent<WIS::CollisionComponent>();
 	auto enemyCharacter = enemy->AddComponent<WIS::CharacterComponent>();
 	auto enemyRigid = enemy->AddComponent<WIS::RigidBodyComponent>();
+	enemy->AddComponent<StateMachineComponent<EnemyComponent>>();
 	
 	DirectX::SimpleMath::Vector3 pos1 = { -5.0f,5.0f,-5.0f };
 	DirectX::SimpleMath::Vector3 pos2 = { 5.0f,5.0f,-5.0f };
@@ -45,7 +50,7 @@ std::weak_ptr<WIS::GameObject> WIS::EnemyArchetype::Create(ObjectManager* p_obje
 	auto enemyModel = enemy->AddComponent<WIS::ModelComponent>();
 
 
-	int enemyHandle = enemyModel->AddModel(device, context, L"Resources/Models/Enemy.sdkmesh", fxFactory);
+	int enemyHandle = enemyModel->AddModel(device, context, enemyModelpath, fxFactory);
 	enemyModel->SetRotate(enemyHandle, { 0,DirectX::XMConvertToRadians(90),0 });
 	enemyModel->SetScale(enemyHandle, { 1.0f,1.0f,1.0f });
 	enemyModel->SetPosition(enemyHandle, { 0.0f,1.0f,0.0f });

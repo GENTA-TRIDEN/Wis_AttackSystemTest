@@ -4,6 +4,8 @@
 #include "../UserResources.h"
 
 #include "WISLib/Camera/CameraManager.h"
+#include "WISLib/UserInterface/HitEffect.h"
+
 
 class RenderTargetViewScene :public Ito::Scene<UserResources>
 {
@@ -95,6 +97,9 @@ private:
 
 	//Attack’†‚©‚Ç‚¤‚©
 	bool m_isAttack = false;
+
+	std::unique_ptr<WIS::HitEffect> m_effect;
+
 private:
 	void Attack();
 

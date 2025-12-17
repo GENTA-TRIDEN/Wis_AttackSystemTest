@@ -11,6 +11,7 @@
 #include "Scene/EnemyScene.h"
 #include "Scene/RigidBodyScene.h"
 #include "Scene/RenderTargetViewScene.h"
+#include "Scene/EffectScene.h"
 
 TitleScene::TitleScene()
 {
@@ -71,6 +72,7 @@ void TitleScene::Update(float elapsedTime)
 
 void TitleScene::Render()
 {
+
 	auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
 	auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
 	auto font = GetUserResources()->GetDebugFont();

@@ -27,7 +27,7 @@ private:
 
 	DirectX::SimpleMath::Vector3 ModelPos = { 0.0f, 1.0f, 0.0f };
 	DirectX::SimpleMath::Vector3 SpawnPos = { 0.0f, 3.0f, 0.0f };
-	DirectX::SimpleMath::Vector3 ModelScale = { 15.0f,15.0f,15.0f };
+	DirectX::SimpleMath::Vector3 ModelScale = { 35.0f,35.0f,35.0f };
 
 };
 

@@ -1,11 +1,13 @@
 #include "pch.h"
 #include "EnemyComponent.h"
+// 作成したステートマシンと初期ステートをインクルード
+#include "WISLib/GameObject/Component/StateMachineComponent.h"
+#include "GameComponent/EnemyState/EnemySearchState.h" 
+
 #include "WISLib/GameObject/Component/TransformComponent.h"
 #include "WISLib/GameObject/Component/CharacterComponent.h"
-#include "WISLib/GameObject/Component/RigidBodyComponent.h" // RigidBodyを使うために必須
+#include "WISLib/GameObject/Component/RigidBodyComponent.h"
 #include "WISLib/GameObject/GameObject.h"
-#include "WISLib/Camera/CameraManager.h"
-#include "WISLib/Camera/TPSCamera.h"
 #include "UserResources.h"
 #include "GameComponent/PlayerComponent.h"
 
@@ -13,10 +15,10 @@ using namespace WIS;
 using namespace DirectX;
 using namespace SimpleMath;
 
-WIS::EnemyComponent::EnemyComponent(DirectX::SimpleMath::Vector3 point1, DirectX::SimpleMath::Vector3 point2)
+WIS::EnemyComponent::EnemyComponent(Vector3 point1, Vector3 point2)
 {
-	m_patrolPoints.push_back(point1);
-	m_patrolPoints.push_back(point2);
+    m_patrolPoints.push_back(point1);
+    m_patrolPoints.push_back(point2);
 }
 
 WIS::EnemyComponent::~EnemyComponent()
@@ -25,244 +27,242 @@ WIS::EnemyComponent::~EnemyComponent()
 
 void WIS::EnemyComponent::OnStart(UserResources* userResources)
 {
-	// 初期化処理
-	// RigidBodyを使う場合、速度は「1秒間に進む距離」で指定します
-	m_moveSpeed = 2.0f;
+    // 初期化
+    m_moveSpeed = 2.0f;
+    m_currentPatrolPointIndex = 0;
 
-	auto device = userResources->GetDeviceResources()->GetD3DDevice();
+    auto device = userResources->GetDeviceResources()->GetD3DDevice();
 
-	// 1. BasicEffect の作成
-	m_basicEffect = std::make_unique<DirectX::BasicEffect>(device);
+    // BasicEffect の作成
+    m_basicEffect = std::make_unique<BasicEffect>(device);
+    m_basicEffect->SetVertexColorEnabled(true);
 
-	// DrawGrid は VertexPositionColor を使うので、頂点カラーを有効にする
-	m_basicEffect->SetVertexColorEnabled(true);
+    void const* shaderByteCode;
+    size_t byteCodeLength;
+    m_basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
-	void const* shaderByteCode;
-	size_t byteCodeLength;
-	m_basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
-	m_currentState = state::Search;
+    device->CreateInputLayout(
+        VertexPositionColor::InputElements,
+        VertexPositionColor::InputElementCount,
+        shaderByteCode,
+        byteCodeLength,
+        m_inputLayout.ReleaseAndGetAddressOf()
+    );
 
-	// VertexPositionColor 用のレイアウトを作成して保持
-	device->CreateInputLayout(
-		DirectX::VertexPositionColor::InputElements,
-		DirectX::VertexPositionColor::InputElementCount,
-		shaderByteCode,
-		byteCodeLength,
-		m_inputLayout.ReleaseAndGetAddressOf()
-	);
+    SelectNextIndex();
 
-	// 最初の移動先を設定
-	SelectNextIndex();
-}
+    // --- ステートマシンの初期化 ---
+    // 自分のGameObjectに StateMachineComponent<EnemyComponent> を追加
+    auto stateMachine = GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
 
-void WIS::EnemyComponent::OnPreUpdate(const float elapsedTime, UserResources* userResources)
-{
+    // 初期ステートとして SearchState をセット
+    stateMachine->ChangeState(std::make_shared<EnemySearchState>());
 }
 
 void WIS::EnemyComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
 {
-	// コンポーネント取得
-	auto transform = GetOwner()->GetComponent<TransformComponent>();
-	auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
-
-	// 必要なコンポーネントがない場合は処理しない
-	if (!transform || !rigidBody) return;
-
-	DirectX::SimpleMath::Vector3 NowPos = transform->GetPosition();
-
-	// 現在の速度を取得（Y成分＝重力落下速度 を維持するため）
-	// ※RigidBodyComponentに GetVelocity() / SetVelocity() が必要です
-	Vector3 currentVelocity = rigidBody->GetVelocity();
-	Vector3 nextVelocity = Vector3::Zero;
-
-	switch (m_currentState)
-	{
-	case WIS::EnemyComponent::state::Search:
-	{
-		// --- 巡回移動 ---
-
-		// 方向(m_moveDirection) に スピードを掛ける
-		nextVelocity = m_moveDirection * m_moveSpeed;
-
-		// Y軸（重力）は元のままにする
-		nextVelocity.y = currentVelocity.y;
-
-		// 速度を適用
-		rigidBody->ChangeVelocity(nextVelocity);
-
-		// 目標地点への距離チェック (XZ平面距離で見るのが理想ですが、簡易的に距離で)
-		// 到着判定を少し緩く(0.5f)しておくと、通り過ぎて振動するのを防げます
-		if (Vector3::Distance(NowPos, m_patrolPoints[m_currentPatrolPointIndex]) <= 0.5f) {
-			SelectNextIndex();
-			m_isCanAttack = true;
-		}
-
-		// プレイヤー発見チェック
-		if (Vector3::Distance(NowPos, m_PlayerPos) <= m_PlayerToFindLength && m_isCanAttack) {
-			m_currentState = state::Chase;
-		}
-	}
-	break;
-
-	case WIS::EnemyComponent::state::Chase:
-	{
-		// --- 追跡移動 ---
-		DirectX::SimpleMath::Vector3 TargetPos = m_PlayerPos;
-
-		// ターゲットへのベクトル算出
-		DirectX::SimpleMath::Vector3 MoveVec = TargetPos - NowPos;
-
-		// 空を飛ばないようにY成分を無視して正規化する（水平移動のみ）
-		MoveVec.y = 0;
-		if (MoveVec.LengthSquared() > 0.0001f) {
-			MoveVec.Normalize();
-		}
-
-		// 速度計算
-		nextVelocity = MoveVec * m_moveSpeed;
-		nextVelocity.y = currentVelocity.y; // 重力維持
-		rigidBody->ChangeVelocity(nextVelocity);
-
-		// 回転 (Transformを直接回転させてOK)
-		// LookAtLHはビュー行列用なので、モデルの向きと逆になる場合があります。
-		// もし敵が後ろ向きに進むなら、LookAtの引数順序を変えるか、LookRotation関数を自作して使います。
-		// ここでは元のロジックを維持します。
-		DirectX::XMMATRIX rot = DirectX::XMMatrixLookAtLH(NowPos, TargetPos, DirectX::SimpleMath::Vector3::Up);
-		DirectX::SimpleMath::Quaternion Qrot = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rot);
-		transform->SetRotation(Qrot);
-
-		// 攻撃範囲チェック
-		if (Vector3::Distance(NowPos, m_PlayerPos) <= m_PlayerAttackLength) {
-			m_currentState = state::Attack;
-			// 攻撃時は停止（慣性を残さないならXZを0に）
-			rigidBody->ChangeVelocity(Vector3(0, currentVelocity.y, 0));
-		}
-
-		// 見失うチェック（距離が離れたら）
-		if (Vector3::Distance(NowPos, m_PlayerPos) >= m_PlayerToFindLength) {
-			m_currentState = state::Search;
-			SelectNextIndex(); // 最寄りのパトロール地点へ向かう等の処理にするのがベター
-		}
-	}
-	break;
-
-	case WIS::EnemyComponent::state::Attack:
-	{
-		// 攻撃中は移動停止（重力のみ適用）
-		rigidBody->ChangeVelocity(Vector3(0, currentVelocity.y, 0));
-	}
-	break;
-
-	default:
-		break;
-	}
+    // OnUpdateのメインロジックは削除されました
+    // ロジックは全て StateMachineComponent -> 各State -> Execute... 関数で行われます
 }
 
-void WIS::EnemyComponent::OnPostUpdate(const float elapsedTime, UserResources* userResources)
+// --- 以下、アクションの実装 ---
+
+void WIS::EnemyComponent::ExecutePatrol()
 {
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
+    if (!transform || !rigidBody) return;
+
+    Vector3 NowPos = transform->GetPosition();
+    Vector3 nextVelocity = m_moveDirection * m_moveSpeed;
+
+    // Y軸（重力）は今の速度を維持
+    Vector3 currentVelocity = rigidBody->GetVelocity();
+    nextVelocity.y = currentVelocity.y;
+
+    rigidBody->ChangeVelocity(nextVelocity);
+
+    // 距離チェック (簡易的に0.5f)
+    if (Vector3::Distance(NowPos, m_patrolPoints[m_currentPatrolPointIndex]) <= 0.5f) {
+        SelectNextIndex();
+        m_isCanAttack = true; // 次の攻撃のためにフラグを戻す
+    }
 }
 
-void WIS::EnemyComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
+void WIS::EnemyComponent::ExecuteChase()
 {
-	auto font = userResources->GetDebugFont();
-	auto context = userResources->GetDeviceResources()->GetD3DDeviceContext();
-	auto device = userResources->GetDeviceResources()->GetD3DDevice();
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
+    if (!transform || !rigidBody) return;
 
-	// プリミティブバッチを取得
-	DirectX::PrimitiveBatch<DirectX::VertexPositionColor>* primitiveBatch = userResources->GetPrimitiveBatch();
+    Vector3 NowPos = transform->GetPosition();
+    Vector3 TargetPos = m_PlayerPos;
 
-	if (!m_basicEffect) {
-		return;
-	}
+    Vector3 MoveVec = TargetPos - NowPos;
+    MoveVec.y = 0; // 水平のみ
 
-	font->AddString((L"state:" + std::to_wstring(static_cast<int>(m_currentState))).c_str(), { 800.0f, 50.0f });
+    if (MoveVec.LengthSquared() > 0.0001f) {
+        MoveVec.Normalize();
+    }
 
-	DirectX::FXMMATRIX value = DirectX::SimpleMath::Matrix::Identity;
-	m_basicEffect->SetWorld(value);
+    // 移動
+    Vector3 currentVelocity = rigidBody->GetVelocity();
+    Vector3 nextVelocity = MoveVec * m_moveSpeed;
+    nextVelocity.y = currentVelocity.y;
+    rigidBody->ChangeVelocity(nextVelocity);
 
-	m_basicEffect->SetView(view);
-	m_basicEffect->SetProjection(proj);
-	m_basicEffect->Apply(context);
-
-	context->IASetInputLayout(m_inputLayout.Get());
-
-	primitiveBatch->Begin();
-
-	// m_patrolPointsの描画
-	for (DirectX::SimpleMath::Vector3 pos : m_patrolPoints) {
-		DirectX::BoundingSphere boundingSphere = DirectX::BoundingSphere({ pos }, 0.2f);
-		DX::Draw(
-			primitiveBatch,
-			boundingSphere,
-			DirectX::Colors::Black);
-	}
-
-	auto ThisTranc = GetOwner()->GetComponent<WIS::TransformComponent>();
-	DirectX::BoundingSphere boundingSphere = DirectX::BoundingSphere({ ThisTranc->GetPosition() }, m_PlayerToFindLength);
-
-	DX::Draw(
-		primitiveBatch,
-		boundingSphere,
-		DirectX::Colors::DarkBlue);
-
-	primitiveBatch->End();
+    // プレイヤーの方向を向く
+    XMMATRIX rot = XMMatrixLookAtLH(NowPos, TargetPos, Vector3::Up);
+    transform->SetRotation(Quaternion::CreateFromRotationMatrix(rot));
 }
 
-void WIS::EnemyComponent::OnRelease()
+void WIS::EnemyComponent::StopMovement()
 {
-}
-
-void WIS::EnemyComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
-{
-	auto player = otherObject->GetComponent<WIS::PlayerComponent>();
-	if (player) {
-		auto playerCharacter = otherObject->GetComponent<WIS::CharacterComponent>();
-
-		// 攻撃状態でなくても触れたらダメージを与えるロジックになっています。
-		// 状態依存にするなら if (m_currentState == state::Attack) などを追加してください。
-		if (m_isCanAttack && playerCharacter) {
-			playerCharacter->DecreaseHP(m_AttackLength);
-			m_isCanAttack = false;
-			m_currentState = state::Search;
-			SelectNextIndex();
-		}
-	}
+    auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
+    if (rigidBody) {
+        Vector3 vel = rigidBody->GetVelocity();
+        // 水平速度を0に、重力(Y)は維持
+        rigidBody->ChangeVelocity(Vector3(0, vel.y, 0));
+    }
 }
 
 void WIS::EnemyComponent::SelectNextIndex()
 {
-	// m_patrolPointsがあることが前提
-	if (m_patrolPoints.size() > 0) {
-		// Indexを加算する
-		m_currentPatrolPointIndex++;
+    if (m_patrolPoints.empty()) return;
 
-		// Sizeを超えた場合は0に戻す
-		if (m_currentPatrolPointIndex >= m_patrolPoints.size()) {
-			m_currentPatrolPointIndex = 0;
-		}
+    m_currentPatrolPointIndex++;
+    if (m_currentPatrolPointIndex >= m_patrolPoints.size()) {
+        m_currentPatrolPointIndex = 0;
+    }
 
-		// 現在の位置から次のポイントまでの向きを求める
-		auto transform = GetOwner()->GetComponent<TransformComponent>();
-		if (!transform) return;
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    if (!transform) return;
 
-		DirectX::SimpleMath::Vector3 NowPos = transform->GetPosition();
-		DirectX::SimpleMath::Vector3 TargetPos = m_patrolPoints[m_currentPatrolPointIndex];
+    Vector3 NowPos = transform->GetPosition();
+    Vector3 TargetPos = m_patrolPoints[m_currentPatrolPointIndex];
+    Vector3 MoveVec = TargetPos - NowPos;
+    MoveVec.y = 0;
 
-		DirectX::SimpleMath::Vector3 MoveVec = TargetPos - NowPos;
+    if (MoveVec.LengthSquared() > 0.0001f) {
+        MoveVec.Normalize();
+    }
+    m_moveDirection = MoveVec;
 
-		// 水平移動のみにする場合
-		MoveVec.y = 0;
+    // 次のポイントの方向を向く
+    XMMATRIX rot = XMMatrixLookAtLH(NowPos, TargetPos, Vector3::Up);
+    transform->SetRotation(Quaternion::CreateFromRotationMatrix(rot));
+}
 
-		if (MoveVec.LengthSquared() > 0.0001f) {
-			MoveVec.Normalize();
-		}
+bool WIS::EnemyComponent::TryAttackHit(std::shared_ptr<WIS::GameObject> target)
+{
+    auto playerComp = target->GetComponent<PlayerComponent>();
+    if (playerComp) {
+        auto charaComp = target->GetComponent<CharacterComponent>();
+        if (charaComp && m_isCanAttack) {
+            charaComp->DecreaseHP((int)m_AttackDamage);
+            m_isCanAttack = false; // 連続ヒット防止
 
-		// 方向ベクトルを保存（UpdateでこれにSpeedを掛けてRigidBodyに渡す）
-		m_moveDirection = MoveVec;
+            // 攻撃後に即次のパトロール地点を向くなら
+            SelectNextIndex();
+            return true;
+        }
+    }
+    return false;
+}
 
-		// 向きを変更
-		DirectX::XMMATRIX rot = DirectX::XMMatrixLookAtLH(NowPos, TargetPos, DirectX::SimpleMath::Vector3::Up);
-		DirectX::SimpleMath::Quaternion Qrot = DirectX::SimpleMath::Quaternion::CreateFromRotationMatrix(rot);
-		transform->SetRotation(Qrot);
-	}
+void WIS::EnemyComponent::ReceiveDamage()
+{
+
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
+    if (!transform || !rigidBody) return;
+
+    //EnemyComponentが持っているStateMachineを取得
+
+
+
+}
+
+// --- 判定メソッド ---
+
+bool WIS::EnemyComponent::CheckPlayerFound()
+{
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    if (!transform) return false;
+
+    // 攻撃可能かつ発見距離内なら
+    return (m_isCanAttack && Vector3::Distance(transform->GetPosition(), m_PlayerPos) <= m_PlayerToFindLength);
+}
+
+bool WIS::EnemyComponent::CheckAttackRange()
+{
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    if (!transform) return false;
+
+    return (Vector3::Distance(transform->GetPosition(), m_PlayerPos) <= m_PlayerAttackLength);
+}
+
+bool WIS::EnemyComponent::CheckPlayerLost()
+{
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    if (!transform) return false;
+
+    return (Vector3::Distance(transform->GetPosition(), m_PlayerPos) >= m_PlayerToFindLength);
+}
+
+bool WIS::EnemyComponent::CheckIsMove()
+{
+    auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
+    if (!rigidBody) return true;
+
+
+
+    //MoveLength以下の場合false
+
+    if (m_EnemyIsMoveLength >= rigidBody->GetVelocity().Length());
+    return false;
+
+
+    return true;
+
+}
+
+bool WIS::EnemyComponent::CheckDamageCoolTime()
+{
+    auto StateMachine = GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
+    if (!StateMachine) return false;
+
+
+    return StateMachine->GetCurrentStateTimer() >= m_TakingDamageCoolTime;
+
+}
+
+void WIS::EnemyComponent::OnRender(UserResources* userResources, const Matrix& view, const Matrix& proj)
+{
+    // デバッグ描画 (元のコードのまま)
+    if (!m_basicEffect) return;
+
+    auto context = userResources->GetDeviceResources()->GetD3DDeviceContext();
+    auto primitiveBatch = userResources->GetPrimitiveBatch();
+
+    m_basicEffect->SetWorld(Matrix::Identity);
+    m_basicEffect->SetView(view);
+    m_basicEffect->SetProjection(proj);
+    m_basicEffect->Apply(context);
+    context->IASetInputLayout(m_inputLayout.Get());
+
+    primitiveBatch->Begin();
+    
+    // 巡回ポイント
+    for (Vector3 pos : m_patrolPoints) {
+        DX::Draw(primitiveBatch, BoundingSphere(pos, 0.2f), Colors::Black);
+    }
+
+    // 索敵範囲
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    if (transform) {
+        DX::Draw(primitiveBatch, BoundingSphere(transform->GetPosition(), m_PlayerToFindLength), Colors::DarkBlue);
+    }
+
+    primitiveBatch->End();
 }

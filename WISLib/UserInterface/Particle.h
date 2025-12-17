@@ -76,6 +76,8 @@ namespace kHorikawa
 		void Create(DX::DeviceResources* pDR);
 
 		void Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMath::Matrix proj);
+
+
 	private:
 
 		void CreateShader();

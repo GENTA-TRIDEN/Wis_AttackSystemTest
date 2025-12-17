@@ -108,33 +108,25 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 	auto otherModelComp = otherObject->GetComponent<ModelComponent>();
 	auto otherTrans = otherObject->GetComponent<TransformComponent>();
 	auto otherFloor = otherObject->GetComponent<FloorComponent>();
-	// 必要なデータがない場合は何もしない
-	if (!otherFloor ||!myTrans || !otherModelComp || !otherTrans || otherModelComp->VertexList.empty()) return;
 
-// --- 2. レイ（Ray）の設定 ---
+	if (!otherFloor || !myTrans || !otherModelComp || !otherTrans || otherModelComp->VertexList.empty()) return;
+
+	// --- 2. レイ（Ray）の設定 ---
 	Vector3 currentPos = myTrans->GetPosition();
 	Vector3 rayOrigin = currentPos + Vector3(0.0f, 0.5f, 0.0f);
 
-	// ★修正: 明示的に数値でセットして、念のため正規化（Normalize）を呼ぶ
 	Vector3 rayDir = Vector3(0.0f, -1.0f, 0.0f);
-	rayDir.Normalize(); // これで確実に長さが 1.0 になります
+	rayDir.Normalize();
 
-	// もし万が一、長さが0になってしまった場合の防御（今回のケースではDownなのでありえませんが、習慣として）
-	if (rayDir.LengthSquared() == 0.0f)
-	{
-		rayDir = Vector3(0.0f, -1.0f, 0.0f);
-	}
 	// 判定結果を保存する変数
-	float nearestDist = FLT_MAX; // 最も近い地面までの距離
-	bool hitGround = false;      // 有効な地面が見つかったかどうかのフラグ
+	float nearestDist = FLT_MAX;
+	bool hitAnyPoly = false;     // 何らかのポリゴンに当たったか
+	Vector3 nearestNormal = Vector3::Up; // 最も近い面の法線を保存しておく
 
-	// 相手モデルの行列と頂点データ
-	Matrix objWorld = otherTrans->GetWorldMatrix();         // GameObjectの位置・回転
-	Matrix modelLocal = otherModelComp->GetLocalMatrix(0);  // SetRotateなどで設定した回転
-
-	// 合体させる (順番重要: Local * World)
+	// 行列計算
+	Matrix objWorld = otherTrans->GetWorldMatrix();
+	Matrix modelLocal = otherModelComp->GetLocalMatrix(0);
 	Matrix finalWorld = modelLocal * objWorld;
-
 
 	const auto& indices = otherModelComp->IndexList;
 	const auto& vertices = otherModelComp->VertexList;
@@ -144,7 +136,6 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 	{
 		if (i + 2 >= indices.size()) break;
 
-		// 3つの頂点を取得してワールド座標に変換
 		uint16_t i0 = indices[i];
 		uint16_t i1 = indices[i + 1];
 		uint16_t i2 = indices[i + 2];
@@ -153,54 +144,87 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 		Vector3 v1 = Vector3::Transform(vertices[i1].position, finalWorld);
 		Vector3 v2 = Vector3::Transform(vertices[i2].position, finalWorld);
 
-		// レイと三角形の交差判定 (dist には rayOrigin からの距離が入る)
 		float dist = 0.0f;
 		if (DirectX::TriangleTests::Intersects(rayOrigin, rayDir, v0, v1, v2, dist))
 		{
-			//今まで見つけた中で一番近いこと
-			//足元付近であること (例: 1.0f以内 = 開始高さ0.5 + 足元の余裕0.5)
+			// 足元付近（1.0f以内）で、かつ今までで一番近い場合
 			if (dist < nearestDist && dist < 1.0f)
 			{
-				//角度チェック (急な坂は地面とみなさない)
+				// ここでは角度チェックをせず、物理的に当たっている事実だけを記録する
+				nearestDist = dist;
+				hitAnyPoly = true;
+
+				// 法線を計算して保存しておく
 				Vector3 edge1 = v1 - v0;
 				Vector3 edge2 = v2 - v0;
 				Vector3 normal = edge1.Cross(edge2);
 				normal.Normalize();
-
-				// 上向き成分が0.7より大きい（＝緩やかな坂）場合のみ地面とする
-				// これにより、急な坂や壁の上には乗れなくなります
-				if (normal.Dot(Vector3::Up) > 0.7f)
-				{
-					nearestDist = dist;
-					hitGround = true;
-				}
+				nearestNormal = normal;
 			}
 		}
 	}
 
-	// --- 4. 接地処理 (スナップ) ---
-	if (hitGround)
+	// --- 4. 衝突後の処理 ---
+	if (hitAnyPoly)
 	{
-		m_isGrounded = true;
-
-		// 地面の高さを計算 (レイの発射地点 - 距離)
+		// 地面の高さ
 		float groundY = rayOrigin.y - nearestDist;
-
-		// キャラクターの位置を更新（高さ合わせ）
-		// 現在のX,Z座標はそのままに、Y座標だけ地面の高さにする
-		// ※モデルの原点が「足元」にある場合の計算です
 		Vector3 newPos = currentPos;
 		newPos.y = groundY;
 
-		// ジャンプ中(上昇中)はスナップしないように、落下中または静止中のみ適用
-		if (m_velocity.y <= 0)
+		// 法線の上向き成分を確認
+		float upDot = nearestNormal.Dot(Vector3::Up);
+
+		// A. 緩やかな坂（歩ける地面）の場合: 今まで通りの処理
+		// cos(45度) ≒ 0.707 なので、0.7fより大きければ45度未満
+		if (upDot > 0.9f)
 		{
-			myTrans->SetPosition(newPos);
-			m_velocity.y = 0; // 落下速度をリセットして止める
+			m_isGrounded = true;
+
+			// 落下中または静止中のみ高さ合わせ
+			if (m_velocity.y <= 0)
+			{
+				myTrans->SetPosition(newPos);
+				m_velocity.y = 0;
+			}
+		}
+		// B. 急な坂（壁）の場合: すり抜け防止処理
+		else
+		{
+
+
+			if (m_velocity.y < 0)
+			{
+				myTrans->SetPosition(newPos);
+
+				// 坂を滑り落ちる表現にしたい場合は velocity.y をリセットしない、
+				// または少しだけ減衰させるなどの処理を入れます。
+				// ここでは完全に止まらず、ゆっくり滑るように摩擦を入れる例です：
+				 m_velocity.y *= 0.9f; 
+			}
+
+
+
+			// 急な坂なので接地判定は出さない（ジャンプできないようにする）
+			m_isGrounded = false;
+
+
+			//適用する
+			Vector3 pushDir = nearestNormal;
+			pushDir.y = 0; // 水平成分のみ
+			pushDir.Normalize();
+			Vector3 pushPos = myTrans->GetPosition();
+			pushPos += pushDir * 0.1f; // 少し押し出す
+			myTrans->SetPosition(pushPos);
+			
 		}
 	}
+	else
+	{
+		// 何も当たらなかったら空中
+		m_isGrounded = false;
+	}
 }
-
 
 void WIS::RigidBodyComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {

@@ -1,9 +1,12 @@
 ﻿#pragma once
 #include "ComponentBase.h"
 #include "WISLib/WISLibTags.h"
+#include "WISLib/UserInterface/HitEffect.h"
 #include <memory>
 #include <vector>
 #include <algorithm> // std::clamp用
+
+
 
 namespace WIS {
 	// 前方宣言: 他のコンポーネントやゲームオブジェクト
@@ -38,7 +41,7 @@ namespace WIS {
 
 		// 武器を構成するパーツオブジェクトのリスト (弱参照で循環参照を回避)
 		std::vector<std::weak_ptr<WIS::GameObject>> m_AttachedParts;
-
+		WIS::HitEffect* p_Effect;
 
 	public:
 		WeaponComponent();
@@ -50,6 +53,7 @@ namespace WIS {
 
 		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)override;
 		void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) override;
+
 
 		void AddWeight(float weight) {
 			m_currentAddedWeight += weight;
@@ -67,5 +71,7 @@ namespace WIS {
 
 		// 最終ステータスを計算する
 		void CalculateFinalStats();
+
+		void SetEffect(WIS::HitEffect* Effect) { p_Effect = Effect; };
 	};
 }

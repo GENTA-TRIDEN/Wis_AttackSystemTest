@@ -1,9 +1,17 @@
 #include "pch.h"
 
 
+#include "GameComponent/EnemyComponent.h"
+
+#include "GameComponent/EnemyState/EnemyDamageState.h"
+
+#include "StateMachineComponent.h"
+
 #include "WeaponComponent.h"
 #include "CharacterComponent.h" 
 #include "PartStatsComponent.h"
+#include "TransformComponent.h"
+#include "RigidBodyComponent.h"
 #include "WISLib/GameObject/GameObject.h" // GetComponentのために必要
 
 #include "UserResources.h"
@@ -15,7 +23,9 @@ WeaponComponent::WeaponComponent()
     CalculateFinalStats();
 }
 
-WeaponComponent::~WeaponComponent() {}
+WeaponComponent::~WeaponComponent() {
+    p_Effect = nullptr;
+}
 
 void WeaponComponent::OnStart(UserResources* userResources)
 {
@@ -73,6 +83,7 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
             m_hasDealtDamageThisSwing = true; // ダメージを与えたのでフラグを立てる
 
 
+
             // --- 2. 各パーツの衝突時ロジックを実行 ---
             for (auto& weakPart : m_AttachedParts) {
                 if (auto partObject = weakPart.lock()) {
@@ -83,6 +94,34 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
                     }
                 }
             }
+
+            auto enemyTrans = otherObject->GetComponent<WIS::TransformComponent>();
+
+            //エフェクトをだす
+            if (p_Effect) {
+                DirectX::SimpleMath::Vector3 pos = enemyTrans->GetPosition();
+                p_Effect->hit(pos);
+            }
+
+
+            //敵をはじき飛ばす
+            auto enemyRigid = otherObject->GetComponent<WIS::RigidBodyComponent>();
+            auto enemySM = otherObject->GetComponent<WIS::StateMachineComponent<WIS::EnemyComponent>>();
+
+            //プレイヤーのtransformComponentを取得
+            auto playerTrans = GetOwner()->GetComponent<WIS::TransformComponent>()->GetParent();
+
+
+            enemySM->ChangeState(std::make_shared<WIS::EnemyDamageState>());
+
+            //敵とプレイヤー
+            DirectX::SimpleMath::Vector3 force = playerTrans->GetPosition() - enemyTrans->GetPosition();
+            force.Normalize();
+            force *= -20;
+
+
+            enemyRigid->AddForce(force);
+
         }
     }
 }

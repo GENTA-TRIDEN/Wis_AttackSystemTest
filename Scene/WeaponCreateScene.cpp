@@ -65,8 +65,8 @@ void WeaponCreateScene::Initialize()
 
 
 	m_button->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
-	m_UpButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
-	m_DownButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	//m_UpButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	//m_DownButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
 	m_RightButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
 	m_LeftButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
 	m_SelectButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);

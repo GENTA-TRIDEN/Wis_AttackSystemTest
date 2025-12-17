@@ -213,13 +213,13 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
 
     Matrix world = transformComp->GetWorldMatrix();
 
+   
     // --- Main Model Rendering ---
     for (size_t i = 0; i < m_modelVec.size(); i++)
     {
         if (m_showWireframe) context->RSSetState(m_wireframeRasterizerState.Get());
 
         Matrix worldMatrix = m_localMatrices[i] * world;
-
         m_modelVec[i]->Draw(context, *state, worldMatrix, view, proj, false, [&]() {
             context->OMSetDepthStencilState(m_stencilState, 0);
             });

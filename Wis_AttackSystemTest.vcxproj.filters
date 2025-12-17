@@ -73,6 +73,15 @@
     <ClInclude Include="Scene\EnemyScene.h" />
     <ClInclude Include="Scene\ItemGetScene.h" />
     <ClInclude Include="Scene\PlayerTestScene.h" />
+    <ClInclude Include="WISLib\GameObject\Component\StateMachineComponent.h" />
+    <ClInclude Include="WISLib\GameObject\State\State.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemySearchState.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemyChaseState.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemyAttackState.h" />
+    <ClInclude Include="Scene\EffectScene.h" />
+    <ClInclude Include="WISLib\UserInterface\ParticleUtility.h" />
+    <ClInclude Include="WISLib\UserInterface\HitEffect.h" />
+    <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -132,6 +141,15 @@
     <ClCompile Include="Scene\EnemyScene.cpp" />
     <ClCompile Include="Scene\ItemGetScene.cpp" />
     <ClCompile Include="Scene\PlayerTestScene.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\StateMachineComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\State\State.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemySearchState.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemyChaseState.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemyAttackState.cpp" />
+    <ClCompile Include="Scene\EffectScene.cpp" />
+    <ClCompile Include="WISLib\UserInterface\ParticleUtility.cpp" />
+    <ClCompile Include="WISLib\UserInterface\HitEffect.cpp" />
+    <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
