@@ -17,6 +17,7 @@ WIS::ModelComponent::ModelComponent() :
 {
     m_modelVec.clear();
     m_localMatrices.clear();
+    m_textureResources.clear(); // ★追加: 初期化
     VertexList.clear();
     IndexList.clear();
 }
@@ -160,6 +161,65 @@ void WIS::ModelComponent::SetPosition(int index, const DirectX::SimpleMath::Vect
 
 }
 
+void WIS::ModelComponent::SetTexture(int index, ID3D11ShaderResourceView* texture)
+{
+    if (index < 0 || index >= m_modelVec.size())
+    {
+        return;
+    }
+
+    auto& model = m_modelVec[index];
+
+    // モデル内の全メッシュ・全パーツを巡回してテクスチャをセット
+    for (const auto& mesh : model->meshes)
+    {
+        for (const auto& part : mesh->meshParts)
+        {
+            // エフェクトを BasicEffect にキャスト
+            auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
+            if (effect)
+            {
+                // テクスチャをセット
+                effect->SetTexture(texture);
+                // テクスチャ有効化フラグをオンにする
+                effect->SetTextureEnabled(true);
+            }
+        }
+    }
+}
+
+// ★追加: DDSファイルパスからテクスチャを設定する関数
+void WIS::ModelComponent::SetTextureFromFile(ID3D11Device* device, int index, const wchar_t* filePath)
+{
+    // インデックスチェック
+    if (index < 0 || index >= m_modelVec.size())
+    {
+        return;
+    }
+
+    // テクスチャ管理用配列が足りなければリサイズ
+    if (m_textureResources.size() <= m_modelVec.size())
+    {
+        m_textureResources.resize(m_modelVec.size());
+    }
+
+    // DDSテクスチャの読み込み
+    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+
+    // DirectXTKの関数でロード
+    HRESULT hr = DirectX::CreateDDSTextureFromFile(device, filePath, resource.GetAddressOf(), srv.GetAddressOf());
+
+    if (SUCCEEDED(hr))
+    {
+        // メンバ変数に保持（所有権を持つ）
+        m_textureResources[index] = srv;
+
+        // 既存のSetTextureを呼び出してモデルに適用
+        SetTexture(index, srv.Get());
+    }
+}
+
 void WIS::ModelComponent::OnStart(UserResources* userResources)
 {
     auto device = userResources->GetDeviceResources()->GetD3DDevice();
@@ -191,6 +251,7 @@ void WIS::ModelComponent::OnStart(UserResources* userResources)
 void WIS::ModelComponent::OnPreUpdate(const float elapsedTime, UserResources* userResources) {}
 void WIS::ModelComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
 {
+    m_showWireframe = false;
 }
 void WIS::ModelComponent::OnPostUpdate(const float elapsedTime, UserResources* userResources) {
 
@@ -213,7 +274,10 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
 
     Matrix world = transformComp->GetWorldMatrix();
 
-   
+
+
+    context->OMSetDepthStencilState(m_stencilState, 0);
+
     // --- Main Model Rendering ---
     for (size_t i = 0; i < m_modelVec.size(); i++)
     {
@@ -225,6 +289,8 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
             });
     }
 
+    context->OMSetDepthStencilState(m_stencilState, 0);
+
 }
 
 void WIS::ModelComponent::OnRelease()
@@ -234,6 +300,7 @@ void WIS::ModelComponent::OnRelease()
     m_wireframeRasterizerState.Reset();
     m_modelVec.clear();
     m_localMatrices.clear();
+    m_textureResources.clear(); // ★追加: テクスチャリソースの解放
     m_vertexNormals.clear();
     VertexList.clear();
     IndexList.clear();

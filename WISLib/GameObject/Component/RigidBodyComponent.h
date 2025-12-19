@@ -12,7 +12,15 @@ namespace WIS {
 
 	class RigidBodyComponent : public WIS::ComponentBase
 	{
+	public:
+		struct value {
+			float gravity = 9.8f;
+			float mass = 1.0f;
+			float drag = 0.0f;
+		};
+
 	private:
+
 
 		//åªç›ÇÃà⁄ìÆ
 		DirectX::SimpleMath::Vector3 m_velocity;
@@ -20,6 +28,9 @@ namespace WIS {
 		//â¡éZÇ≥ÇÍÇÈóÕ
 		DirectX::SimpleMath::Vector3 m_force;
 		float m_gravity = 9.8f;
+
+
+		value m_value;
 
 		//éøó 
 		float m_mass = 1.0f;
@@ -36,6 +47,9 @@ namespace WIS {
 
 		bool m_isGrounded;
 
+
+
+		
 	public:
 		RigidBodyComponent();
 		~RigidBodyComponent();
@@ -68,5 +82,10 @@ namespace WIS {
 
 		void SetIsGrounded(bool isGrounded) {
 			m_isGrounded = isGrounded;}
+
+		value GetValue() { return m_value; }
+		void SetValue(const value val){
+			m_value = val;
+		}
 	};
 }

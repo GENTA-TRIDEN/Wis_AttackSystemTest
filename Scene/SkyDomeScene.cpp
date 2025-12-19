@@ -98,10 +98,27 @@ void SkyDomeScene::Initialize()
 
 	auto SkyTransform = m_skyDome->AddComponent<WIS::TransformComponent>();
 	auto Skymodel=m_skyDome->AddComponent<WIS::ModelComponent>();
-	int index=Skymodel->AddModel(device, context, L"Resources/Models/SkyDome.sdkmesh", fxFactory);
 
-	Skymodel->SetDepthStencilState(GetUserResources()->GetCommonStates()->DepthNone());
+
+
+	int index=Skymodel->AddModel(device, context, L"Resources/Models/sky1.sdkmesh", fxFactory);
+	Skymodel->SetTextureFromFile(device, index, L"Resources/Models/sky.dds");
+	// テクスチャリソースを作成 (UserResourcesなどで管理している想定)
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture;
+	//DirectX::CreateDDSTextureFromFile(device, L"Resources/Models/sky.dds", nullptr, myTexture.GetAddressOf());
+
+	//Skymodel->SetTexture(index, myTexture.Get());
+	Skymodel->SetDepthStencilState(GetUserResources()->GetCommonStates()->DepthRead());
+
 	m_skyDome->Start(GetUserResources());
+
+
+
+	m_basicEffect->SetLightingEnabled(true);
+	m_basicEffect->SetPerPixelLighting(true);
+
+	m_basicEffect->EnableDefaultLighting();
+	m_basicEffect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(2.5f, 2.5f, 2.5f));
 
 }
 
@@ -184,8 +201,10 @@ void SkyDomeScene::Update(float elapsedTime)
 		ChangeScene<ResultScene>();
 	}
 
-	//m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition(p_cameraManager->GetCamera()->GetPosition());
-	m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition({0,5,0});
+	DirectX::SimpleMath::Vector3 pos = p_cameraManager->GetCamera()->GetPosition();
+	pos.y += 0.2;
+	m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition(pos);
+	//m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition({0,5,0});
 
 
 
@@ -206,20 +225,52 @@ void SkyDomeScene::Render()
 
 
 
+
 	if (!this->IsStack()) {
 
 		context->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
 
+
 		float clearColor[4] = { 0.0f, 0.1f, 0.2f, 1.0f };
 		context->ClearRenderTargetView(m_renderTargetView.Get(), clearColor);
+		context->RSSetState(GetUserResources()->GetCommonStates()->CullNone());
+
+		m_skyDome->GetComponent<WIS::ModelComponent>()->GetModel(0)->UpdateEffects([](DirectX::IEffect* effect)
+			{
+				auto lights = dynamic_cast<DirectX::IEffectLights*>(effect);
+				if (lights)
+				{
+					lights->SetLightEnabled(0, true);
+					lights->SetLightEnabled(1, false);
+					lights->SetLightEnabled(2, false);
+					lights->SetAmbientLightColor(DirectX::Colors::White);
+				}
+				auto basicEffect = dynamic_cast<DirectX::BasicEffect*>(effect);
+				basicEffect->SetTextureEnabled(true);
+				//if (basicEffect)
+				//{
+				//	basicEffect->SetEmissiveColor(DirectX::Colors::White);
+				//}
+
+			}
+		);
+		m_skyDome->OnRender(GetUserResources(), *p_cameraManager->GetView(), m_proj);
+
 		context->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 	}
 	else {
 
 	}
-	m_skyDome->OnRender(GetUserResources(), *p_cameraManager->GetView(), m_proj);
+
+
+
 
 	m_objectManager->Render(GetUserResources(), *p_cameraManager->GetView(), m_proj);
+
+
+
+
+
 
 
 
@@ -310,6 +361,7 @@ void SkyDomeScene::Finalize()
 	m_objectManager->Finalize();
 
 	p_cameraManager->RequestFirstCamera();
+	m_skyDome = nullptr;
 
 }
 
@@ -325,6 +377,15 @@ void SkyDomeScene::CreateDeviceDependentResources()
 	size_t byteCodeLength;
 
 	m_basicEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+
+	//ライティング計算を有効にする
+	m_basicEffect->SetLightingEnabled(true);
+	m_basicEffect->SetPerPixelLighting(true);
+
+	m_basicEffect->EnableDefaultLighting();
+	m_basicEffect->SetAmbientLightColor(SimpleMath::Vector3(5.1f, 5.1f,5.1f));
+	
+
 
 	m_spriteBatch = std::make_unique<DirectX::SpriteBatch>(context);
 
@@ -357,7 +418,7 @@ void SkyDomeScene::CreateWindowSizeDependentResources()
 		DirectX::XMConvertToRadians(45.0f),
 		aspectRatio,
 		0.1f,
-		100.0f
+		1000.0f
 	);
 
 

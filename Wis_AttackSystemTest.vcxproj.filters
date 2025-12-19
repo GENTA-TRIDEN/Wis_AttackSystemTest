@@ -82,6 +82,8 @@
     <ClInclude Include="WISLib\UserInterface\ParticleUtility.h" />
     <ClInclude Include="WISLib\UserInterface\HitEffect.h" />
     <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
+    <ClInclude Include="Scene\SkyDomeScene.h" />
+    <ClInclude Include="Scene\StageScene.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -150,6 +152,8 @@
     <ClCompile Include="WISLib\UserInterface\ParticleUtility.cpp" />
     <ClCompile Include="WISLib\UserInterface\HitEffect.cpp" />
     <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
+    <ClCompile Include="Scene\SkyDomeScene.cpp" />
+    <ClCompile Include="Scene\StageScene.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

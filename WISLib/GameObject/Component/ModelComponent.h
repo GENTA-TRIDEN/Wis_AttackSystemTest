@@ -8,6 +8,7 @@
 #include <wrl/client.h>
 #include <vector>
 #include <string>
+#include <DDSTextureLoader.h> // ★追加: DDS読み込み用
 
 namespace WIS {
 
@@ -22,6 +23,9 @@ namespace WIS {
         DirectX::SimpleMath::Matrix m_worldMatrix = DirectX::SimpleMath::Matrix::Identity;
         std::vector<DirectX::SimpleMath::Matrix> m_localMatrices;
         std::vector<std::unique_ptr<DirectX::Model>> m_modelVec;
+
+        // ★追加: 読み込んだテクスチャの所有権を管理するためのリスト
+        std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_textureResources;
 
         bool m_DrawModel;
         // --- Debug Visualization Members ---
@@ -48,7 +52,6 @@ namespace WIS {
 
         int AddModel(ID3D11Device* device, ID3D11DeviceContext* context, wchar_t const* fileName, DirectX::EffectFactory* fxFactory);
 
-
         int GetModelNum() { return static_cast<int>(m_modelVec.size()); }
 
         DirectX::Model* GetModel(int index)
@@ -62,6 +65,11 @@ namespace WIS {
         void SetRotate(int index, const DirectX::SimpleMath::Vector3& rotate);
         void SetPosition(int index, const DirectX::SimpleMath::Vector3& position);
 
+        // テクスチャの設定 (既存のSRVを直接セットする場合)
+        void SetTexture(int index, ID3D11ShaderResourceView* texture);
+
+        // ★追加: DDSファイルパスからテクスチャを設定する関数
+        void SetTextureFromFile(ID3D11Device* device, int index, const wchar_t* filePath);
 
         void SetLocalMatrix(int index, const DirectX::SimpleMath::Matrix& localMatrix)
         {
@@ -69,14 +77,12 @@ namespace WIS {
             m_localMatrices[index] = localMatrix;
         }
 
-
         void SetAddLocalMatrix(int index, const DirectX::SimpleMath::Matrix& localMatrix)
         {
             if (index < 0 || index >= m_localMatrices.size()) return;
             m_localMatrices[index] *= localMatrix;
         }
         void IsDrawModel(bool isDraw) { m_DrawModel = isDraw; }
-
 
         // --- Debug Control Functions ---
         void ShowNormals(bool show) { m_showNormals = show; }
@@ -98,9 +104,9 @@ namespace WIS {
             return m_localMatrices[index];
         }
 
-
         std::vector<DirectX::VertexPositionColor>& GetVertices() { return VertexList; }
         std::vector<uint16_t>& GetIndices() { return IndexList; }
+
     public:
         void OnStart(UserResources* userResources) override;
         void OnPreUpdate(const float elapsedTime, UserResources* userResources) override;
@@ -110,6 +116,5 @@ namespace WIS {
             const DirectX::SimpleMath::Matrix& view,
             const DirectX::SimpleMath::Matrix& proj) override;
         void OnRelease() override;
-
     };
 }

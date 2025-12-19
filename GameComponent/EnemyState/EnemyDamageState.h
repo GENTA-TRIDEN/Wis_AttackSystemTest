@@ -7,6 +7,7 @@ namespace WIS {
     class EnemyDamageState : public State<EnemyComponent>
     {
     public:
+        void OnEnter(EnemyComponent* owner);
         void OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res) override;
     };
 }

@@ -6,6 +6,11 @@
 
 using namespace WIS;
 
+void WIS::EnemyDamageState::OnEnter(EnemyComponent* owner)
+{
+
+}
+
 void EnemyDamageState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res)
 {
     // 1.ダメージを受けた際の処理を実行

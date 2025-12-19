@@ -262,11 +262,11 @@ void WIS::HitEffect::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMat
 	//	透明判定処理
 	context->OMSetBlendState(blendstate, nullptr, 0xFFFFFFFF);
 
-	//	深度バッファに書き込み参照する
-	context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	////	深度バッファに書き込み参照する
+	//context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
 
 	//	カリングはなし
-	context->RSSetState(m_states->CullNone());
+	context->RSSetState(m_states->CullClockwise());
 
 	//	シェーダをセットする
 	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);

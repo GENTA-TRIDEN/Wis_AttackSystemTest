@@ -35,7 +35,10 @@ std::weak_ptr<WIS::GameObject> WIS::EnemyArchetype::Create(ObjectManager* p_obje
 	auto enemyCharacter = enemy->AddComponent<WIS::CharacterComponent>();
 	auto enemyRigid = enemy->AddComponent<WIS::RigidBodyComponent>();
 	enemy->AddComponent<StateMachineComponent<EnemyComponent>>();
-	
+
+	auto value = enemyRigid->GetValue();
+	value.gravity += 10.0f;
+	enemyRigid->SetValue(value);
 	DirectX::SimpleMath::Vector3 pos1 = { -5.0f,5.0f,-5.0f };
 	DirectX::SimpleMath::Vector3 pos2 = { 5.0f,5.0f,-5.0f };
 	DirectX::SimpleMath::Vector3 pos3 = { 5.0f,5.0f,5.0f };
@@ -70,5 +73,6 @@ std::weak_ptr<WIS::GameObject> WIS::EnemyArchetype::Create(ObjectManager* p_obje
 	DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(DirectX::XMConvertToRadians(30.0f), 0.0f, 0.0f);
 	enemyTransform->SetRotation(rot);
 
+	
     return enemy;
 }

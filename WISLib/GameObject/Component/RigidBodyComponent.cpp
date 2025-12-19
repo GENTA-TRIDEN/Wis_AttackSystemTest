@@ -62,8 +62,10 @@ void WIS::RigidBodyComponent::OnUpdate(const float elapsedTime, UserResources* u
 	//if (m_useGravity)
 	if (m_useGravity)
 	{
+
+		
 		// Y軸下向きに力を加える
-		DirectX::SimpleMath::Vector3 gravityForce(0.0f, -m_gravity * m_mass, 0.0f);
+		DirectX::SimpleMath::Vector3 gravityForce(0.0f, -m_value.gravity * m_value.mass, 0.0f);
 		AddForce(gravityForce);
 	}
 
@@ -71,10 +73,10 @@ void WIS::RigidBodyComponent::OnUpdate(const float elapsedTime, UserResources* u
 	DirectX::SimpleMath::Vector3 acceleration = DirectX::SimpleMath::Vector3::Zero;
 
 	//0じゃないかチェックする
-	if (m_mass > 0.0001f)
+	if (m_value.mass > 0.0001f)
 	{
 		//力を計算する
-		acceleration = m_force / m_mass;
+		acceleration = m_force / m_value.mass;
 	}
 
 
@@ -85,10 +87,10 @@ void WIS::RigidBodyComponent::OnUpdate(const float elapsedTime, UserResources* u
 
 
 	//抵抗を適用させる
-	if (m_drag > 0.0f)
+	if (m_value.drag > 0.0f)
 	{
 		// 係数がマイナスにならないようにClampする
-		float dragFactor = 1.0f - (m_drag * elapsedTime);
+		float dragFactor = 1.0f - (m_value.drag * elapsedTime);
 		if (dragFactor < 0.0f) dragFactor = 0.0f;
 
 		m_velocity *= dragFactor;
@@ -175,7 +177,7 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 		// 法線の上向き成分を確認
 		float upDot = nearestNormal.Dot(Vector3::Up);
 
-		// A. 緩やかな坂（歩ける地面）の場合: 今まで通りの処理
+		// 緩やかな坂（歩ける地面）の場合: 今まで通りの処理
 		// cos(45度) ≒ 0.707 なので、0.7fより大きければ45度未満
 		if (upDot > 0.9f)
 		{
@@ -186,7 +188,9 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 			{
 				myTrans->SetPosition(newPos);
 				m_velocity.y = 0;
+
 			}
+
 		}
 		// B. 急な坂（壁）の場合: すり抜け防止処理
 		else
@@ -217,6 +221,9 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 			pushPos += pushDir * 0.1f; // 少し押し出す
 			myTrans->SetPosition(pushPos);
 			
+
+			AddImpulse(pushDir * 2);
+
 		}
 	}
 	else
