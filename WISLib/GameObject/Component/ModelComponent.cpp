@@ -11,13 +11,13 @@ using namespace DirectX::SimpleMath;
 WIS::ModelComponent::ModelComponent() :
     m_DrawModel(true),
     m_stencilState(nullptr),
-    m_showWireframe(false), // 初期値を false に設定
+    m_showWireframe(false),
     m_showNormals(false),
     m_showFaceNormals(false)
 {
     m_modelVec.clear();
     m_localMatrices.clear();
-    m_textureResources.clear(); // ★追加: 初期化
+    m_textureResources.clear(); 
     VertexList.clear();
     IndexList.clear();
 }
@@ -28,9 +28,21 @@ WIS::ModelComponent::~ModelComponent()
 
 int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* context, wchar_t const* fileName, DirectX::EffectFactory* fxFactory)
 {
-    // アニメーション用フラグを削除
-    // 2019版でもClockwiseは使用可能です
     std::unique_ptr<DirectX::Model> tempModel = DirectX::Model::CreateFromSDKMESH(device, fileName, *fxFactory, DirectX::ModelLoader_Clockwise);
+
+    fxFactory->SetDirectory(L"Resources/textures");
+    if (tempModel && !tempModel->meshes.empty()) {
+        auto part = tempModel->meshes[0]->meshParts[0].get();
+
+        // 頂点のサイズ（バイト数）を取得
+        size_t stride = part->vertexStride;
+
+        // デバッグ出力
+        wchar_t msg[256];
+        swprintf_s(msg, L"★ Model Vertex Stride: %zu bytes\n", stride);
+        OutputDebugStringW(msg);
+    }
+
 
     if (!tempModel) {
         return -1;
@@ -46,7 +58,7 @@ int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* con
             D3D11_BUFFER_DESC vbDesc;
             gpuVertexBuffer->GetDesc(&vbDesc);
 
-            // ステージングバッファ作成 (CPU読み取り用)
+            //
             D3D11_BUFFER_DESC stagingDesc = vbDesc;
             stagingDesc.Usage = D3D11_USAGE_STAGING;
             stagingDesc.BindFlags = 0;
@@ -57,7 +69,7 @@ int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* con
             device->CreateBuffer(&stagingDesc, nullptr, stagingVertexBuffer.GetAddressOf());
             context->CopyResource(stagingVertexBuffer.Get(), gpuVertexBuffer);
 
-            // --- 2. インデックスバッファの取得 ---
+
             auto gpuIndexBuffer = part->indexBuffer.Get();
             D3D11_BUFFER_DESC ibDesc;
             gpuIndexBuffer->GetDesc(&ibDesc);
@@ -72,8 +84,6 @@ int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* con
             device->CreateBuffer(&stagingDesc, nullptr, stagingIndexBuffer.GetAddressOf());
             context->CopyResource(stagingIndexBuffer.Get(), gpuIndexBuffer);
 
-            // --- 3. データの読み出しと変換 ---
-
             // マップ（ロック）
             D3D11_MAPPED_SUBRESOURCE mappedVertex, mappedIndex;
             context->Map(stagingVertexBuffer.Get(), 0, D3D11_MAP_READ, 0, &mappedVertex);
@@ -85,38 +95,27 @@ int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* con
             // 現在のVertexListのサイズを記録（インデックスのオフセット用）
             uint16_t indexOffset = static_cast<uint16_t>(VertexList.size());
 
-            // ★修正点1: 頂点数をバッファサイズとストライドから計算する
-            // part->vertexCount がない2019版向けの対応
+
             size_t totalVertexCountInPart = vbDesc.ByteWidth / part->vertexStride;
 
-            // A. 頂点の抽出 (バッファ内の全頂点をコピー)
             for (size_t i = 0; i < totalVertexCountInPart; ++i)
             {
                 // 先頭から順番に取得する
                 const uint8_t* pV = pVertexBase + (i * part->vertexStride);
 
-                // 座標と法線を取得 (キャストして読み取り)
-                // SDKMESH形式は通常 VertexPositionNormalTexture を使用
                 auto vSrc = reinterpret_cast<const DirectX::VertexPositionNormalTexture*>(pV);
 
-                // 公開用リストに追加：VertexPositionColor に変換
                 VertexList.push_back(DirectX::VertexPositionColor(vSrc->position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)));
 
-                // デバッグ用リストに追加
                 m_vertexNormals.push_back({ vSrc->position, vSrc->normal });
             }
 
-            // B. インデックスの抽出
+
             for (size_t i = 0; i < part->indexCount; ++i)
             {
                 // インデックスバッファから値を読む
                 uint16_t rawIndex = pIndexBase[part->startIndex + i];
 
-                // ★修正点2: インデックスの計算
-                // rawIndex: インデックスバッファの値 (0, 1, 2...)
-                // part->vertexOffset: GPUが参照する頂点の開始位置補正 (BaseVertexLocation)
-                // indexOffset: 今回結合したVertexListの開始位置
-                // これらを足すことで、VertexList上の正しい要素を指すようにする
                 uint16_t finalIndex = static_cast<uint16_t>(indexOffset + part->vertexOffset + rawIndex);
 
                 IndexList.push_back(finalIndex);
@@ -163,7 +162,7 @@ void WIS::ModelComponent::SetPosition(int index, const DirectX::SimpleMath::Vect
 
 void WIS::ModelComponent::SetTexture(int index, ID3D11ShaderResourceView* texture)
 {
-    if (index < 0 || index >= m_modelVec.size())
+    if (index < 0 || index >= m_modelVec.size()|| !texture)
     {
         return;
     }
@@ -183,12 +182,48 @@ void WIS::ModelComponent::SetTexture(int index, ID3D11ShaderResourceView* textur
                 effect->SetTexture(texture);
                 // テクスチャ有効化フラグをオンにする
                 effect->SetTextureEnabled(true);
+               
             }
         }
     }
 }
 
-// ★追加: DDSファイルパスからテクスチャを設定する関数
+
+void WIS::ModelComponent::SetColor(int index, DirectX::SimpleMath::Vector4 color)
+{
+    // インデックスチェック
+    if (index < 0 || index >= m_modelVec.size())
+    {
+        return;
+    }
+
+    auto& model = m_modelVec[index];
+
+    // モデル内の全パーツを巡回
+    for (const auto& mesh : model->meshes)
+    {
+        for (const auto& part : mesh->meshParts)
+        {
+            auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
+            if (effect)
+            {
+
+                effect->SetTextureEnabled(false);
+                effect->SetLightingEnabled(true);
+
+                effect->EnableDefaultLighting();
+
+
+                effect->SetDiffuseColor(color);
+
+                // 必要なら環境光も少し入れる（真っ黒防止）
+                effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.3f, 0.3f, 0.3f));
+            }
+        }
+    }
+}
+
+
 void WIS::ModelComponent::SetTextureFromFile(ID3D11Device* device, int index, const wchar_t* filePath)
 {
     // インデックスチェック
@@ -207,7 +242,7 @@ void WIS::ModelComponent::SetTextureFromFile(ID3D11Device* device, int index, co
     Microsoft::WRL::ComPtr<ID3D11Resource> resource;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
 
-    // DirectXTKの関数でロード
+
     HRESULT hr = DirectX::CreateDDSTextureFromFile(device, filePath, resource.GetAddressOf(), srv.GetAddressOf());
 
     if (SUCCEEDED(hr))
@@ -215,8 +250,9 @@ void WIS::ModelComponent::SetTextureFromFile(ID3D11Device* device, int index, co
         // メンバ変数に保持（所有権を持つ）
         m_textureResources[index] = srv;
 
-        // 既存のSetTextureを呼び出してモデルに適用
         SetTexture(index, srv.Get());
+
+     
     }
 }
 
@@ -245,7 +281,9 @@ void WIS::ModelComponent::OnStart(UserResources* userResources)
     rasterizerDesc.DepthClipEnable = true;
     device->CreateRasterizerState(&rasterizerDesc, m_wireframeRasterizerState.GetAddressOf());
 
-    m_stencilState = userResources->GetCommonStates()->DepthDefault();
+
+
+    //m_stencilState = userResources->GetCommonStates()->DepthDefault();
 }
 
 void WIS::ModelComponent::OnPreUpdate(const float elapsedTime, UserResources* userResources) {}
@@ -275,8 +313,11 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
     Matrix world = transformComp->GetWorldMatrix();
 
 
+    context->OMSetDepthStencilState(state->DepthDefault(), 0);
 
-    context->OMSetDepthStencilState(m_stencilState, 0);
+    context->OMSetBlendState(state->Opaque(), nullptr, 0xFFFFFFFF);
+
+   // context->OMSetDepthStencilState(m_stencilState, 0);
 
     // --- Main Model Rendering ---
     for (size_t i = 0; i < m_modelVec.size(); i++)
@@ -300,7 +341,7 @@ void WIS::ModelComponent::OnRelease()
     m_wireframeRasterizerState.Reset();
     m_modelVec.clear();
     m_localMatrices.clear();
-    m_textureResources.clear(); // ★追加: テクスチャリソースの解放
+    m_textureResources.clear();
     m_vertexNormals.clear();
     VertexList.clear();
     IndexList.clear();

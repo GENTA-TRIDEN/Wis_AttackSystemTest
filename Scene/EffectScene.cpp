@@ -72,7 +72,7 @@ void EffectScene::Update(float elapsedTime)
 	m_effect->Update(elapsedTime);
 
 	if (mouse_state.leftButton) {
-		//m_effect->hit();
+		m_effect->hit({ 0.0f, 0.0f, 0.0f });
 	}
 
 
@@ -127,10 +127,13 @@ void EffectScene::Render()
 		*p_cameraManager->GetView(),
 		m_proj
 	);
+
 	auto cam = p_cameraManager->GetCamera();
 	m_effect->CreateBillboard(cam->GetDirection(), cam->GetPosition(), DirectX::SimpleMath::Vector3::Up);
+
 	m_effect->Render(*p_cameraManager->GetView(),
 		m_proj);
+
 	font->AddString(L"GamePlayScene(EffectScene):", { 0.0f, 0.0f });
 
 

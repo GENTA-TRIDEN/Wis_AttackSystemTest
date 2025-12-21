@@ -1,5 +1,3 @@
-
-
 //--------------------------------------------------------------------------------------
 // File: Particle.cpp
 //
@@ -95,13 +93,8 @@ void WIS::HitEffect::Update(const float elapsedTime)
 	m_timer += elapsedTime;
 	if (m_timer <= 0.2f)
 	{
-		//
-
-
-			//	タイマーのリセット
-			m_timer = 0.0f;
-
-		
+		//	タイマーのリセット
+		m_timer = 0.0f;
 	}
 
 
@@ -186,13 +179,14 @@ void WIS::HitEffect::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMat
 	m_world = m_billboard;
 	//	ビルボード設定時にもらったカメラ情報から、視線ベクトルを計算する
 	DirectX::SimpleMath::Vector3 cameraDir = m_cameraTarget - m_cameraPosition;
+
 	//	視線ベクトルは正規化しておく
 	cameraDir.Normalize();
 
 	//	パーティクル情報を、カメラからの距離順でソートする
 	m_particleUtility.sort(
 		//	ソート処理の基準を示す関数については、ラムダ式で指定する
-		[&](kHorikawa::ParticleUtility lhs, kHorikawa::ParticleUtility  rhs)
+		[&](kHorikawa::ParticleUtility lhs, kHorikawa::ParticleUtility rhs)
 		{
 			//	カメラ正面の距離でソート
 			return cameraDir.Dot(lhs.GetPosition() - m_cameraPosition) > cameraDir.Dot(rhs.GetPosition() - m_cameraPosition);
@@ -209,20 +203,13 @@ void WIS::HitEffect::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMat
 		}
 
 		DirectX::VertexPositionColorTexture vPCT;
-		//	表示するパーティクルの中心座標のみを入れる。
-		//	→つまり、前回の授業資料にあった「頂点1つだけで描画命令を出す？」を実際に行っている
-		//	→1頂点しか情報がないため、C++で用意しているデータだけではテクスチャを表示できない
-		//	　→ジオメトリシェーダで頂点を増やすことが前提のデータ、ということ
+
 		vPCT.position = DirectX::XMFLOAT3(li.GetPosition());
 		//	テクスチャの色
 		vPCT.color = DirectX::XMFLOAT4(li.GetNowColor());
-		//	現在のテクスチャのスケールを「XMFLOAT2」のXに入れる。
-		//	→実際に画像表示をするためのUV座標はジオメトリシェーダが管理しているから出来ること
-		//	Yは使用しないため、0.0fを入れておく
+
 		vPCT.textureCoordinate = DirectX::XMFLOAT2(li.GetNowScale().x, 0.0f);
 
-		//	頂点情報を1つだけ追加。
-		//	※これまでは、4頂点で2枚の三角形ポリゴンとしていた
 		m_vertices.push_back(vPCT);
 	}
 
@@ -263,10 +250,10 @@ void WIS::HitEffect::Render(DirectX::SimpleMath::Matrix view, DirectX::SimpleMat
 	context->OMSetBlendState(blendstate, nullptr, 0xFFFFFFFF);
 
 	////	深度バッファに書き込み参照する
-	//context->OMSetDepthStencilState(m_states->DepthDefault(), 0);
+	context->OMSetDepthStencilState(m_states->DepthRead(), 0);
 
 	//	カリングはなし
-	context->RSSetState(m_states->CullClockwise());
+	context->RSSetState(m_states->CullNone());
 
 	//	シェーダをセットする
 	context->VSSetShader(m_vertexShader.Get(), nullptr, 0);
@@ -312,7 +299,7 @@ void WIS::HitEffect::CreateBillboard(DirectX::SimpleMath::Vector3 target, Direct
 	//	180度逆を向いているので、補正するための情報を入れる
 	rot._11 = -1;
 	rot._33 = -1;
-	
+
 	m_cameraPosition = eye;
 	m_cameraTarget = target;
 	m_billboard = rot * m_billboard;
@@ -332,12 +319,12 @@ void WIS::HitEffect::hit(DirectX::SimpleMath::Vector3 pos)
 		float range = 2.0f;
 		//	0～2PIの値をdefault_random_engine(恐らくしばらくはmt19937)を使って取り出す
 		float rand = static_cast<float>(dist(engine));
-		float Irand= static_cast<float>(dist(Iengine));
+		float Irand = static_cast<float>(dist(Iengine));
 		//	新しいパーティクル情報を作成する
 		kHorikawa::ParticleUtility pU(
 			0.2f,																							//	生存時間(s)
-			pos+DirectX::SimpleMath::Vector3(range / 4.0f * cosf(rand), 0.0f, range/4.0f * sinf(rand)),						//	基準座標
-			DirectX::SimpleMath::Vector3( cosf(Irand) * 20, sinf(rand) * 20,  sinf(Irand) * 20),													//	速度
+			pos + DirectX::SimpleMath::Vector3(range / 4.0f * cosf(rand), 0.0f, range / 4.0f * sinf(rand)),						//	基準座標
+			DirectX::SimpleMath::Vector3(cosf(Irand) * 20, sinf(rand) * 20, sinf(Irand) * 20),													//	速度
 			DirectX::SimpleMath::Vector3::One * 5,																//	加速度
 			DirectX::SimpleMath::Vector3::One, DirectX::SimpleMath::Vector3::Zero,							//	初期スケール、最終スケール
 			DirectX::SimpleMath::Color(1.f, 0.f, 0.01f, 1.f), DirectX::SimpleMath::Color(0.02f, 0.f, 0.f, 0.f)	//	初期カラー、最終カラー

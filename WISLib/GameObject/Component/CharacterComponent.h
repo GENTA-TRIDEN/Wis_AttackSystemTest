@@ -23,12 +23,35 @@ namespace WIS {
 
 		ObjectType m_objectType = ObjectType::PLAYER; //オブジェクトの種類
 
+
+		// ベーシックエフェクトへのポインタ
+		std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
+
+		// プリミティブバッチへのポインタ
+		std::unique_ptr<DirectX::PrimitiveBatch<DirectX::VertexPositionTexture>> m_primitiveBatch;
+
+		// 入力レイアウトへのポインタ
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+
+
+		//影のテクスチャ
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> m_shadowTexture;
+
+		//深度ステンシルステート (影）
+		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> m_depthStencilState_Shadow;
+
+		//床の高さ
+		float m_floorHeight = 0.0f;
+
+
 	public:
 		CharacterComponent();
 		~CharacterComponent();
 		void OnStart(UserResources* userResources) override;
 
 		void OnUpdate(const float elapsedTime, UserResources* userResources) override;
+
+		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj) override;
 
 		void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) override;
 		//体力を減らす関数
@@ -53,6 +76,21 @@ namespace WIS {
 		ObjectType GetObjectType() {
 			return m_objectType;
 		}
+
+		void SetFloorHeight(float height) {
+			m_floorHeight = height;
+		}
+
+
+		//影の描画関数
+		void DrawShadow(
+			ID3D11DeviceContext* context,
+			DirectX::CommonStates* states,
+			DirectX::SimpleMath::Vector3 position,
+			float Radius,
+			const DirectX::SimpleMath::Matrix& view, 
+			const DirectX::SimpleMath::Matrix& proj
+		);
 	};
 }
 

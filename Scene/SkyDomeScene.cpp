@@ -187,15 +187,26 @@ void SkyDomeScene::Update(float elapsedTime)
 		Stacking = true;
 	}
 
-
+	auto floor = m_objectManager->GetObject(m_floorText);
 
 	auto player = m_objectManager->GetObject(m_PlayerText);
 	auto playerTranc = player->GetComponent<WIS::TransformComponent>();
+	auto playerCharacter = player->GetComponent<WIS::CharacterComponent>();
 	auto enemy = m_objectManager->GetObject(m_EnemyText);
+
+
+	playerCharacter->SetFloorHeight(floor->GetComponent<WIS::FloorComponent>()->GetHeight(playerTranc->GetPosition()));
+
 
 	if (enemy) {
 		auto enemyEnemy = enemy->GetComponent<WIS::EnemyComponent>();
+		auto enemyCharacter = enemy->GetComponent<WIS::CharacterComponent>();
+
+		enemyCharacter->SetFloorHeight(floor->GetComponent<WIS::FloorComponent>()->GetHeight(enemy->GetComponent<WIS::TransformComponent>()->GetPosition()));
+
+
 		enemyEnemy->SetPlayerPos(playerTranc->GetPosition());
+
 	}
 	else {
 		ChangeScene<ResultScene>();
@@ -204,8 +215,8 @@ void SkyDomeScene::Update(float elapsedTime)
 	DirectX::SimpleMath::Vector3 pos = p_cameraManager->GetCamera()->GetPosition();
 	pos.y += 0.2;
 	m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition(pos);
-	//m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition({0,5,0});
 
+	//m_skyDome->GetComponent<WIS::TransformComponent>()->SetPosition({0,5,0});
 
 
 
@@ -247,10 +258,7 @@ void SkyDomeScene::Render()
 				}
 				auto basicEffect = dynamic_cast<DirectX::BasicEffect*>(effect);
 				basicEffect->SetTextureEnabled(true);
-				//if (basicEffect)
-				//{
-				//	basicEffect->SetEmissiveColor(DirectX::Colors::White);
-				//}
+
 
 			}
 		);

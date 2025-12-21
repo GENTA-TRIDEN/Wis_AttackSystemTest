@@ -19,7 +19,7 @@ void EnemyChaseState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserRes
     if (owner->CheckAttackRange()) {
         sm->ChangeState(std::make_shared<EnemyAttackState>());
     }
-    // 3. 遷移判定: プレイヤーを見失ったら Search へ
+    // 遷移判定: プレイヤーを見失ったら Search へ
     else if (owner->CheckPlayerLost()) {
         // 次のパトロール地点を決めてから戻る
         owner->SelectNextIndex();

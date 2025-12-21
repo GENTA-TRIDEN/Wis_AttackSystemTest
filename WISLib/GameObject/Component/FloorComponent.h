@@ -9,9 +9,11 @@ namespace WIS {
 	{
 	private:
 
-		std::vector<DirectX::VertexPositionColor> VertexList;
-		std::vector<uint16_t> IndexList;
+		std::vector<DirectX::VertexPositionColor> m_VertexList;
+		std::vector<uint16_t> m_IndexList;
 
+
+		bool m_HaveModel = false;
 
 	public:
 		FloorComponent();
@@ -24,15 +26,16 @@ namespace WIS {
 
 		// モデルロード時に、ここにもデータを入れておく
 		void SetMeshData(const std::vector<DirectX::VertexPositionColor>& verts, const std::vector<uint16_t>& indices) {
-			VertexList = verts;
-			IndexList = indices;
+			m_VertexList = verts;
+			m_IndexList = indices;
 		}
 
-
-		std::vector<DirectX::VertexPositionColor>& GetVertices() { return VertexList; }
-		std::vector<uint16_t>& GetIndices() { return IndexList; }
+		void SetModel();
 
 
+		std::vector<DirectX::VertexPositionColor>& GetVertices() { return m_VertexList; }
+		//IndexList
+		std::vector<uint16_t>& GetIndices() { return m_IndexList; }
 
 		float GetHeight(DirectX::SimpleMath::Vector3);
 	};

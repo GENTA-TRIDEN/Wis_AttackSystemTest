@@ -20,11 +20,13 @@ void EnemyAttackState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserRe
 
 void EnemyAttackState::OnCollision(EnemyComponent* owner, std::shared_ptr<WIS::GameObject> otherObject)
 {
+
     // プレイヤーにダメージを与えようとする
     if (owner->TryAttackHit(otherObject)) {
         // 攻撃が成功したら Search に戻る
         auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
         if (sm) {
+            owner->SelectNextIndex();
             sm->ChangeState(std::make_shared<EnemySearchState>());
         }
     }

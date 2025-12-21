@@ -2,56 +2,62 @@
 #include "WISLib/GameObject/Component/ComponentBase.h"
 #include "WISLib/WISLibTags.h"
 #include "WISLib/Camera/CameraManager.h"
+#include <string>
 
 namespace WIS {
-    class PlayerComponent : public WIS::ComponentBase
-    {
+	class PlayerComponent : public WIS::ComponentBase
+	{
 
-    private :
+	private:
 		DirectX::SimpleMath::Vector3 m_moveDirection;
 
-		float m_moveSpeed = 5.0f; // 移動速度
+		float m_moveSpeed = 15.0f;
 
-        
-        CameraManager* p_cameraManager = CameraManager::GetInstance();
+		CameraManager* p_cameraManager = CameraManager::GetInstance();
 
-
-        //@TODO:アイテムを保持する奴を作ってもいいかも
-        
-		//ItemListのなかのItemをそれぞれ何個持っているかの配列
 		std::unordered_map<WIS::ItemKinds, int> m_itemCountMap;
-        
 
-    public:
+		std::string m_weaponName;
+		bool m_isAttack = false;
+		float m_WeaponAttackTime = 0.0f;
+
+		// 武器の初期回転（持ち方）を保存する変数
+		DirectX::SimpleMath::Quaternion m_initialWeaponRotation;
+		bool m_hasCapturedRotation = false;
+
+	public:
 		PlayerComponent();
 		~PlayerComponent();
 
-        void OnStart(UserResources* userResources) override;
-        void OnPreUpdate(const float elapsedTime, UserResources* userResources) override;
-        void OnUpdate(const float elapsedTime, UserResources* userResources) override;
-        void OnPostUpdate(const float elapsedTime, UserResources* userResources) override;
-        void OnRender(UserResources* userResources,
-            const DirectX::SimpleMath::Matrix& view,
-            const DirectX::SimpleMath::Matrix& proj) override;
-        void OnRelease() override;
+		void OnStart(UserResources* userResources) override;
+		void OnPreUpdate(const float elapsedTime, UserResources* userResources) override;
+		void OnUpdate(const float elapsedTime, UserResources* userResources) override;
+		void OnPostUpdate(const float elapsedTime, UserResources* userResources) override;
+		void OnRender(UserResources* userResources,
+			const DirectX::SimpleMath::Matrix& view,
+			const DirectX::SimpleMath::Matrix& proj) override;
+		void OnRelease() override;
 
 
 		void AddItem(WIS::ItemKinds itemType) {
 			m_itemCountMap[itemType]++;
 		}
 
-        int GetItemCount(WIS::ItemKinds itemType) {
+		int GetItemCount(WIS::ItemKinds itemType) {
 			if (m_itemCountMap.find(itemType) == m_itemCountMap.end()) {
 				return 0;
 			}
 			return m_itemCountMap[itemType];
-        }
+		}
 
-        void SetItemCount(WIS::ItemKinds itemType, int ItemCount) {
+		void SetItemCount(WIS::ItemKinds itemType, int ItemCount) {
 
-            m_itemCountMap[itemType] = ItemCount;
-        }
+			m_itemCountMap[itemType] = ItemCount;
+		}
 
-    };
+		void SetWeaponName(const std::string& name) {
+			m_weaponName = name;
+		}
+
+	};
 }
-

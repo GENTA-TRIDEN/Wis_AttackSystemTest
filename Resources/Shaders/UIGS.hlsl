@@ -57,6 +57,7 @@ void main(
 		element.tex =  offset_array[i].xy;
 
 		output.Append(element);
+		
 	}
 	output.RestartStrip();
 }

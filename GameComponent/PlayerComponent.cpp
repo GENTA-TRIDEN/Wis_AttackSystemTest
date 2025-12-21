@@ -2,14 +2,24 @@
 #include "PlayerComponent.h"
 #include "WISLib/GameObject/Component/TransformComponent.h"
 #include "WISLib/GameObject/Component/RigidBodyComponent.h"
+#include "WISLib/GameObject/Component/WeaponComponent.h"
 #include "WISLib/GameObject/GameObject.h"
 #include "WISLib/Camera/CameraManager.h"
 #include "WISLib/Camera/TPSCamera.h"
+#include "WISLib/GameObject/ObjectManager.h"
+#include "WISLib/Common/Easing.h"
+#include "UserResources.h"
 
 
 WIS::PlayerComponent::PlayerComponent()
-{
+    : m_moveSpeed(15.0f),
+	m_isAttack(false),
+	m_WeaponAttackTime(0.0f),
+	m_hasCapturedRotation(false)
+{ 
+	m_initialWeaponRotation = DirectX::SimpleMath::Quaternion::Identity;
 }
+
 
 WIS::PlayerComponent::~PlayerComponent()
 {
@@ -17,9 +27,6 @@ WIS::PlayerComponent::~PlayerComponent()
 
 void WIS::PlayerComponent::OnStart(UserResources* userResources)
 {
-	// 初期化処理
-	m_moveSpeed = 2.2f;
-
 }
 
 void WIS::PlayerComponent::OnPreUpdate(const float elapsedTime, UserResources* userResources)
@@ -27,8 +34,10 @@ void WIS::PlayerComponent::OnPreUpdate(const float elapsedTime, UserResources* u
 }
 void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
 {
-    // --- 1. 入力処理 ---
+    // --- 移動処理 (変更なし) ---
     auto keyboard = DirectX::Keyboard::Get().GetState();
+    auto mouse = DirectX::Mouse::Get().GetState();
+
     m_moveDirection = DirectX::SimpleMath::Vector3::Zero;
 
     if (keyboard.W) { m_moveDirection.z += 1.0f; }
@@ -36,82 +45,109 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
     if (keyboard.A) { m_moveDirection.x += 1.0f; }
     if (keyboard.D) { m_moveDirection.x -= 1.0f; }
 
-    // --- 2. カメラ・座標関連の準備 ---
     auto cam = p_cameraManager->GetCamera();
     auto tpsCam = dynamic_cast<WIS::TPSCamera*>(cam);
     if (!tpsCam) return;
 
-    // コンポーネント取得
     auto transform = this->GetOwner()->GetComponent<WIS::TransformComponent>();
-    auto rigidBody = this->GetOwner()->GetComponent<WIS::RigidBodyComponent>(); // RigidBodyを取得
+    auto rigidBody = this->GetOwner()->GetComponent<WIS::RigidBodyComponent>();
 
-    // カメラ位置更新
     DirectX::SimpleMath::Vector3 currentPos = transform->GetPosition();
     tpsCam->SetPlayerPosition(currentPos);
 
-    // カメラの向き取得
     float cameraYaw = tpsCam->GetYaw();
     float correctYaw = -cameraYaw;
 
-    // キャラクターの向きをカメラに合わせる（ここは仕様に合わせて調整してください）
     DirectX::SimpleMath::Quaternion targetRotation = DirectX::SimpleMath::Quaternion::CreateFromAxisAngle(DirectX::SimpleMath::Vector3::Up, correctYaw);
     transform->SetRotation(targetRotation);
 
-    // --- 3. 物理移動計算ロジック ---
-
-    // RigidBodyがないと動かせないのでチェック
     if (rigidBody)
     {
-        //いまの速度を取得重力などを調べるため
         DirectX::SimpleMath::Vector3 currentVelocity = rigidBody->GetVelocity();
-
-        //次のフレームの速度
         DirectX::SimpleMath::Vector3 finalVelocity = DirectX::SimpleMath::Vector3::Zero;
 
-        //入力がある場合
         if (m_moveDirection.LengthSquared() > 0)
         {
-            // 移動方向 × スピード
-
-            //正規化
             m_moveDirection.Normalize();
-
-
-            // カメラの向きに合わせてベクトルを回転
             DirectX::SimpleMath::Matrix rotationMatrix = DirectX::SimpleMath::Matrix::CreateRotationY(correctYaw);
             DirectX::SimpleMath::Vector3 worldMoveVec = DirectX::SimpleMath::Vector3::TransformNormal(m_moveDirection, rotationMatrix);
 
-            // Y軸の入力成分はなくし水平移動のみにする
             worldMoveVec.y = 0.0f;
             if (worldMoveVec.LengthSquared() > 0) {
                 worldMoveVec.Normalize();
             }
-
-            // スピードを掛ける
             finalVelocity = worldMoveVec * m_moveSpeed;
         }
         else
         {
-            // 入力がない場合：水平速度はゼロ
             finalVelocity = DirectX::SimpleMath::Vector3::Zero;
         }
-
-
-        // C. 【重要】重力成分の維持
-        // ここで Y を 0 や固定値にすると、空中に浮いたりゆっくり落ちてしまいます。
-        // 「今の落下速度」をそのまま採用することで、重力だけは物理演算に任せます。
         finalVelocity.y = currentVelocity.y;
-
-
-
-        // D. 最終的な速度を適用
         rigidBody->ChangeVelocity(finalVelocity);
 
         if (keyboard.Space && rigidBody->GetVelocity().y == 0.0f)
         {
             rigidBody->AddImpulse(DirectX::SimpleMath::Vector3{ 0,5,0 });
         }
+    }
 
+    // --- 武器攻撃処理 (修正版) ---
+    if (!m_weaponName.empty())
+    {
+        auto objectManager = userResources->GetObjectManager();
+        auto weapon = objectManager->GetObject(m_weaponName);
+
+        if (weapon)
+        {
+            auto weaponTransform = weapon->GetComponent<WIS::TransformComponent>();
+            auto weaponComp = weapon->GetComponent<WIS::WeaponComponent>();
+
+            if (!m_hasCapturedRotation)
+            {
+                m_initialWeaponRotation = weaponTransform->GetRotation();
+                m_hasCapturedRotation = true;
+            }
+
+            if (m_isAttack)
+            {
+                m_WeaponAttackTime += elapsedTime;
+
+                float currentTime = m_WeaponAttackTime;
+                if (currentTime > 1.0f) currentTime = 1.0f;
+
+                // Back系を使う場合: 第3引数に反動量(例えば1.7f)を指定し、第4引数に目標角度(-180.0f)を入れる
+                float angleDeg = WIS::Easing::OutCubic<float>(currentTime, 1.0f, -180.0f, 0.0f);
+
+                // 振り回転の作成
+                DirectX::SimpleMath::Quaternion swingRot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(
+                    DirectX::XMConvertToRadians(angleDeg),
+                    
+                    0.0f,
+                    DirectX::XMConvertToRadians(10)
+                );
+
+                // これにより、もともとの持ち方を維持したまま振ることができます
+                weaponTransform->SetRotation(m_initialWeaponRotation * swingRot);
+
+                if (m_WeaponAttackTime >= 1.0f)
+                {
+                    m_isAttack = false;
+                    m_WeaponAttackTime = 0.0f;
+                    // 終わったら初期回転に戻す
+                    weaponTransform->SetRotation(m_initialWeaponRotation);
+                }
+            }
+
+            if (mouse.leftButton && !m_isAttack)
+            {
+                m_isAttack = true;
+                m_WeaponAttackTime = 0.0f;
+                if (weaponComp)
+                {
+                    weaponComp->TryAttack();
+                }
+            }
+        }
     }
 }
 

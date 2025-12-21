@@ -65,7 +65,7 @@ void WIS::EnemyComponent::OnUpdate(const float elapsedTime, UserResources* userR
     // ロジックは全て StateMachineComponent -> 各State -> Execute... 関数で行われます
 }
 
-// --- 以下、アクションの実装 ---
+// アクション ---
 
 void WIS::EnemyComponent::ExecutePatrol()
 {
@@ -83,10 +83,20 @@ void WIS::EnemyComponent::ExecutePatrol()
     rigidBody->ChangeVelocity(nextVelocity);
 
     // 距離チェック (簡易的に0.5f)
-    if (Vector3::Distance(NowPos, m_patrolPoints[m_currentPatrolPointIndex]) <= 0.5f) {
-        SelectNextIndex();
-        m_isCanAttack = true; // 次の攻撃のためにフラグを戻す
-    }
+    //Y軸は考慮しない
+	Vector2 NowPos2D = Vector2(NowPos.x, NowPos.z);
+	Vector2 TargetPos2D = Vector2(m_patrolPoints[m_currentPatrolPointIndex].x, m_patrolPoints[m_currentPatrolPointIndex].z);
+	if (Vector2::Distance(NowPos2D, TargetPos2D) <= 0.5f) {
+		SelectNextIndex();
+		m_isCanAttack = true; // 次の攻撃のためにフラグを戻す
+	}
+
+
+
+    //if (Vector3::Distance(NowPos, m_patrolPoints[m_currentPatrolPointIndex]) <= 0.5f) {
+    //    SelectNextIndex();
+    //    m_isCanAttack = true; // 次の攻撃のためにフラグを戻す
+    //}
 }
 
 void WIS::EnemyComponent::ExecuteChase()
@@ -108,7 +118,9 @@ void WIS::EnemyComponent::ExecuteChase()
     // 移動
     Vector3 currentVelocity = rigidBody->GetVelocity();
     Vector3 nextVelocity = MoveVec * m_moveSpeed;
+
     nextVelocity.y = currentVelocity.y;
+
     rigidBody->ChangeVelocity(nextVelocity);
 
     // プレイヤーの方向を向く
@@ -120,9 +132,9 @@ void WIS::EnemyComponent::StopMovement()
 {
     auto rigidBody = GetOwner()->GetComponent<RigidBodyComponent>();
     if (rigidBody) {
-        Vector3 vel = rigidBody->GetVelocity();
-        // 水平速度を0に、重力(Y)は維持
-        rigidBody->ChangeVelocity(Vector3(0, vel.y, 0));
+        //Vector3 vel = rigidBody->GetVelocity();
+        //// 水平速度を0に、重力(Y)は維持
+        //rigidBody->ChangeVelocity(Vector3(0, vel.y, 0));
     }
 }
 
@@ -140,19 +152,22 @@ void WIS::EnemyComponent::SelectNextIndex()
 
     Vector3 NowPos = transform->GetPosition();
     Vector3 TargetPos = m_patrolPoints[m_currentPatrolPointIndex];
+
+    // 方向ベクトルを計算
     Vector3 MoveVec = TargetPos - NowPos;
     MoveVec.y = 0;
 
+    // ベクトルの長さが十分ある場合のみ更新
     if (MoveVec.LengthSquared() > 0.0001f) {
         MoveVec.Normalize();
+        m_moveDirection = MoveVec;
+
+        Matrix world = Matrix::CreateWorld(NowPos, MoveVec, Vector3::Up);
+
+        // 作成したワールド行列から回転(クォータニオン)を抽出してセット
+        transform->SetRotation(Quaternion::CreateFromRotationMatrix(world));
     }
-    m_moveDirection = MoveVec;
-
-    // 次のポイントの方向を向く
-    XMMATRIX rot = XMMatrixLookAtLH(NowPos, TargetPos, Vector3::Up);
-    transform->SetRotation(Quaternion::CreateFromRotationMatrix(rot));
 }
-
 bool WIS::EnemyComponent::TryAttackHit(std::shared_ptr<WIS::GameObject> target)
 {
     auto playerComp = target->GetComponent<PlayerComponent>();

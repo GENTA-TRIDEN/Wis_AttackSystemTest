@@ -97,10 +97,26 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
 
             auto enemyTrans = otherObject->GetComponent<WIS::TransformComponent>();
 
-            //エフェクトをだす
-            if (p_Effect) {
-                DirectX::SimpleMath::Vector3 pos = enemyTrans->GetPosition();
-                p_Effect->hit(pos);
+            auto myTrans = GetOwner()->GetComponent<WIS::TransformComponent>();
+
+            // エフェクトをだす
+            if (p_Effect && myTrans) {
+                // 1. 敵と武器の座標を取得
+                DirectX::SimpleMath::Vector3 enemyPos = enemyTrans->GetPosition();
+                DirectX::SimpleMath::Vector3 myPos = myTrans->GetPosition();
+
+                // 2. 「敵」から「武器」への方向ベクトルを計算
+                DirectX::SimpleMath::Vector3 dir = myPos - enemyPos;
+
+                // 長さが0だと計算できないのでチェック
+                if (dir.LengthSquared() > 0.001f) {
+                    dir.Normalize();
+                }
+
+                DirectX::SimpleMath::Vector3 hitPos = enemyPos + (dir * 1.0f);
+
+
+                p_Effect->hit(hitPos);
             }
 
 

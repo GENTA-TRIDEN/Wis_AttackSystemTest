@@ -24,12 +24,12 @@ namespace WIS {
         std::vector<DirectX::SimpleMath::Matrix> m_localMatrices;
         std::vector<std::unique_ptr<DirectX::Model>> m_modelVec;
 
-        // ★追加: 読み込んだテクスチャの所有権を管理するためのリスト
+
         std::vector<Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>> m_textureResources;
 
         bool m_DrawModel;
-        // --- Debug Visualization Members ---
-        // Toggles
+
+
         bool m_showNormals = false;
         bool m_showFaceNormals = false;
         bool m_showWireframe = true;
@@ -68,7 +68,8 @@ namespace WIS {
         // テクスチャの設定 (既存のSRVを直接セットする場合)
         void SetTexture(int index, ID3D11ShaderResourceView* texture);
 
-        // ★追加: DDSファイルパスからテクスチャを設定する関数
+        void SetColor(int index, DirectX::SimpleMath::Vector4 color);
+
         void SetTextureFromFile(ID3D11Device* device, int index, const wchar_t* filePath);
 
         void SetLocalMatrix(int index, const DirectX::SimpleMath::Matrix& localMatrix)
