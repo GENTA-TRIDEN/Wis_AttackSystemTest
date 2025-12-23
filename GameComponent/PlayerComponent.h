@@ -25,6 +25,11 @@ namespace WIS {
 		DirectX::SimpleMath::Quaternion m_initialWeaponRotation;
 		bool m_hasCapturedRotation = false;
 
+		bool m_IsLeftToRight = true;
+
+		float m_nowRot;
+		//‰ñ“]‘¬“x‚Ì”{—¦
+		float m_rotSpeedMag =1.0f;
 	public:
 		PlayerComponent();
 		~PlayerComponent();

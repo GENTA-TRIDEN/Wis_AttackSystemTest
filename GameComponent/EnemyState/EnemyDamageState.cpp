@@ -22,6 +22,7 @@ void EnemyDamageState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserRe
 
         auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
         if (sm) {
+            owner->SelectNextIndex();
             sm->ChangeState(std::make_shared<EnemySearchState>());
         }
     }

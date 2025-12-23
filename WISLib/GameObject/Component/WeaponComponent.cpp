@@ -78,13 +78,13 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
 
         if (TargetCharacter && TargetCharacter->GetObjectType() == WIS::ObjectType::ENEMY)
         {
-            // --- 1. 武器本体のダメージ処理 ---
+            //  1. 武器本体のダメージ処理 
             TargetCharacter->DecreaseHP(m_attackPower);
             m_hasDealtDamageThisSwing = true; // ダメージを与えたのでフラグを立てる
 
 
 
-            // --- 2. 各パーツの衝突時ロジックを実行 ---
+            //  2. 各パーツの衝突時ロジックを実行 
             for (auto& weakPart : m_AttachedParts) {
                 if (auto partObject = weakPart.lock()) {
                     // PartStatsComponentを取得し、固有のヒット時効果を適用

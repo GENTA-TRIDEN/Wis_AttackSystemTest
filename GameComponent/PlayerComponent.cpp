@@ -91,7 +91,8 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
         }
     }
 
-    // --- •ŠíUŒ‚ˆ— (C³”Å) ---
+   
+	// --- UŒ‚ˆ— ---
     if (!m_weaponName.empty())
     {
         auto objectManager = userResources->GetObjectManager();
@@ -110,23 +111,30 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
 
             if (m_isAttack)
             {
-                m_WeaponAttackTime += elapsedTime;
+
+                m_rotSpeedMag = weaponComp->GetBaseWeight()/ weaponComp->GetWeight();
+
+                if (m_IsLeftToRight)m_WeaponAttackTime += m_rotSpeedMag * elapsedTime;
+                else m_WeaponAttackTime -= m_rotSpeedMag * elapsedTime;
+
 
                 float currentTime = m_WeaponAttackTime;
                 if (currentTime > 1.0f) currentTime = 1.0f;
 
-                // BackŒn‚ğg‚¤ê‡: ‘æ3ˆø”‚É”½“®—Ê(—á‚¦‚Î1.7f)‚ğw’è‚µA‘æ4ˆø”‚É–Ú•WŠp“x(-180.0f)‚ğ“ü‚ê‚é
-                float angleDeg = WIS::Easing::OutCubic<float>(currentTime, 1.0f, -180.0f, 0.0f);
 
+                float angleDeg = 0;
+                //0-180“x‚Ì‰ñ“]‚ğƒC[ƒWƒ“ƒO‚ÅŒvZ
+                if (m_IsLeftToRight)angleDeg = WIS::Easing::OutCubic<float>(currentTime, 1.0f, -180.0f, 0.0f);
+                else angleDeg = WIS::Easing::OutCubic<float>(currentTime, 1.0f, -180.0f, 0.0f);
                 // U‚è‰ñ“]‚Ìì¬
                 DirectX::SimpleMath::Quaternion swingRot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(
                     DirectX::XMConvertToRadians(angleDeg),
-                    
                     0.0f,
-                    DirectX::XMConvertToRadians(10)
+                    DirectX::XMConvertToRadians(10* m_IsLeftToRight)
                 );
 
-                // ‚±‚ê‚É‚æ‚èA‚à‚Æ‚à‚Æ‚Ì‚¿•û‚ğˆÛ‚µ‚½‚Ü‚ÜU‚é‚±‚Æ‚ª‚Å‚«‚Ü‚·
+               
+
                 weaponTransform->SetRotation(m_initialWeaponRotation * swingRot);
 
                 if (m_WeaponAttackTime >= 1.0f)
@@ -136,16 +144,40 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
                     // I‚í‚Á‚½‚ç‰Šú‰ñ“]‚É–ß‚·
                     weaponTransform->SetRotation(m_initialWeaponRotation);
                 }
+				//0‚¢‚©‚É‚È‚Á‚½‚ç–ß‚·
+				if (m_WeaponAttackTime < 0.0f)
+				{
+					m_isAttack = false;
+					m_WeaponAttackTime = 0.0f;
+					// I‚í‚Á‚½‚ç‰Šú‰ñ“]‚É–ß‚·
+					weaponTransform->SetRotation(m_initialWeaponRotation);
+				}
+
+
             }
 
-            if (mouse.leftButton && !m_isAttack)
+
+            //¶Click‚ğ‚·‚é
+            if (mouse.leftButton)
             {
-                m_isAttack = true;
-                m_WeaponAttackTime = 0.0f;
+                //UŒ‚’†
+                if (m_isAttack) {
+
+                    if (m_IsLeftToRight && m_WeaponAttackTime >= 0.3f) m_IsLeftToRight = false;
+                    m_isAttack = true;
+                }
+                //UŒ‚’†‚Å‚È‚¢ê‡
+                else {
+                    m_isAttack = true;
+                    m_IsLeftToRight = true;
+                    m_WeaponAttackTime = 0.0f;
+                }
+
                 if (weaponComp)
                 {
                     weaponComp->TryAttack();
                 }
+
             }
         }
     }
@@ -153,12 +185,15 @@ void WIS::PlayerComponent::OnUpdate(const float elapsedTime, UserResources* user
 
 void WIS::PlayerComponent::OnPostUpdate(const float elapsedTime, UserResources* userResources)
 {
+
 }
 
 void WIS::PlayerComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
+
 }
 
 void WIS::PlayerComponent::OnRelease()
 {
+
 }

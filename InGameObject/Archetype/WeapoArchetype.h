@@ -21,10 +21,11 @@ public:
     );
 
 private:
-    const wchar_t* weaponModelpath = L"Resources/Models/Weapon/stick.sdkmesh";
+    const wchar_t* weaponModelpath = L"Resources/Models/Weapon/Stick.sdkmesh";
 
     DirectX::SimpleMath::Vector3 ModelPos = { 0.0f, 1.0f, 0.0f };
     DirectX::SimpleMath::Vector3 SpawnPos = { 0.0f, 3.0f, 0.0f };
+    DirectX::SimpleMath::Vector3 Scale = { 0.7f, 0.7f, 0.7f };
 
 
 

@@ -75,11 +75,10 @@ namespace WIS
 
 	enum class ItemKinds
 	{
-		NONE = 0,
-		BLADE,//n
-		SHIELD,//‚
-		BOMB,//”š’e
-		ARROW,
-		GEAR//Ž•ŽÔ
+		NONE	= 0,
+		BLADE	=1,//n
+		BOMB	=2,//”š’e
+		ARROW	=3,
+		GEAR	=4//Ž•ŽÔ
 	};
 }

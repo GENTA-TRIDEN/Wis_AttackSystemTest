@@ -185,6 +185,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
+    <ClInclude Include="InGameObject\Archetype\PartsArchetype.h" />
     <ClInclude Include="WISLib\Common\Easing.h" />
     <ClInclude Include="WISLib\GameObject\Component\PolygonComponent.h" />
     <ClInclude Include="Scene\SkyDomeScene.h" />
@@ -259,6 +260,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
+    <ClCompile Include="InGameObject\Archetype\PartsArchetype.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PolygonComponent.cpp" />
     <ClCompile Include="Scene\SkyDomeScene.cpp" />
     <ClCompile Include="Scene\StageScene.cpp" />

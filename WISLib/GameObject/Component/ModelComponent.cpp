@@ -315,7 +315,7 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
 
     context->OMSetDepthStencilState(state->DepthDefault(), 0);
 
-    context->OMSetBlendState(state->Opaque(), nullptr, 0xFFFFFFFF);
+    context->OMSetBlendState(state->Additive(), nullptr, 0xFFFFFFFF);
 
    // context->OMSetDepthStencilState(m_stencilState, 0);
 
@@ -328,9 +328,13 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
         m_modelVec[i]->Draw(context, *state, worldMatrix, view, proj, false, [&]() {
             context->OMSetDepthStencilState(m_stencilState, 0);
             });
+
     }
 
-    context->OMSetDepthStencilState(m_stencilState, 0);
+
+
+	context->OMSetDepthStencilState(m_stencilState, 0);
+
 
 }
 

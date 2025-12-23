@@ -152,6 +152,7 @@
     </ClInclude>
     <ClInclude Include="WISLib\GameObject\Component\PolygonComponent.h" />
     <ClInclude Include="WISLib\Common\Easing.h" />
+    <ClInclude Include="InGameObject\Archetype\PartsArchetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -279,6 +280,7 @@
       <Filter>Component</Filter>
     </ClCompile>
     <ClCompile Include="WISLib\GameObject\Component\PolygonComponent.cpp" />
+    <ClCompile Include="InGameObject\Archetype\PartsArchetype.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />

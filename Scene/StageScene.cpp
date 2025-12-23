@@ -22,6 +22,7 @@
 #include "InGameObject/Archetype/EnemyArchetype.h"
 #include "InGameObject/Archetype/FloorArchetype.h"
 #include "InGameObject/Archetype/WeapoArchetype.h"
+#include "InGameObject/Archetype/PartsArchetype.h"
 
 #include "Scene/WeaponCreateScene.h"
 #include "Scene/TitleScene.h"
@@ -75,7 +76,20 @@ void StageScene::Initialize()
 	for (int i = 0; i < 5; i++) {
 
 		ItemGenerate({ static_cast<float>(rand() % 10 - 5),2.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
-
+		//PartsArchetype
+		WIS::PartsArchetype partsArchetype = WIS::PartsArchetype();
+		partsArchetype.Create(m_objectManager,
+			GetUserResources(),
+			"Item_" + std::to_string(m_itemNames.size()),
+			0, m_itemNames, WIS::ItemKinds::BOMB,
+			DirectX::SimpleMath::Vector3{
+			static_cast<float>(rand() % 10 - 5), 
+			2.0f,
+			static_cast<float>(rand() % 10 - 5)
+			}
+		);
+	
+	
 	}
 
 
@@ -248,9 +262,31 @@ void StageScene::Render()
 				if (lights)
 				{
 					lights->SetLightEnabled(0, true);
-					lights->SetLightEnabled(1, false);
-					lights->SetLightEnabled(2, false);
-					lights->SetAmbientLightColor(DirectX::Colors::White);
+					lights->SetLightEnabled(1, true);
+					lights->SetLightEnabled(2, true);
+
+					// ベクトルは「光が進む方向」です（光源の位置ではありません）
+
+					auto dir0 = DirectX::SimpleMath::Vector3(-1.0f, -1.0f, 0.0f);
+					dir0.Normalize(); // 長さを1にする（重要）
+					lights->SetLightDirection(0, dir0);
+					lights->SetAmbientLightColor(DirectX::Colors::DarkGray);
+
+
+					auto dir1 = DirectX::SimpleMath::Vector3(1.0f, -1.0f, 1.0f);
+					dir1.Normalize();
+					lights->SetLightDirection(1, dir1);
+					lights->SetAmbientLightColor(DirectX::Colors::DarkGray);
+
+
+					auto dir2 = DirectX::SimpleMath::Vector3(-1.0f, -1.0f, -1.0f);
+					dir2.Normalize();
+					lights->SetLightDirection(1, dir2);
+					lights->SetAmbientLightColor(DirectX::Colors::Blue);
+
+
+					// 環境光（全体的な明るさの底上げ）の設定
+					lights->SetAmbientLightColor(DirectX::Colors::DarkGray);
 				}
 				auto basicEffect = dynamic_cast<DirectX::BasicEffect*>(effect);
 				basicEffect->SetTextureEnabled(true);
@@ -509,9 +545,7 @@ std::string StageScene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::Item
 		L"Resources/Models/Weapon/Gear.sdkmesh",
 		GetUserResources()->GetEffectFactory());
 	itemModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+	//itemModel->SetColor(Handle, { 2.0f / 255.0f,2.0f / 255.0f,2.0f / 255.0f,1.0f });
 	itemModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
-
-
-
 	return name;
 }

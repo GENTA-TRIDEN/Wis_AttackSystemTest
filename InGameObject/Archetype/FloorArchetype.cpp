@@ -36,11 +36,11 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
 
 
 	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(0),0,0 });
+
 	floorModel->SetScale(floorHandle, ModelScale);
+
 	floorModel->SetPosition(floorHandle, { 0.0f,0.0f,0.0f });
-	floorModel->SetColor(floorHandle, { 32.0f/255.0f,153.0f/255.0f,40.0f/255.0f,1.0f });
-
-
+	
 	floorFloor->SetMeshData(floorModel->GetVertices(), floorModel->GetIndices());
 
 
