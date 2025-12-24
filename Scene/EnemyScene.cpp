@@ -226,6 +226,9 @@ void EnemyScene::Render()
 	//	size_t xdivs,
 	//	size_t ydivs,
 	//	GXMVECTOR color)
+
+
+#ifdef _DEBUG
 	primitiveBatch->Begin();
 
 
@@ -245,6 +248,7 @@ void EnemyScene::Render()
 
 	primitiveBatch->End();
 
+#endif
 	m_objectManager->Render(
 		GetUserResources(),
 		*p_cameraManager->GetView(),

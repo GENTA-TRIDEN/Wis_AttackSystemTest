@@ -14,6 +14,9 @@
 #include "Scene/EffectScene.h"
 #include "Scene/SkyDomeScene.h"
 #include "Scene/StageScene.h"
+#include "Scene/Stage1223Scene.h"
+
+
 
 TitleScene::TitleScene()
 {
@@ -66,7 +69,7 @@ void TitleScene::Update(float elapsedTime)
 
 	if (m_button->IsClick() && count >= 1) {
 
-		ChangeScene<StageScene>();
+		ChangeScene<Stage1223Scene>();
 
 	}
 

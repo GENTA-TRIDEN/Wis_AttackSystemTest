@@ -8,7 +8,7 @@
 #include <wrl/client.h>
 #include <vector>
 #include <string>
-#include <DDSTextureLoader.h> // š’Ç‰Á: DDS“Ç‚İ‚İ—p
+#include <DDSTextureLoader.h> 
 
 namespace WIS {
 

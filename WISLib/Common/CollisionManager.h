@@ -26,6 +26,17 @@ namespace WIS {
         // 毎フレームの更新処理
         void Update();
 
+
+
+
+
+        static bool m_IsDrawCollisions;
+
+
+        static void SetAllCollisionDebugDraw(bool IsDraw) {
+            m_IsDrawCollisions = IsDraw; 
+        };
+        static bool GetAllCollisionDebugDraw() { return m_IsDrawCollisions; };
     private:
         // プライベートコンストラクタ（シングルトンのため）
         CollisionManager() = default;
@@ -46,6 +57,8 @@ namespace WIS {
 			const DirectX::SimpleMath::Matrix& worldMatrix1,
 			const Y& bounding2,
 			const DirectX::SimpleMath::Matrix& worldMatrix2);
+
+
     private:
         // シングルトンのインスタンス
         static std::unique_ptr<CollisionManager> s_collisionManager;

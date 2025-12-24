@@ -54,4 +54,5 @@ namespace DX
     void XM_CALLCONV DrawQuad(DirectX::PrimitiveBatch<DirectX::VertexPositionColor>* batch,
         DirectX::FXMVECTOR pointA, DirectX::FXMVECTOR pointB, DirectX::FXMVECTOR pointC, DirectX::GXMVECTOR pointD,
         DirectX::HXMVECTOR color = DirectX::Colors::White);
+
 }

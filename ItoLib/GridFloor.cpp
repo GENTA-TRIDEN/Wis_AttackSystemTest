@@ -77,6 +77,7 @@ void GridFloor::Render(
 	// 入力レイアウトを設定
 	pContext->IASetInputLayout(m_inputLayout.Get());
 
+#ifdef _DEBUG
 	// グリッドの床を描画
 	m_primitiveBatch->Begin();
 
@@ -90,4 +91,5 @@ void GridFloor::Render(
 	);
 
 	m_primitiveBatch->End();
+#endif
 }

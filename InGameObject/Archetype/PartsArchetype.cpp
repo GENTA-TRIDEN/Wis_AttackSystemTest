@@ -27,7 +27,7 @@ std::weak_ptr<WIS::GameObject> WIS::PartsArchetype::Create(ObjectManager* p_obje
 	auto partsModel = parts->AddComponent<WIS::ModelComponent>();
 	auto partsTransform = parts->GetComponent<WIS::TransformComponent>();
 	//リジッドボディ
-	auto partsRigid = parts->AddComponent<WIS::RigidBodyComponent>();
+	//auto partsRigid = parts->AddComponent<WIS::RigidBodyComponent>();
 
 		
 	//Partskindの設定
@@ -39,7 +39,7 @@ std::weak_ptr<WIS::GameObject> WIS::PartsArchetype::Create(ObjectManager* p_obje
 	int Handle = partsModel->AddModel(device, context, GetItemModelPath(itemKinds), fxFactory);
 	partsTransform->SetPosition(SpawnPos);
 		
-	partsModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+	partsModel->SetRotate(Handle, Rotate);
 	partsModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
 
 	return parts;
@@ -61,12 +61,15 @@ const wchar_t* WIS::PartsArchetype::GetItemModelPath(WIS::ItemKinds itemKinds)
 		return L"Resources/Models/Weapon/Blade.sdkmesh";
 
 	case WIS::ItemKinds::BOMB:
+		Rotate = { 0, DirectX::XMConvertToRadians(-90), 0 };
+
 		return L"Resources/Models/Weapon/Bomb.sdkmesh";
 
 	case WIS::ItemKinds::ARROW:
 		return L"Resources/Models/Weapon/Arrow.sdkmesh";
 
 	case WIS::ItemKinds::GEAR:
+		Rotate = { 0, 0, DirectX::XMConvertToRadians(-90) };
 		return L"Resources/Models/Weapon/Gear.sdkmesh";
 
 	default:

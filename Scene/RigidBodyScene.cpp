@@ -236,7 +236,7 @@ void RigidBodyScene::Render()
 	{
 		auto enemyCharacter = enemy->GetComponent<WIS::CharacterComponent>();
 		enemyHP = enemyCharacter->GetHP();
-		font->AddString((L"enemyHP:" + std::to_wstring(enemyHP)).c_str(), { 10.0f, 90.0f });
+		font->AddString((L"‚Ä‚«:" + std::to_wstring(enemyHP)).c_str(), { 10.0f, 90.0f });
 	}
 
 	int PlayerHP = 0;

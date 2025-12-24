@@ -31,17 +31,7 @@ int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* con
     std::unique_ptr<DirectX::Model> tempModel = DirectX::Model::CreateFromSDKMESH(device, fileName, *fxFactory, DirectX::ModelLoader_Clockwise);
 
     fxFactory->SetDirectory(L"Resources/textures");
-    if (tempModel && !tempModel->meshes.empty()) {
-        auto part = tempModel->meshes[0]->meshParts[0].get();
 
-        // 頂点のサイズ（バイト数）を取得
-        size_t stride = part->vertexStride;
-
-        // デバッグ出力
-        wchar_t msg[256];
-        swprintf_s(msg, L"★ Model Vertex Stride: %zu bytes\n", stride);
-        OutputDebugStringW(msg);
-    }
 
 
     if (!tempModel) {
@@ -178,6 +168,8 @@ void WIS::ModelComponent::SetTexture(int index, ID3D11ShaderResourceView* textur
             auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
             if (effect)
             {
+				effect->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+
                 // テクスチャをセット
                 effect->SetTexture(texture);
                 // テクスチャ有効化フラグをオンにする
@@ -209,15 +201,7 @@ void WIS::ModelComponent::SetColor(int index, DirectX::SimpleMath::Vector4 color
             {
 
                 effect->SetTextureEnabled(false);
-                effect->SetLightingEnabled(true);
-
-                effect->EnableDefaultLighting();
-
-
                 effect->SetDiffuseColor(color);
-
-                // 必要なら環境光も少し入れる（真っ黒防止）
-                effect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(0.3f, 0.3f, 0.3f));
             }
         }
     }

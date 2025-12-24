@@ -85,7 +85,6 @@ void WIS::CharacterComponent::OnStart(UserResources* userResources)
 	desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;			//深度バッファに書き込みをする
 
 	//ステンシルテスト
-	// ★修正箇所: 床の設定(TRUE)が残っていると描画されないため、影側で無効にする
 	desc.StencilEnable = FALSE;
 
 	//表面
@@ -198,7 +197,7 @@ void WIS::CharacterComponent::DrawShadow(ID3D11DeviceContext* context, DirectX::
 
 	position.y = m_floorHeight;
 
-	float lift = +0.2f;
+	float lift = +0.08f;
 
 	// Y成分を 0.0f から lift に変更
 	vertexes[0].position = DirectX::SimpleMath::Vector3(-Radius, lift, -Radius) + position;

@@ -2,6 +2,7 @@
 #include "WISLib/GameObject/Component/ComponentBase.h"
 #include "WISLib/WISLibTags.h"
 #include "WISLib/Camera/CameraManager.h"
+#include <unordered_map>
 #include <string>
 
 namespace WIS {

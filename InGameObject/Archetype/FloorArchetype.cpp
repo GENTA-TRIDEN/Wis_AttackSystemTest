@@ -23,16 +23,17 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
     auto floor = p_objectManager->GenerateObject(BaseName, WIS::SceneTag::GAMEPLAY_SCENE);
 	auto floorModel = floor->AddComponent<WIS::ModelComponent>();
 	auto floorFloor = floor->AddComponent<WIS::FloorComponent>();
-	auto floorPolygon = floor->AddComponent<WIS::PolygonComponent>();
 	auto FloorColl = floor->AddComponent<WIS::CollisionComponent>();
+
+	//auto floorPolygon = floor->AddComponent<WIS::PolygonComponent>();
+
 	FloorColl->AddBoundingOrientedBox({ 1500.0f,50.0f,1500.0f }, { 0.0f,-2.0f,0.0f });
 	
 	fxFactory->SetDirectory(L"Resources/Models");
+
 	int floorHandle = floorModel->AddModel(device, context, floorModelPath, fxFactory);
-	//floorModel->SetTextureFromFile(device, floorHandle, L"Resources/Models/Stage.dds");
 
-
-	//floorModel->SetDepthStencilState(p_userResources->GetCommonStates()->DepthRead());
+	floorModel->SetTextureFromFile(device, floorHandle, L"Resources/textures/Stage.dds");
 
 
 	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(0),0,0 });
@@ -42,7 +43,7 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
 	floorModel->SetPosition(floorHandle, { 0.0f,0.0f,0.0f });
 	
 	floorFloor->SetMeshData(floorModel->GetVertices(), floorModel->GetIndices());
-
+	
 
 	//std::vector<DirectX::VertexPositionColor> VertexList;
 	//std::vector<uint16_t> IndexList;

@@ -3,6 +3,9 @@
 #include "WISLib/WISLibTags.h"
 #include "WISLib/Camera/CameraManager.h"
 #include <vector>
+#include "WISLib/UserInterface/UserInterface.h"
+#include "WISLib/UserInterface/HPBar.h"
+
 
 namespace WIS {
     class EnemyComponent : public WIS::ComponentBase
@@ -18,8 +21,8 @@ namespace WIS {
 
         // プレイヤー情報
         DirectX::SimpleMath::Vector3 m_PlayerPos;
-        float m_PlayerToFindLength = 5.0f;  // 発見距離
-        float m_PlayerAttackLength = 0.8f;  // 攻撃射程
+        float m_PlayerToFindLength = 25.0f;  // 発見距離
+        float m_PlayerAttackLength = 1.8f;  // 攻撃射程
         float m_AttackDamage = 5.0f;        // 攻撃力
         bool m_isCanAttack = true;          // 攻撃可能フラグ
 
@@ -27,13 +30,24 @@ namespace WIS {
         float m_EnemyIsMoveLength = 0.01f;  //物理挙動中判定用
         float m_TakingDamageCoolTime = 2.0f;
 
+        
+
+        // 背景（赤色）
+        std::unique_ptr<kHorikawa::UserInterface> m_hpBarBack;
+        // 前面（緑色）
+        std::unique_ptr<kHorikawa::UserInterface> m_hpBarFront;
 
 
 
 
         // デバッグ描画
         std::unique_ptr<DirectX::BasicEffect> m_basicEffect = nullptr;
-        Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+        //Microsoft::WRL::ComPtr<DX::ID3D11InputLayout> m_inputLayout;
+		Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+        
+
+
+        std::unique_ptr<WIS::HPBar> m_hpBar;
 
     public:
         EnemyComponent(DirectX::SimpleMath::Vector3 point1, DirectX::SimpleMath::Vector3 point2);
@@ -68,23 +82,22 @@ namespace WIS {
 
             
 
-        // --- 判定メソッド (Condition Checks) ---
-
+        //判定
         bool CheckPlayerFound();
         bool CheckAttackRange();
         bool CheckPlayerLost();
        
 
-        //
+        
         bool CheckIsMove();
         bool CheckDamageCoolTime();
 
-        // --- セッターなど ---
 
+
+        //セッターゲッター
         void SetPlayerPos(DirectX::SimpleMath::Vector3 pos) {
             m_PlayerPos = pos;
         }
-
         void AddPatrolPoint(DirectX::SimpleMath::Vector3 newPoint) {
             m_patrolPoints.push_back(newPoint);
         }

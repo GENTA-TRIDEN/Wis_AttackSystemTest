@@ -77,8 +77,9 @@
 
 //デバックドロー
 #include "ItoLib/DebugDraw.h"
-
 #include "WISLib/WISLibTags.h"
+
+#include "WISLib/Common/CollisionManager.h"
 
 
 namespace DX

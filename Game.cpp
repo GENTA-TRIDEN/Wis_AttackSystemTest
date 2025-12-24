@@ -113,9 +113,6 @@ void Game::Update(DX::StepTimer const& timer)
     m_sceneManager->Update(elapsedTime);
 
 
-    if (m_kbTracker.released.P) {
-        WIS::CollisionComponent::SetAllCollisionDebugDraw(!WIS::CollisionComponent::GetAllCollisionDebugDraw());
-    }
 
 }
 #pragma endregion
@@ -190,7 +187,7 @@ void Game::CreateDeviceDependentResources()
     m_effectFactory = std::make_unique<DirectX::EffectFactory>(m_deviceResources->GetD3DDevice());
     m_primitiveBatch = std::make_unique<DirectX::PrimitiveBatch<DirectX::VertexPositionColor>>(context);
 
-    m_debugFont = std::make_unique<Ito::DebugFont>(device, context, L"Resources\\Font\\SegoeUI_18.spritefont");
+    m_debugFont = std::make_unique<Ito::DebugFont>(device, context, L"Resources\\Font\\DebugFont.spritefont");
 
     if (!m_userResources)
     {

@@ -9,13 +9,13 @@ using namespace WIS;
 
 void EnemyChaseState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res)
 {
-    // 1. ’ÇÕˆÚ“®‚ðŽÀs
+    //’ÇÕˆÚ“®‚ðŽÀs
     owner->ExecuteChase();
 
     auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
     if (!sm) return;
 
-    // 2. ‘JˆÚ”»’è: UŒ‚”ÍˆÍ“à‚È‚ç Attack ‚Ö
+    //‘JˆÚ”»’è: UŒ‚”ÍˆÍ“à‚È‚ç Attack ‚Ö
     if (owner->CheckAttackRange()) {
         sm->ChangeState(std::make_shared<EnemyAttackState>());
     }

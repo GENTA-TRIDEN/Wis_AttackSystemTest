@@ -7,6 +7,10 @@
 
 // --- GetInstance, ResistCollisionObject, RemoveCollisionObject, Update ÇÕïœçXÇ†ÇËÇ‹ÇπÇÒ ---
 
+
+bool WIS::CollisionManager::m_IsDrawCollisions = true;
+
+
 std::unique_ptr<WIS::CollisionManager> WIS::CollisionManager::s_collisionManager = nullptr;
 
 WIS::CollisionManager* WIS::CollisionManager::GetInstance()

@@ -23,12 +23,12 @@ public:
 	std::weak_ptr<WIS::GameObject> Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int FloorModelNumconst, const std::string& playerName);
 
 private:
-	const wchar_t* floorModelPath = L"Resources/Models/Stage4.sdkmesh";
-	//const wchar_t* floorModelPath = L"Resources/Models/Floor.sdkmesh";
+	const wchar_t* floorModelPath = L"Resources/Models/Stage5.sdkmesh";
+
 
 	DirectX::SimpleMath::Vector3 ModelPos = { 0.0f, 1.0f, 0.0f };  
 	DirectX::SimpleMath::Vector3 SpawnPos = { 0.0f, 3.0f, 0.0f };
-	DirectX::SimpleMath::Vector3 ModelScale = { 15.0f,15.0f,15.0f };
+	DirectX::SimpleMath::Vector3 ModelScale = { 12.0f,12.0f,12.0f };
 
 };
 

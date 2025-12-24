@@ -16,6 +16,10 @@
 
 #include "UserResources.h"
 
+//clamp用
+#include <algorithm>
+
+
 using namespace WIS;
 
 WeaponComponent::WeaponComponent()
@@ -61,11 +65,13 @@ void WIS::WeaponComponent::OnRender(UserResources* userResources, const DirectX:
     auto font = userResources->GetDebugFont();
 
 
+#ifdef _DEBUG
 
     font->AddString((L"currentAddedWeight:" + std::to_wstring(m_currentAddedWeight)).c_str(), { 500.0f, 20.0f });
     font->AddString((L"attackPower:" + std::to_wstring(m_attackPower)).c_str(), { 500.0f, 50.0f });
     font->AddString((L"currentCenterOfMass:" + std::to_wstring(m_currentCenterOfMass)).c_str(), { 500.0f, 80.0f });
 
+#endif
 }
 
 void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
@@ -101,11 +107,11 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
 
             // エフェクトをだす
             if (p_Effect && myTrans) {
-                // 1. 敵と武器の座標を取得
+                //敵と武器の座標を取得
                 DirectX::SimpleMath::Vector3 enemyPos = enemyTrans->GetPosition();
                 DirectX::SimpleMath::Vector3 myPos = myTrans->GetPosition();
 
-                // 2. 「敵」から「武器」への方向ベクトルを計算
+                //ベクトルを計算
                 DirectX::SimpleMath::Vector3 dir = myPos - enemyPos;
 
                 // 長さが0だと計算できないのでチェック
@@ -176,22 +182,14 @@ void WeaponComponent::AggregateAndCalculateStats()
         }
     }
 
-    // 最終的な重心の算出
-    float finalCenterOfMass;
-    if (totalAddedWeight > 0.0f) {
-        // 重心 = 総モーメント / 総重量 (重み付き平均)
-        // クランプして0.1から1.0の範囲に収める
-        finalCenterOfMass = std::clamp(totalMoment / totalAddedWeight, 0.1f, 1.0f);
-    }
-    else {
-        // パーツがない場合は基本重心を使用
-        finalCenterOfMass = m_baseCenterOfMass;
-    }
+
 
     // メンバー変数を更新
     m_currentAddedWeight = totalAddedWeight;
-    m_currentCenterOfMass = finalCenterOfMass;
     m_currentDamageBonus = totalDamageBonus;
+
+    //@TODO
+    m_currentCenterOfMass;
 
     // 最終ステータスを計算
     CalculateFinalStats();
@@ -205,13 +203,14 @@ void WeaponComponent::CalculateFinalStats()
     // 最終的な重心 (パーツの重み付けで計算された値)
     float finalCenter = m_currentCenterOfMass;
 
-    // 1. 最終攻撃力の計算 
+
     // (基本ダメージ + パーツボーナス) * (最終重さ * 最終重心)
     m_attackPower = (m_baseDamage + m_currentDamageBonus) * (finalWeight * finalCenter);
 
-    // 2. クールダウン時間 (振りの遅さ) の計算 (重さ*重心に比例して遅くなる)
+    //クールダウンの調整
     float factor = finalWeight * finalCenter;
     float baseCoolDown = 0.2f;
+
 
     m_attackCoolDown = baseCoolDown * (1.0f + 0.5f * factor);
 

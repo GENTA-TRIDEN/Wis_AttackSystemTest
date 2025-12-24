@@ -57,6 +57,10 @@ void WIS::EnemyComponent::OnStart(UserResources* userResources)
 
     // 初期ステートとして SearchState をセット
     stateMachine->ChangeState(std::make_shared<EnemySearchState>());
+    //	void HPBar::Create(DX::DeviceResources* pDR, float offsetY, float width, float height)
+	m_hpBar = std::make_unique<WIS::HPBar>();
+	m_hpBar->Create(userResources->GetDeviceResources(), 3.1f, 2.0f, 0.3f);
+
 }
 
 void WIS::EnemyComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
@@ -266,6 +270,28 @@ void WIS::EnemyComponent::OnRender(UserResources* userResources, const Matrix& v
     m_basicEffect->Apply(context);
     context->IASetInputLayout(m_inputLayout.Get());
 
+    // HPバーの描画
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    auto chara = GetOwner()->GetComponent<CharacterComponent>();
+
+    if (transform && chara && m_hpBar)
+    {
+        // カメラ座標を取得 (UserResourcesやCameraManagerから取得してください)
+		auto cameraPos = WIS::CameraManager::GetInstance()->GetCamera()->GetPosition();
+       
+
+        m_hpBar->Render(
+            transform->GetPosition(),   // 敵の位置
+            view,                       // ビュー行列
+            proj,                       // 射影行列
+            cameraPos,                  // カメラ座標
+            (float)chara->GetHP(),      // 現在HP
+            (float)chara->GetMaxHP()    // 最大HP
+        );
+    }
+
+    
+#ifdef _DEBUG
     primitiveBatch->Begin();
     
     // 巡回ポイント
@@ -280,4 +306,5 @@ void WIS::EnemyComponent::OnRender(UserResources* userResources, const Matrix& v
     }
 
     primitiveBatch->End();
+#endif
 }

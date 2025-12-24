@@ -18,6 +18,9 @@ namespace
         CXMMATRIX matWorld,
         FXMVECTOR color)
     {
+
+        if (!WIS::CollisionManager::m_IsDrawCollisions) return;
+
         static const XMVECTORF32 s_verts[8] =
         {
             { { { -1.f, -1.f, -1.f, 0.f } } },
@@ -54,6 +57,8 @@ namespace
             XMStoreFloat4(&verts[i].color, color);
         }
 
+
+      if(WIS::CollisionManager::m_IsDrawCollisions)
         batch->DrawIndexed(D3D_PRIMITIVE_TOPOLOGY_LINELIST, s_indices, static_cast<UINT>(std::size(s_indices)), verts, 8);
     }
 }
@@ -62,6 +67,8 @@ void XM_CALLCONV DX::Draw(PrimitiveBatch<VertexPositionColor>* batch,
     const BoundingSphere& sphere,
     FXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     const XMVECTOR origin = XMLoadFloat3(&sphere.Center);
 
     const float radius = sphere.Radius;
@@ -79,6 +86,8 @@ void XM_CALLCONV DX::Draw(PrimitiveBatch<VertexPositionColor>* batch,
     const BoundingBox& box,
     FXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     XMMATRIX matWorld = XMMatrixScaling(box.Extents.x, box.Extents.y, box.Extents.z);
     const XMVECTOR position = XMLoadFloat3(&box.Center);
     matWorld.r[3] = XMVectorSelect(matWorld.r[3], position, g_XMSelect1110);
@@ -90,6 +99,8 @@ void XM_CALLCONV DX::Draw(PrimitiveBatch<VertexPositionColor>* batch,
     const BoundingOrientedBox& obb,
     FXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     XMMATRIX matWorld = XMMatrixRotationQuaternion(XMLoadFloat4(&obb.Orientation));
     const XMMATRIX matScale = XMMatrixScaling(obb.Extents.x, obb.Extents.y, obb.Extents.z);
     matWorld = XMMatrixMultiply(matScale, matWorld);
@@ -103,6 +114,8 @@ void XM_CALLCONV DX::Draw(PrimitiveBatch<VertexPositionColor>* batch,
     const BoundingFrustum& frustum,
     FXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     XMFLOAT3 corners[BoundingFrustum::CORNER_COUNT];
     frustum.GetCorners(corners);
 
@@ -150,6 +163,8 @@ void XM_CALLCONV DX::DrawGrid(PrimitiveBatch<VertexPositionColor>* batch,
     size_t ydivs,
     GXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     xdivs = std::max<size_t>(1, xdivs);
     ydivs = std::max<size_t>(1, ydivs);
 
@@ -184,6 +199,8 @@ void XM_CALLCONV DX::DrawRing(PrimitiveBatch<VertexPositionColor>* batch,
     FXMVECTOR minorAxis,
     GXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     constexpr size_t c_ringSegments = 32;
 
     VertexPositionColor verts[c_ringSegments + 1];
@@ -223,6 +240,8 @@ void XM_CALLCONV DX::DrawRay(PrimitiveBatch<VertexPositionColor>* batch,
     bool normalize,
     FXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     VertexPositionColor verts[3];
     XMStoreFloat3(&verts[0].position, origin);
 
@@ -257,6 +276,8 @@ void XM_CALLCONV DX::DrawTriangle(PrimitiveBatch<VertexPositionColor>* batch,
     FXMVECTOR pointC,
     GXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     VertexPositionColor verts[4];
     XMStoreFloat3(&verts[0].position, pointA);
     XMStoreFloat3(&verts[1].position, pointB);
@@ -278,6 +299,8 @@ void XM_CALLCONV DX::DrawQuad(PrimitiveBatch<VertexPositionColor>* batch,
     GXMVECTOR pointD,
     HXMVECTOR color)
 {
+
+    if (!WIS::CollisionManager::m_IsDrawCollisions) return;
     VertexPositionColor verts[5];
     XMStoreFloat3(&verts[0].position, pointA);
     XMStoreFloat3(&verts[1].position, pointB);

@@ -9,8 +9,6 @@
 
 using namespace WIS;
 
-bool CollisionComponent::m_IsDrawCollisions = true;
-
 
 CollisionComponent::CollisionComponent() :
 	m_boundingType(WIS::BoundingType::NONE)
@@ -84,8 +82,6 @@ void WIS::CollisionComponent::AddBoundingFrustum(float nearPlane, float farPlane
 void WIS::CollisionComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
 {
 
-	//まとめて描画するかどうか
-	if (!m_IsDrawCollisions)return;
 	//個別で描画するかどうか
 	if(!m_IsDrawCollision)return;
 
@@ -94,6 +90,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 	auto device = userResources->GetDeviceResources()->GetD3DDevice();
 	//void DebugFont::AddString(const wchar_t * string, DirectX::SimpleMath::Vector2 pos, FXMVECTOR color, float scale)
 
+#ifdef _DEBUG
 	if (IsHit) {
 
 		font->AddString(L"Hit", { 50, 50 }, DirectX::Colors::Green);
@@ -104,6 +101,8 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 		font->AddString(L"NotHit", { 50, 50 }, DirectX::Colors::Red);
 		m_color = DirectX::Colors::Red;
 	}
+
+#endif
 	// プリミティブバッチを取得
 	DirectX::PrimitiveBatch<DirectX::VertexPositionColor>* primitiveBatch = userResources->GetPrimitiveBatch();
 
@@ -122,6 +121,7 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 
 	context->IASetInputLayout(m_inputLayout.Get());
 
+#ifdef _DEBUG
 	primitiveBatch->Begin();
 
 	switch (m_boundingType)
@@ -171,6 +171,8 @@ void WIS::CollisionComponent::OnRender(UserResources* userResources, const Direc
 	}
 
 	primitiveBatch->End();
+
+#endif
 	IsHit = false;
 }
 

@@ -29,11 +29,12 @@ namespace WIS {
 
     private:
 
-        const wchar_t* enemyModelpath = L"Resources/Models/Enemy.sdkmesh";
+        const wchar_t* PartsModelPath = L"Resources/Models/Enemy.sdkmesh";
 
 
         const wchar_t* GetItemModelPath(WIS::ItemKinds itemKinds);
         DirectX::SimpleMath::Vector3 ModelPos = { 0.0f, 1.0f, 0.0f };
+		DirectX::SimpleMath::Vector3 Rotate = { 0.0f,0.0f,0.0f };
     };
 
 }

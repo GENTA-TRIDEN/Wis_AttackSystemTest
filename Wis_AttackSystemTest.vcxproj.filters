@@ -153,6 +153,8 @@
     <ClInclude Include="WISLib\GameObject\Component\PolygonComponent.h" />
     <ClInclude Include="WISLib\Common\Easing.h" />
     <ClInclude Include="InGameObject\Archetype\PartsArchetype.h" />
+    <ClInclude Include="Scene\Stage1223Scene.h" />
+    <ClInclude Include="WISLib\UserInterface\HPBar.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -281,6 +283,8 @@
     </ClCompile>
     <ClCompile Include="WISLib\GameObject\Component\PolygonComponent.cpp" />
     <ClCompile Include="InGameObject\Archetype\PartsArchetype.cpp" />
+    <ClCompile Include="Scene\Stage1223Scene.cpp" />
+    <ClCompile Include="WISLib\UserInterface\HPBar.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
@@ -301,7 +305,6 @@
     <None Include="Resources\Shaders\UI.hlsli" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="Resources\Shaders\CircleShadowPS.hlsl" />
     <FxCompile Include="Resources\Shaders\ParticleGS.hlsl" />
     <FxCompile Include="Resources\Shaders\ParticlePS.hlsl" />
     <FxCompile Include="Resources\Shaders\ParticleVS.hlsl" />

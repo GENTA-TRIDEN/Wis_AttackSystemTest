@@ -65,6 +65,7 @@ void WeaponCreateScene::Initialize()
 
 
 	m_button->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
+	m_BombButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
 	//m_UpButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
 	//m_DownButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
 	m_RightButton->Initialize(GetUserResources()->GetDeviceResources(), 1280, 720);
@@ -105,6 +106,7 @@ void WeaponCreateScene::Initialize()
 	}
 	
 	m_button->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/GearSilhouette.png");
+	m_BombButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/BombSilhouette.png");
 	m_LeftButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/LeftArrowButton.png");
 	m_RightButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/RightArrowButton.png");
 	m_SelectButton->SetTexture(WIS::Button::STATE::Normal, L"Resources/Textures/SelectButton.png");
@@ -145,6 +147,7 @@ void WeaponCreateScene::Update(float elapsedTime)
 
 
 	m_button->Update();
+	m_BombButton->Update();
 	//m_UpButton->Update();
 	//m_DownButton->Update();
 	m_RightButton->Update();
@@ -163,11 +166,11 @@ void WeaponCreateScene::Update(float elapsedTime)
 		clickCount++;
 		itemCount--;
 		player->SetItemCount(WIS::ItemKinds::GEAR, itemCount);
-		auto weaponParts=m_objectManager->GenerateObject(m_weaponPartsText + std::to_string(clickCount), WIS::SceneTag::GAMEPLAY_SCENE);
+		auto weaponParts=m_objectManager->GenerateObject(m_weaponPartsText + std::to_string(clickCount), WIS::SceneTag::STACK_SCENE);
 		name = weaponParts->GetName();
 		m_currentWeaponPartsNameIndex++;
 
-		m_objectManager->AddObjectSceneTag(name, WIS::SceneTag::STACK_SCENE);
+		m_objectManager->AddObjectSceneTag(name, WIS::SceneTag::GAMEPLAY_SCENE);
 		m_weaponArchetype.AddGameObjectName(name);
 		auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
 		auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
@@ -201,6 +204,46 @@ void WeaponCreateScene::Update(float elapsedTime)
 
 		}
 	}
+	//ã‹L‚ÌBomb”Å
+	if (m_BombButton->IsClick() && isClick == false) {
+		auto player = m_objectManager->GetObject(m_playerText)->GetComponent<WIS::PlayerComponent>();
+		int itemCount = player->GetItemCount(WIS::ItemKinds::BOMB);
+		if (itemCount > 0) {
+			clickCount++;
+			itemCount--;
+			player->SetItemCount(WIS::ItemKinds::BOMB, itemCount);
+			auto weaponParts = m_objectManager->GenerateObject(m_weaponPartsText + std::to_string(clickCount), WIS::SceneTag::STACK_SCENE);
+			name = weaponParts->GetName();
+			m_currentWeaponPartsNameIndex++;
+			m_objectManager->AddObjectSceneTag(name, WIS::SceneTag::GAMEPLAY_SCENE);
+			m_weaponArchetype.AddGameObjectName(name);
+			auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
+			auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
+			auto fxFactory = GetUserResources()->GetEffectFactory();
+			auto Weapon = m_objectManager->GetObject(m_weaponText);
+			auto WeaponWeaponComponent = Weapon->GetComponent<WIS::WeaponComponent>();
+			m_objectManager->GetObject(name);
+			auto weaponPartsTransform = weaponParts->GetComponent<WIS::TransformComponent>();
+			auto weaponPartsColl = weaponParts->AddComponent<WIS::CollisionComponent>();
+			auto weaponModel = weaponParts->AddComponent<WIS::ModelComponent>();
+			auto WeaponPartsComp = weaponParts->AddComponent<WIS::WeaponPartsComponent>(Weapon);
+			auto WeaponPartsStatsComp = weaponParts->AddComponent<WIS::PartStatsComponent>();
+			weaponPartsColl->AddBoundingOrientedBox({ 0.5f,0.5f,0.5f }, { 0.0f,0.0f,0.0f });
+			weaponPartsTransform->SetParent(m_objectManager->GetObject(m_weaponText)->GetComponent<WIS::TransformComponent>());
+			weaponPartsTransform->SetPosition({ 3.0f, 0.0f, 0.0f });
+			DirectX::SimpleMath::Quaternion rot = DirectX::SimpleMath::Quaternion::CreateFromYawPitchRoll(0.0f, 0.0f, 0.0f);
+			weaponPartsTransform->SetRotation(rot);
+			int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/Bomb.sdkmesh", fxFactory);
+			WeaponWeaponComponent->AddWeight(20.0f);
+			WeaponWeaponComponent->AttachPart(weaponParts);
+			WeaponPartsName.push_back(weaponParts->GetName());
+		}
+
+	}
+
+
+
+
 	if (m_button->IsClick()) {
 		
 		isClick = true;
@@ -307,6 +350,7 @@ void WeaponCreateScene::Render()
 	primitiveBatch->End();
 
 	m_button->Render();
+	m_BombButton->Render();
 	//m_UpButton->Render();
 	//m_DownButton->Render();
 	m_RightButton->Render();
@@ -319,10 +363,14 @@ void WeaponCreateScene::Render()
 	);
 
 
+#ifdef _DEBUG
 	font->AddString((L"clickCount:" + std::to_wstring(clickCount)).c_str(), { 10.0f, 90.0f });
 	font->AddString((L"isClick:" + std::to_wstring(isClick)).c_str(), { 10.0f, 110.0f });
-	font->AddString((L"CurrentWeaponPartsNameIndex:" + std::to_wstring(m_currentWeaponPartsNameIndex)).c_str(), { 10.0f,130.0f });
+	font->AddString((L"
+		
+		WeaponPartsNameIndex:" + std::to_wstring(m_currentWeaponPartsNameIndex)).c_str(), { 10.0f,130.0f });
 	
+#endif // _DEBUG
 }
 
 void WeaponCreateScene::Finalize()
@@ -408,10 +456,13 @@ void WeaponCreateScene::CreateWindowSizeDependentResources()
 		{ 100, 100 },
 		{ 1.0f, 1.0f },
 		kHorikawa::ANCHOR::TOP_LEFT);
-	//m_UpButton;
-	//m_DownButton;
-	//m_RightButton;
-	//m_LeftButton;
+
+	m_BombButton = std::make_unique<WIS::Button>();
+	m_BombButton->Initialize(GetUserResources()->GetDeviceResources(), rect.right, rect.bottom);
+	m_BombButton->Add(L"Resources/Textures/Bullet.png",
+		{ 300, 100 },
+		{ 1.0f, 1.0f },
+		kHorikawa::ANCHOR::TOP_LEFT);
 
 	m_UpButton = std::make_unique<WIS::Button>();
 	m_UpButton->Initialize(GetUserResources()->GetDeviceResources(), rect.right, rect.bottom);
@@ -449,6 +500,9 @@ void WeaponCreateScene::CreateWindowSizeDependentResources()
 		{ 100, 500 },
 		{ 1.0f, 1.0f },
 		kHorikawa::ANCHOR::TOP_LEFT);
+
+
+
 
 
 

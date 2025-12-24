@@ -35,16 +35,16 @@ void WIS::VehicleCamera::UniqueInitialize()
 void WIS::VehicleCamera::UniqueUpdate(DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3& target, DirectX::SimpleMath::Vector3& up, const DirectX::Mouse::State& state)
 {
 	//  weak_ptrの安全な使い方 
-	// 1. lock()を試みて、ターゲットがまだ存在するかどうかを確認する
+	// lock()を試みて、ターゲットがまだ存在するかどうかを確認する
 	std::shared_ptr<WIS::TransformComponent> lockedTarget = m_pTargetTransform.lock();
 
-	// 2. もしlock()に成功したら（ターゲットがまだ存在したら）、カメラの処理を続ける
+	//  もしlock()に成功したら（ターゲットがまだ存在したら）、カメラの処理を続ける
 	if (lockedTarget)
 	{
 		// ターゲットの現在の位置を取得
 		target = lockedTarget->GetPosition();
 
-		// --- ここからカメラの視点操作 ---
+
 		using namespace DirectX::SimpleMath;
 
 		// マウスの移動量からカメラの回転角度を計算

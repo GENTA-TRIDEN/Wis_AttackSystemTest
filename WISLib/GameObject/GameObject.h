@@ -13,9 +13,6 @@ class UserResources;
 
 namespace WIS {
 
-    // SceneTag がどこで定義されているかによりますが、
-    // ここで前方宣言するか、適切なヘッダー（WISLibTags.hなど）をインクルードしてください。
-    // エラーが出る場合は #include "WISLibTags.h" などを追加してください。
 
 
     class GameObject : public std::enable_shared_from_this<GameObject>
@@ -28,14 +25,13 @@ namespace WIS {
         // コンポーネントの所有権をshared_ptrで管理
         std::vector<std::shared_ptr<WIS::ComponentBase>> m_components;
 
-        // 生ポインタで管理されていますが、デストラクタで解放するように修正しました
+        // 生ポインタで管理されていますが、デストラクタで解放
         std::vector<WIS::SceneTag>* m_pSceneTags = nullptr;
 
     public:
         GameObject();
         virtual ~GameObject();
 
-        // --- コンポーネント管理 (テンプレート関数はヘッダーに残す必要があります) ---
 
         /// <summary>
         /// コンポーネントをこのゲームオブジェクトに追加

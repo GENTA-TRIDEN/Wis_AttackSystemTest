@@ -13,11 +13,9 @@ void WIS::EnemyDamageState::OnEnter(EnemyComponent* owner)
 
 void EnemyDamageState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res)
 {
-    // 1.ダメージを受けた際の処理を実行
+
     owner->ReceiveDamage();
 
-
-    //クールタイムが終わったらSearchへ変更
     if (owner->CheckDamageCoolTime()) {
 
         auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();

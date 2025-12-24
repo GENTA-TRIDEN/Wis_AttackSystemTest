@@ -56,6 +56,8 @@ private:
 	int m_ReturnCameraHandle;
 
 	std::unique_ptr <WIS::Button> m_button;
+	std::unique_ptr <WIS::Button> m_BombButton;
+
 	std::unique_ptr<WIS::Button> m_UpButton;
 	std::unique_ptr<WIS::Button> m_DownButton;
 	std::unique_ptr<WIS::Button> m_RightButton;

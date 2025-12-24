@@ -8,10 +8,10 @@ using namespace WIS;
 
 void EnemySearchState::OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res)
 {
-    // 1. 巡回移動を実行
+    // 巡回移動を実行
     owner->ExecutePatrol();
 
-    // 2. 遷移判定: 攻撃可能な距離でプレイヤーを発見したら Chase へ
+    // 遷移判定: 攻撃可能な距離でプレイヤーを発見したら Chase へ
     if (owner->CheckPlayerFound()) {
         auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
         if (sm) {

@@ -58,7 +58,6 @@ namespace WIS {
 
 
 
-		static bool m_IsDrawCollisions;
 	public:
 		CollisionComponent();
 		~CollisionComponent();
@@ -117,12 +116,6 @@ namespace WIS {
 
 		void SetDebugDraw(bool IsDraw) { m_IsDrawCollision = IsDraw; };
 		bool GetDebugDraw() { return m_IsDrawCollision; };
-
-
-
-		static void SetAllCollisionDebugDraw(bool IsDraw) { m_IsDrawCollisions = IsDraw; };
-		static bool GetAllCollisionDebugDraw() { return m_IsDrawCollisions; };
-
 
 
 		void SetDebugColor(DirectX::FXMVECTOR color) {
