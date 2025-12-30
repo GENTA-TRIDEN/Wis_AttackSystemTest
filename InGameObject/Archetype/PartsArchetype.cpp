@@ -36,12 +36,15 @@ std::weak_ptr<WIS::GameObject> WIS::PartsArchetype::Create(ObjectManager* p_obje
 	partsColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 
 	//ƒ‚ƒfƒ‹
+
 	int Handle = partsModel->AddModel(device, context, GetItemModelPath(itemKinds), fxFactory);
+
 	partsTransform->SetPosition(SpawnPos);
 		
 	partsModel->SetRotate(Handle, Rotate);
 	partsModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
-
+	//ŠDF
+	//partsModel->SetColor(Handle, { 2.0f / 255.0f,2.0f / 255.0f,2.0f / 255.0f,1.0f });
 	return parts;
 }
 

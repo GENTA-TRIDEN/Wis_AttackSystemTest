@@ -15,13 +15,6 @@
 
 #include "GameComponent/PlayerComponent.h"
 #include "GameComponent/ItemComponent.h"
-#include "GameComponent/EnemyComponent.h"
-
-
-#include "InGameObject/Archetype/PlayerArchetype.h"
-#include "InGameObject/Archetype/EnemyArchetype.h"
-#include "InGameObject/Archetype/FloorArchetype.h"
-#include "InGameObject/Archetype/WeapoArchetype.h"
 #include "InGameObject/Archetype/PartsArchetype.h"
 
 #include "Scene/WeaponCreateScene.h"
@@ -29,6 +22,13 @@
 
 #include "Scene/ResultScene.h"
 
+#include "GameComponent/EnemyComponent.h"
+
+
+#include "InGameObject/Archetype/PlayerArchetype.h"
+#include "InGameObject/Archetype/EnemyArchetype.h"
+#include "InGameObject/Archetype/FloorArchetype.h"
+#include "InGameObject/Archetype/WeapoArchetype.h"
 
 
 
@@ -47,11 +47,13 @@ void Stage1223Scene::Initialize()
 	CreateWindowSizeDependentResources();
 	auto device = GetUserResources()->GetDeviceResources()->GetD3DDevice();
 	auto context = GetUserResources()->GetDeviceResources()->GetD3DDeviceContext();
-	auto fxFactory = GetUserResources()->GetEffectFactory();
 
-	fxFactory->SetDirectory(L"Resources/textures");
+	auto fxFactory = GetUserResources()->GetEffectFactory();
+	
+
 	m_enemyKill = 0;
 	m_objectManager = GetUserResources()->GetObjectManager();
+
 	p_cameraManager = WIS::CameraManager::GetInstance();
 	int handle = p_cameraManager->AddCamera({ 0.0f, 2.0f, 0.0f }, WIS::CameraMode::MODE_TPSCAM, m_cameraHandle);
 	p_cameraManager->RequestCameraByHandle(handle);
@@ -73,15 +75,33 @@ void Stage1223Scene::Initialize()
 	auto playerRigid = player->GetComponent<WIS::RigidBodyComponent>();
 
 
+
+	auto SkyTransform = m_skyDome->AddComponent<WIS::TransformComponent>();
+	auto Skymodel = m_skyDome->AddComponent<WIS::ModelComponent>();
+
+
+	fxFactory->SetDirectory(L"Resources/Models");
+	int index = Skymodel->AddModel(device, context, L"Resources/Models/sky1.sdkmesh", fxFactory);
+	Skymodel->SetTextureFromFile(device, index, L"Resources/Models/sky.dds");
+
+
+	Skymodel->SetDepthStencilState(GetUserResources()->GetCommonStates()->DepthRead());
+
+	auto model = Skymodel->GetModel(index);
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture;
+
+	m_skyDome->Start(GetUserResources());
+
+
 	for (int i = 0; i < 5; i++) {
 
-		ItemGenerate({ static_cast<float>(rand() % 10 - 5),2.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
+		//ItemGenerate({ static_cast<float>(rand() % 10 - 5),2.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
 		//PartsArchetype
 		WIS::PartsArchetype partsArchetype = WIS::PartsArchetype();
 		partsArchetype.Create(m_objectManager,
 			GetUserResources(),
 			"Item_" + std::to_string(m_itemNames.size()),
-			0, m_itemNames, WIS::ItemKinds::BOMB,
+			0, m_itemNames, WIS::ItemKinds::GEAR,
 			DirectX::SimpleMath::Vector3{
 			static_cast<float>(rand() % 10 - 5),
 			2.0f,
@@ -91,6 +111,11 @@ void Stage1223Scene::Initialize()
 
 
 	}
+
+	WIS::FloorArchetype floorArchetype = WIS::FloorArchetype();
+	auto floor = floorArchetype.Create(m_objectManager, GetUserResources(), m_floorText, m_FloorModelHandle, m_PlayerText);
+	std::string floorName = floor.lock()->GetName();
+	m_floorText = floorName;
 
 
 	WIS::WeapoArchetype weaponArchetype = WIS::WeapoArchetype();
@@ -106,10 +131,7 @@ void Stage1223Scene::Initialize()
 	}
 
 
-	WIS::FloorArchetype floorArchetype = WIS::FloorArchetype();
-	auto floor = floorArchetype.Create(m_objectManager, GetUserResources(), m_floorText, m_FloorModelHandle, m_PlayerText);
-	std::string floorName = floor.lock()->GetName();
-	m_floorText = floorName;
+
 
 	WIS::EnemyArchetype enemyArchetype = WIS::EnemyArchetype();
 	m_EnemyText = enemyArchetype.Create(m_objectManager, GetUserResources(), m_EnemyText, m_EnemyModelHandle, floorName).lock()->GetName();
@@ -135,20 +157,7 @@ void Stage1223Scene::Initialize()
 
 
 
-	auto SkyTransform = m_skyDome->AddComponent<WIS::TransformComponent>();
-	auto Skymodel = m_skyDome->AddComponent<WIS::ModelComponent>();
 
-
-
-	int index = Skymodel->AddModel(device, context, L"Resources/Models/sky1.sdkmesh", fxFactory);
-	Skymodel->SetTextureFromFile(device, index, L"Resources/Models/sky.dds");
-	Skymodel->SetDepthStencilState(GetUserResources()->GetCommonStates()->DepthRead());
-
-	auto model = Skymodel->GetModel(index);
-
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> myTexture;
-
-	m_skyDome->Start(GetUserResources());
 
 
 
@@ -157,11 +166,6 @@ void Stage1223Scene::Initialize()
 
 	m_basicEffect->EnableDefaultLighting();
 	m_basicEffect->SetAmbientLightColor(DirectX::SimpleMath::Vector3(2.5f, 2.5f, 2.5f));
-
-
-
-
-
 
 }
 
@@ -190,9 +194,23 @@ void Stage1223Scene::Update(float elapsedTime)
 
 
 	if (key_state.Tab) {
+
+
+
 		this->StackScene<WeaponCreateScene>();
-		Stacking = true;
+
+
 	}
+
+	if (key_state.U) 
+	{
+		ChangeScene<Stage1223Scene>();
+
+
+
+
+	}
+
 
 	auto floor = m_objectManager->GetObject(m_floorText)->GetComponent<WIS::FloorComponent>();
 
@@ -433,6 +451,7 @@ void Stage1223Scene::Render()
 	font->AddString(L"GamePlayScene(Stage1223Scene):", { 0.0f, 0.0f });
 
 #endif // _DEBUG
+
 	ID3D11ShaderResourceView* nullSRV = nullptr;
 	context->PSSetShaderResources(0, 1, &nullSRV);
 
@@ -478,6 +497,8 @@ void Stage1223Scene::Finalize()
 
 	p_cameraManager->RequestFirstCamera();
 	m_skyDome = nullptr;
+
+	
 
 }
 

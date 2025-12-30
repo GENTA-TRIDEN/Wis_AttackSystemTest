@@ -28,9 +28,13 @@ WIS::ModelComponent::~ModelComponent()
 
 int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* context, wchar_t const* fileName, DirectX::EffectFactory* fxFactory)
 {
+
+
+	fxFactory->SetDirectory(L"Resources/Models");
+
+
     std::unique_ptr<DirectX::Model> tempModel = DirectX::Model::CreateFromSDKMESH(device, fileName, *fxFactory, DirectX::ModelLoader_Clockwise);
 
-    fxFactory->SetDirectory(L"Resources/textures");
 
 
 
@@ -225,13 +229,14 @@ void WIS::ModelComponent::SetTextureFromFile(ID3D11Device* device, int index, co
     // DDSテクスチャの読み込み
     Microsoft::WRL::ComPtr<ID3D11Resource> resource;
     Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+    
 
 
     HRESULT hr = DirectX::CreateDDSTextureFromFile(device, filePath, resource.GetAddressOf(), srv.GetAddressOf());
 
     if (SUCCEEDED(hr))
     {
-        // メンバ変数に保持（所有権を持つ）
+        // メンバ変数に保持
         m_textureResources[index] = srv;
 
         SetTexture(index, srv.Get());

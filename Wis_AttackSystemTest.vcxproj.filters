@@ -300,9 +300,10 @@
     </Manifest>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Resources\Shaders\Particle.hlsli" />
     <None Include="Resources\Shaders\UI.hlsli" />
+    <None Include="ClassDiagram.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Resources\Shaders\ParticleGS.hlsl" />

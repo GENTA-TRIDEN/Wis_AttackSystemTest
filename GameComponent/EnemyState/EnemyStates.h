@@ -2,6 +2,9 @@
 #include "GameComponent/EnemyComponent.h"
 #include "WISLib/GameObject/Component/StateMachineComponent.h"
 
+
+#include "GameComponent/EnemyState/EnemyChaseState.h"
+
 namespace WIS {
 
     // --- 探索 (巡回) ステート ---
@@ -27,29 +30,29 @@ namespace WIS {
     };
 
     // --- 追跡 ステート ---
-    class EnemyChaseState : public State<EnemyComponent>
-    {
-    public:
-        void OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res) override {
-            // 1. 追跡移動を実行
-            owner->ExecuteChase();
+    //class EnemyChaseState : public State<EnemyComponent>
+    //{
+    //public:
+    //    void OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res) override {
+    //        // 1. 追跡移動を実行
+    //        owner->ExecuteChase();
 
-            // 2. 遷移判定: 攻撃範囲なら Attack へ
-            if (owner->CheckAttackRange()) {
-                ChangeState(owner, std::make_shared<EnemyAttackState>());
-            }
-            // 3. 遷移判定: 見失ったら Search へ
-            else if (owner->CheckPlayerLost()) {
-                ChangeState(owner, std::make_shared<EnemySearchState>());
-            }
-        }
+    //        // 2. 遷移判定: 攻撃範囲なら Attack へ
+    //        if (owner->CheckAttackRange()) {
+    //            ChangeState(owner, std::make_shared<EnemyAttackState>());
+    //        }
+    //        // 3. 遷移判定: 見失ったら Search へ
+    //        else if (owner->CheckPlayerLost()) {
+    //            ChangeState(owner, std::make_shared<EnemySearchState>());
+    //        }
+    //    }
 
-    private:
-        void ChangeState(EnemyComponent* owner, std::shared_ptr<State<EnemyComponent>> newState) {
-            auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
-            if (sm) sm->ChangeState(newState);
-        }
-    };
+    //private:
+    //    void ChangeState(EnemyComponent* owner, std::shared_ptr<State<EnemyComponent>> newState) {
+    //        auto sm = owner->GetOwner()->GetComponent<StateMachineComponent<EnemyComponent>>();
+    //        if (sm) sm->ChangeState(newState);
+    //    }
+    //};
 
     // --- 攻撃 ステート ---
     class EnemyAttackState : public State<EnemyComponent>
@@ -61,9 +64,7 @@ namespace WIS {
         }
 
         void OnUpdate(EnemyComponent* owner, float elapsedTime, UserResources* res) override {
-            // 攻撃アニメーション待ちや、硬直時間処理などをここに書く
-            // 今回はCollisionで判定しているので、ここでは特に何もしないか、
-            // 一定時間経過でSearchに戻す処理などを入れる
+
         }
 
         // 衝突判定はステート側で受け取る

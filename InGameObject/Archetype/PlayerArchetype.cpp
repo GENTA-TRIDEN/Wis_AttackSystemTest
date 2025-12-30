@@ -35,7 +35,7 @@ std::weak_ptr<WIS::GameObject> WIS::PlayerArchetype::Create(ObjectManager* p_obj
 
     // モデルファイルと同じフォルダにテクスチャがある場合、これを指定しないと
     // マテリアルが正しく読み込まれず、影が出ないことがあります。
-    fxFactory->SetDirectory(L"Resources/Models");
+    //fxFactory->SetDirectory(L"Resources/Models");
 
     // モデルロード
     int playerHandle = PlayerModel->AddModel(device, context, playerModelpath, fxFactory);

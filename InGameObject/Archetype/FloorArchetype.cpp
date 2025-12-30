@@ -28,12 +28,13 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
 	//auto floorPolygon = floor->AddComponent<WIS::PolygonComponent>();
 
 	FloorColl->AddBoundingOrientedBox({ 1500.0f,50.0f,1500.0f }, { 0.0f,-2.0f,0.0f });
-	
+
 	fxFactory->SetDirectory(L"Resources/Models");
+
 
 	int floorHandle = floorModel->AddModel(device, context, floorModelPath, fxFactory);
 
-	floorModel->SetTextureFromFile(device, floorHandle, L"Resources/textures/Stage.dds");
+	floorModel->SetTextureFromFile(device, floorHandle, L"Resources/Models/Stage.dds");
 
 
 	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(0),0,0 });

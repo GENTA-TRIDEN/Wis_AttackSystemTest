@@ -348,6 +348,7 @@
     <Manifest Include="settings.manifest" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="packages.config" />
     <None Include="Resources\Shaders\Particle.hlsli" />
     <None Include="Resources\Shaders\UI.hlsli" />

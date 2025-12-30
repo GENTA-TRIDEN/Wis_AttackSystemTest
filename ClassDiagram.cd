@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Ito::Scene&lt;T&gt;" Collapsed="true">
+    <Position X="3" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAATAEAAQAGgAAAAAAAQAAAgABAABAACEQABgA=</HashCode>
+      <FileName>ItoLib\SceneManager.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ResultScene" Collapsed="true">
+    <Position X="0.5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAAEAAAAQEGBAAAAAAAAAAAgAAgIJAgABQQAgA=</HashCode>
+      <FileName>Scene\ResultScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="WeaponCreateScene" Collapsed="true">
+    <Position X="5" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAYEEgQAAAIACQEGDNAAEEAIgAAAhQAiINAACVQQIAE=</HashCode>
+      <FileName>Scene\WeaponCreateScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TitleScene" Collapsed="true">
+    <Position X="2.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQEAAAAAAAAAQEGBAAAAIAAAAAAgIAgIJAgABQQAAA=</HashCode>
+      <FileName>Scene\TitleScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="PlayerTestScene" Collapsed="true">
+    <Position X="7.25" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAIAAQEGCICAAGAACIAChAAiIJAAABQQAAA=</HashCode>
+      <FileName>Scene\PlayerTestScene.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Yu Gothic UI" Size="9" />
+</ClassDiagram>

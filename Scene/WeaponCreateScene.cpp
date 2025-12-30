@@ -361,6 +361,7 @@ void WeaponCreateScene::Render()
 		*p_cameraManager->GetView(),
 		m_proj
 	);
+	font->AddString((L"clickCount:" + std::to_wstring(clickCount)).c_str(), { 10.0f, 90.0f });
 
 
 #ifdef _DEBUG
