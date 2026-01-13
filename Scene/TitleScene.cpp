@@ -15,6 +15,8 @@
 #include "Scene/SkyDomeScene.h"
 #include "Scene/StageScene.h"
 #include "Scene/Stage1223Scene.h"
+#include "Scene/ModelTexTestScene.h"
+#include "Scene/GamePadTestScene.h"
 
 
 
@@ -83,7 +85,10 @@ void TitleScene::Render()
 	auto font = GetUserResources()->GetDebugFont();
 	auto primitiveBatch = GetUserResources()->GetPrimitiveBatch();
 	auto world = DirectX::SimpleMath::Matrix::Identity;
+	auto proj = m_proj;
 	Background->Render();
+	m_titleShading->Render(*p_cameraManager->GetView(), m_proj);
+
 	m_button->Render();
 
 	font->AddString(L"TitleScene:", { 0.0f, 0.0f });
@@ -135,6 +140,10 @@ void TitleScene::CreateDeviceDependentResources()
 		, { 0.667f,0.667f }
 	, kHorikawa::ANCHOR::TOP_LEFT);
 	Background->SetWindowSize(rect.right, rect.bottom);
+
+
+	m_titleShading = std::make_unique<WIS::TitleShading>();
+	m_titleShading->Create(GetUserResources()->GetDeviceResources());
 }
 
 void TitleScene::CreateWindowSizeDependentResources()

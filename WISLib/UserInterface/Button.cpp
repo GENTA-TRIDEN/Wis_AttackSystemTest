@@ -18,6 +18,7 @@
 #include <WICTextureLoader.h>
 #include <CommonStates.h>
 #include <vector>
+#include <GamePad.h>
 
 using namespace DirectX;
 /// <summary>
@@ -62,8 +63,9 @@ void WIS::Button::Update()
 	//  キーボード情報の更新
 	DirectX::Keyboard::State keystate = DirectX::Keyboard::Get().GetState();
 	auto mouse = DirectX::Mouse::Get().GetState();
+	auto gamePad = DirectX::GamePad::Get().GetState(0);
 
-
+	m_GamePadState.Update(gamePad);
 	m_tracker.Update(keystate);
 
 	//マウスの位置から状態変化させる
@@ -88,10 +90,11 @@ void WIS::Button::Update()
 
 		// 判定には計算された buttonScale を使用
 	if (mousePos.x >= buttonPos.x && mousePos.x <= buttonPos.x + buttonScale.x
-		&& mousePos.y >= buttonPos.y && mousePos.y <= buttonPos.y + buttonScale.y)
+		&& mousePos.y >= buttonPos.y && mousePos.y <= buttonPos.y + buttonScale.y|| m_Isselected)
 	{
+
 		//ボタンの上にマウスがある
-		if (mouse.leftButton && m_state == Hover)
+		if ((mouse.leftButton || m_GamePadState.a== m_GamePadState.RELEASED)&& m_state == Hover)
 		{
 			//押された
 			m_state = Push;
@@ -105,7 +108,7 @@ void WIS::Button::Update()
 				OnClick = true;
 			}
 		}
-		else if (m_state != Push || !mouse.leftButton)
+		else if (m_state != Push ||  !mouse.leftButton )
 		{
 			//ホバー
 			m_state = Hover;
@@ -124,7 +127,7 @@ void WIS::Button::Update()
 
 
 	//
-
+	m_Isselected = false;
 
 
 
@@ -138,6 +141,13 @@ void WIS::Button::Update()
 void WIS::Button::Render()
 {
 	if (m_button == nullptr)return;
+
+	//ホバー中は色を変える
+	if (m_state == STATE::Hover) {
+		m_button->LoadTexture(StateTexturePath[Hover]);
+	}
+	else {
+	}
 
 	m_button->Render();
 	//m_textをぼたんのちゅうおうに表示

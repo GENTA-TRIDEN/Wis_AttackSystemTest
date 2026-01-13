@@ -13,7 +13,7 @@
 #include "UserResources.h"
 
 
-std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int FloorModelNumconst, const std::string& playerName)
+std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int FloorModelNumconst/*, const std::string& playerName*/)
 {
 
 	auto device = p_userResources->GetDeviceResources()->GetD3DDevice();
@@ -29,14 +29,24 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
 
 	FloorColl->AddBoundingOrientedBox({ 1500.0f,50.0f,1500.0f }, { 0.0f,-2.0f,0.0f });
 
-	fxFactory->SetDirectory(L"Resources/Models");
-
+	floorModel->SetUseTexture(true, 0);
 
 	int floorHandle = floorModel->AddModel(device, context, floorModelPath, fxFactory);
 
 	floorModel->SetTextureFromFile(device, floorHandle, L"Resources/Models/Stage.dds");
 
+	//void SetTexture(int index, ID3D11ShaderResourceView* texture);
 
+	//ID3D11ShaderResourceView* SRV = nullptr;
+	////Textureを読み込む
+	//HRESULT hr = DirectX::CreateDDSTextureFromFile(device, L"Resources/Models/Stage.dds", nullptr, &SRV);
+
+
+	////モデルにTextureをセットする
+	//floorModel->SetTexture(floorHandle, SRV);
+
+
+	//floorModel->SetUseTexture(true, floorHandle);
 	floorModel->SetRotate(floorHandle, { DirectX::XMConvertToRadians(0),0,0 });
 
 	floorModel->SetScale(floorHandle, ModelScale);
@@ -65,4 +75,9 @@ std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_obje
 
 
     return floor;
+}
+
+std::weak_ptr<WIS::GameObject> WIS::FloorArchetype::Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int FloorModelNumconst, const std::string& playerName)
+{
+	return std::weak_ptr<WIS::GameObject>();
 }

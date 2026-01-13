@@ -47,6 +47,7 @@ namespace WIS {
 
 		bool m_isGrounded;
 
+		float m_heightOffset=0;
 
 
 		
@@ -87,5 +88,7 @@ namespace WIS {
 		void SetValue(const value val){
 			m_value = val;
 		}
+		//
+		void SetHeightOffset(float height) { m_heightOffset = height; }
 	};
 }

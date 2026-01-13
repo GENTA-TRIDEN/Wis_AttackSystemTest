@@ -9,17 +9,17 @@ using namespace DirectX;
 using namespace DirectX::SimpleMath;
 
 WIS::ModelComponent::ModelComponent() :
-    m_DrawModel(true),
-    m_stencilState(nullptr),
-    m_showWireframe(false),
-    m_showNormals(false),
-    m_showFaceNormals(false)
+	m_DrawModel(true),
+	m_stencilState(nullptr),
+	m_showWireframe(false),
+	m_showNormals(false),
+	m_showFaceNormals(false)
 {
-    m_modelVec.clear();
-    m_localMatrices.clear();
-    m_textureResources.clear(); 
-    VertexList.clear();
-    IndexList.clear();
+	m_modelVec.clear();
+	m_localMatrices.clear();
+	m_textureResources.clear(); 
+	VertexList.clear();
+	IndexList.clear();
 }
 
 WIS::ModelComponent::~ModelComponent()
@@ -30,255 +30,315 @@ int WIS::ModelComponent::AddModel(ID3D11Device* device, ID3D11DeviceContext* con
 {
 
 
-	fxFactory->SetDirectory(L"Resources/Models");
+	auto localFactory = std::make_unique<DirectX::EffectFactory>(device);
 
 
-    std::unique_ptr<DirectX::Model> tempModel = DirectX::Model::CreateFromSDKMESH(device, fileName, *fxFactory, DirectX::ModelLoader_Clockwise);
+	// ディレクトリ設定（必要であれば引数のfxFactoryからコピーするか、固定パスを指定）
+	localFactory->SetDirectory(L"Resources/Models");
+
+	//localFactory を使用して読み込む
+	std::unique_ptr<DirectX::Model> tempModel = DirectX::Model::CreateFromSDKMESH(device, fileName, *localFactory);
 
 
 
 
-    if (!tempModel) {
-        return -1;
-    }
+	if (!tempModel) {
+		return -1;
+	}
+	tempModel->UpdateEffects([&](DirectX::IEffect* effect)
+		{
+			auto basicEffect = dynamic_cast<DirectX::BasicEffect*>(effect);
+			if (basicEffect)
+			{
+				// テクスチャ使用設定
+				basicEffect->SetTextureEnabled(m_isUseTexture);
+			}
+		});
 
-    // Vertex data extraction
-    for (const auto& mesh : tempModel->meshes)
-    {
-        for (const auto& part : mesh->meshParts)
-        {
-            // --- 1. 頂点バッファの取得 ---
-            auto gpuVertexBuffer = part->vertexBuffer.Get();
-            D3D11_BUFFER_DESC vbDesc;
-            gpuVertexBuffer->GetDesc(&vbDesc);
+	for (const auto& mesh : tempModel->meshes)
+	{
+		for (const auto& part : mesh->meshParts)
+		{
+			auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
+			if (effect)
+			{
+				// 初期状態をテクスチャなしに設定
+			   effect->SetTextureEnabled(m_isUseTexture);
 
-            //
-            D3D11_BUFFER_DESC stagingDesc = vbDesc;
-            stagingDesc.Usage = D3D11_USAGE_STAGING;
-            stagingDesc.BindFlags = 0;
-            stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-            stagingDesc.MiscFlags = 0;
+			}
+		}
+	}
 
-            Microsoft::WRL::ComPtr<ID3D11Buffer> stagingVertexBuffer;
-            device->CreateBuffer(&stagingDesc, nullptr, stagingVertexBuffer.GetAddressOf());
-            context->CopyResource(stagingVertexBuffer.Get(), gpuVertexBuffer);
+	// Vertex data extraction
+	for (const auto& mesh : tempModel->meshes)
+	{
+		for (const auto& part : mesh->meshParts)
+		{
+			// --- 1. 頂点バッファの取得 ---
+			auto gpuVertexBuffer = part->vertexBuffer.Get();
+			D3D11_BUFFER_DESC vbDesc;
+			gpuVertexBuffer->GetDesc(&vbDesc);
 
+			//
+			D3D11_BUFFER_DESC stagingDesc = vbDesc;
+			stagingDesc.Usage = D3D11_USAGE_STAGING;
+			stagingDesc.BindFlags = 0;
+			stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+			stagingDesc.MiscFlags = 0;
 
-            auto gpuIndexBuffer = part->indexBuffer.Get();
-            D3D11_BUFFER_DESC ibDesc;
-            gpuIndexBuffer->GetDesc(&ibDesc);
-
-            stagingDesc = ibDesc;
-            stagingDesc.Usage = D3D11_USAGE_STAGING;
-            stagingDesc.BindFlags = 0;
-            stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-            stagingDesc.MiscFlags = 0;
-
-            Microsoft::WRL::ComPtr<ID3D11Buffer> stagingIndexBuffer;
-            device->CreateBuffer(&stagingDesc, nullptr, stagingIndexBuffer.GetAddressOf());
-            context->CopyResource(stagingIndexBuffer.Get(), gpuIndexBuffer);
-
-            // マップ（ロック）
-            D3D11_MAPPED_SUBRESOURCE mappedVertex, mappedIndex;
-            context->Map(stagingVertexBuffer.Get(), 0, D3D11_MAP_READ, 0, &mappedVertex);
-            context->Map(stagingIndexBuffer.Get(), 0, D3D11_MAP_READ, 0, &mappedIndex);
-
-            const uint8_t* pVertexBase = reinterpret_cast<const uint8_t*>(mappedVertex.pData);
-            const uint16_t* pIndexBase = reinterpret_cast<const uint16_t*>(mappedIndex.pData);
-
-            // 現在のVertexListのサイズを記録（インデックスのオフセット用）
-            uint16_t indexOffset = static_cast<uint16_t>(VertexList.size());
+			Microsoft::WRL::ComPtr<ID3D11Buffer> stagingVertexBuffer;
+			device->CreateBuffer(&stagingDesc, nullptr, stagingVertexBuffer.GetAddressOf());
+			context->CopyResource(stagingVertexBuffer.Get(), gpuVertexBuffer);
 
 
-            size_t totalVertexCountInPart = vbDesc.ByteWidth / part->vertexStride;
+			auto gpuIndexBuffer = part->indexBuffer.Get();
+			D3D11_BUFFER_DESC ibDesc;
+			gpuIndexBuffer->GetDesc(&ibDesc);
 
-            for (size_t i = 0; i < totalVertexCountInPart; ++i)
-            {
-                // 先頭から順番に取得する
-                const uint8_t* pV = pVertexBase + (i * part->vertexStride);
+			stagingDesc = ibDesc;
+			stagingDesc.Usage = D3D11_USAGE_STAGING;
+			stagingDesc.BindFlags = 0;
+			stagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+			stagingDesc.MiscFlags = 0;
 
-                auto vSrc = reinterpret_cast<const DirectX::VertexPositionNormalTexture*>(pV);
+			Microsoft::WRL::ComPtr<ID3D11Buffer> stagingIndexBuffer;
+			device->CreateBuffer(&stagingDesc, nullptr, stagingIndexBuffer.GetAddressOf());
+			context->CopyResource(stagingIndexBuffer.Get(), gpuIndexBuffer);
 
-                VertexList.push_back(DirectX::VertexPositionColor(vSrc->position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)));
+			// マップ（ロック）
+			D3D11_MAPPED_SUBRESOURCE mappedVertex, mappedIndex;
+			context->Map(stagingVertexBuffer.Get(), 0, D3D11_MAP_READ, 0, &mappedVertex);
+			context->Map(stagingIndexBuffer.Get(), 0, D3D11_MAP_READ, 0, &mappedIndex);
 
-                m_vertexNormals.push_back({ vSrc->position, vSrc->normal });
-            }
+			const uint8_t* pVertexBase = reinterpret_cast<const uint8_t*>(mappedVertex.pData);
+			const uint16_t* pIndexBase = reinterpret_cast<const uint16_t*>(mappedIndex.pData);
+
+			// 現在のVertexListのサイズを記録（インデックスのオフセット用）
+			uint16_t indexOffset = static_cast<uint16_t>(VertexList.size());
 
 
-            for (size_t i = 0; i < part->indexCount; ++i)
-            {
-                // インデックスバッファから値を読む
-                uint16_t rawIndex = pIndexBase[part->startIndex + i];
+			size_t totalVertexCountInPart = vbDesc.ByteWidth / part->vertexStride;
 
-                uint16_t finalIndex = static_cast<uint16_t>(indexOffset + part->vertexOffset + rawIndex);
+			for (size_t i = 0; i < totalVertexCountInPart; ++i)
+			{
+				// 先頭から順番に取得する
+				const uint8_t* pV = pVertexBase + (i * part->vertexStride);
 
-                IndexList.push_back(finalIndex);
-            }
+				auto vSrc = reinterpret_cast<const DirectX::VertexPositionNormalTexture*>(pV);
 
-            context->Unmap(stagingVertexBuffer.Get(), 0);
-            context->Unmap(stagingIndexBuffer.Get(), 0);
-        }
-    }
+				VertexList.push_back(DirectX::VertexPositionColor(vSrc->position, DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f)));
 
-    m_modelVec.push_back(std::move(tempModel));
-    m_localMatrices.push_back(Matrix::Identity);
+				m_vertexNormals.push_back({ vSrc->position, vSrc->normal });
+			}
 
-    return static_cast<int>(m_modelVec.size() - 1);
+
+			for (size_t i = 0; i < part->indexCount; ++i)
+			{
+				// インデックスバッファから値を読む
+				uint16_t rawIndex = pIndexBase[part->startIndex + i];
+
+				uint16_t finalIndex = static_cast<uint16_t>(indexOffset + part->vertexOffset + rawIndex);
+
+				IndexList.push_back(finalIndex);
+			}
+
+			context->Unmap(stagingVertexBuffer.Get(), 0);
+			context->Unmap(stagingIndexBuffer.Get(), 0);
+		}
+	}
+
+	m_modelVec.push_back(std::move(tempModel));
+	m_localMatrices.push_back(Matrix::Identity);
+
+	return static_cast<int>(m_modelVec.size() - 1);
 }
 
 void WIS::ModelComponent::SetScale(int index, const DirectX::SimpleMath::Vector3& scale)
 {
-    if (index < 0 || index >= m_localMatrices.size())
-    {
-        return;
-    }
-    m_localMatrices[index] *= Matrix::CreateScale(scale);
+	if (index < 0 || index >= m_localMatrices.size())
+	{
+		return;
+	}
+	m_localMatrices[index] *= Matrix::CreateScale(scale);
 }
 
 void WIS::ModelComponent::SetRotate(int index, const DirectX::SimpleMath::Vector3& rotate)
 {
-    if (index < 0 || index >= m_localMatrices.size())
-    {
-        return;
-    }
-    m_localMatrices[index] *= Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(rotate.y, rotate.x, rotate.z));
+	if (index < 0 || index >= m_localMatrices.size())
+	{
+		return;
+	}
+	m_localMatrices[index] *= Matrix::CreateFromQuaternion(Quaternion::CreateFromYawPitchRoll(rotate.y, rotate.x, rotate.z));
 }
 
 void WIS::ModelComponent::SetPosition(int index, const DirectX::SimpleMath::Vector3& position)
 {
-    if (index < 0 || index >= m_localMatrices.size())
-    {
-        return;
-    }
-    m_localMatrices[index] *= Matrix::CreateTranslation(position);
+	if (index < 0 || index >= m_localMatrices.size())
+	{
+		return;
+	}
+	m_localMatrices[index] *= Matrix::CreateTranslation(position);
 
 }
 
 void WIS::ModelComponent::SetTexture(int index, ID3D11ShaderResourceView* texture)
 {
-    if (index < 0 || index >= m_modelVec.size()|| !texture)
-    {
-        return;
-    }
 
-    auto& model = m_modelVec[index];
+	if (index < 0 || index >= m_modelVec.size()|| !texture)
+	{
+		return;
+	}
 
-    // モデル内の全メッシュ・全パーツを巡回してテクスチャをセット
-    for (const auto& mesh : model->meshes)
-    {
-        for (const auto& part : mesh->meshParts)
-        {
-            // エフェクトを BasicEffect にキャスト
-            auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
-            if (effect)
-            {
-				effect->SetDiffuseColor({ 1.0f, 1.0f, 1.0f, 1.0f });
+	auto& model = m_modelVec[index];
 
-                // テクスチャをセット
-                effect->SetTexture(texture);
-                // テクスチャ有効化フラグをオンにする
-                effect->SetTextureEnabled(true);
-               
-            }
-        }
-    }
+	// モデル内の全メッシュ・全パーツを巡回してテクスチャをセット
+	for (const auto& mesh : model->meshes)
+	{
+		for (const auto& part : mesh->meshParts)
+		{
+			// エフェクトを BasicEffect にキャスト
+			auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
+			if (effect)
+			{
+				//effect->SetDiffuseColor({ 0.0f, 1.0f, 1.0f, 1.0f });
+
+				// テクスチャ有効化フラグをオンにする
+
+				effect->SetTexture(texture);
+				effect->SetTextureEnabled(true);
+				// テクスチャをセット
+
+			   
+			}
+		}
+	}
 }
 
 
-void WIS::ModelComponent::SetColor(int index, DirectX::SimpleMath::Vector4 color)
+void WIS::ModelComponent::SetColors(int index, DirectX::SimpleMath::Vector4 color)
 {
-    // インデックスチェック
-    if (index < 0 || index >= m_modelVec.size())
-    {
-        return;
-    }
+	int a = 5;
 
-    auto& model = m_modelVec[index];
+	auto& model = m_modelVec[index];
 
-    // モデル内の全パーツを巡回
-    for (const auto& mesh : model->meshes)
-    {
-        for (const auto& part : mesh->meshParts)
-        {
-            auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
-            if (effect)
-            {
+	if(model == nullptr)
+	{
+		return;
+	}   
+	// モデル内の全パーツを巡回
+	for (const auto& mesh : model->meshes)
+	{
+		for (const auto& part : mesh->meshParts)
+		{
+			auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
+			if (effect)
+			{
 
-                effect->SetTextureEnabled(false);
-                effect->SetDiffuseColor(color);
-            }
-        }
-    }
+				effect->SetDiffuseColor(color);
+				effect->SetEmissiveColor(color);
+			}
+		}
+	}
 }
 
 
 void WIS::ModelComponent::SetTextureFromFile(ID3D11Device* device, int index, const wchar_t* filePath)
 {
-    // インデックスチェック
-    if (index < 0 || index >= m_modelVec.size())
-    {
-        return;
-    }
+	// インデックスチェック
+	if (index < 0 || index >= m_modelVec.size())
+	{
+		return;
+	}
 
-    // テクスチャ管理用配列が足りなければリサイズ
-    if (m_textureResources.size() <= m_modelVec.size())
-    {
-        m_textureResources.resize(m_modelVec.size());
-    }
+	// テクスチャ管理用配列が足りなければリサイズ
+	if (m_textureResources.size() <= m_modelVec.size())
+	{
+		m_textureResources.resize(m_modelVec.size());
+	}
 
-    // DDSテクスチャの読み込み
-    Microsoft::WRL::ComPtr<ID3D11Resource> resource;
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
-    
+	// DDSテクスチャの読み込み
+	Microsoft::WRL::ComPtr<ID3D11Resource> resource;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> srv;
+	
 
 
-    HRESULT hr = DirectX::CreateDDSTextureFromFile(device, filePath, resource.GetAddressOf(), srv.GetAddressOf());
+	HRESULT hr = DirectX::CreateDDSTextureFromFile(device, filePath, resource.GetAddressOf(), srv.GetAddressOf());
 
-    if (SUCCEEDED(hr))
-    {
-        // メンバ変数に保持
-        m_textureResources[index] = srv;
+	if (SUCCEEDED(hr))
+	{
+		// メンバ変数に保持
+		m_textureResources[index] = srv;
 
-        SetTexture(index, srv.Get());
+		SetTexture(index, srv.Get());
 
-     
-    }
+	 
+	}
+}
+
+void WIS::ModelComponent::SetUseTexture(bool isUse, int index)
+{
+
+	m_isUseTexture = isUse;
+
+	if (index < 0 || index >= m_modelVec.size())
+	{
+		return;
+	}
+	auto& model = m_modelVec[index];
+
+
+	if (!model) return;
+
+	// モデル内の全パーツを巡回
+	for (const auto& mesh : model->meshes)
+	{
+		for (const auto& part : mesh->meshParts)
+		{
+			auto effect = dynamic_cast<DirectX::BasicEffect*>(part->effect.get());
+			if (effect)
+			{
+
+				effect->SetTextureEnabled(isUse);
+
+			}
+		}
+	}
 }
 
 void WIS::ModelComponent::OnStart(UserResources* userResources)
 {
-    auto device = userResources->GetDeviceResources()->GetD3DDevice();
+	auto device = userResources->GetDeviceResources()->GetD3DDevice();
 
-    m_lineEffect = std::make_unique<BasicEffect>(device);
-    m_lineEffect->SetVertexColorEnabled(true);
+	m_lineEffect = std::make_unique<BasicEffect>(device);
+	m_lineEffect->SetVertexColorEnabled(true);
 
-    void const* shaderByteCode;
-    size_t byteCodeLength;
-    m_lineEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
+	void const* shaderByteCode;
+	size_t byteCodeLength;
+	m_lineEffect->GetVertexShaderBytecode(&shaderByteCode, &byteCodeLength);
 
-    device->CreateInputLayout(
-        VertexPositionColor::InputElements,
-        VertexPositionColor::InputElementCount,
-        shaderByteCode,
-        byteCodeLength,
-        m_lineInputLayout.ReleaseAndGetAddressOf()
-    );
+	device->CreateInputLayout(
+		VertexPositionColor::InputElements,
+		VertexPositionColor::InputElementCount,
+		shaderByteCode,
+		byteCodeLength,
+		m_lineInputLayout.ReleaseAndGetAddressOf()
+	);
 
-    D3D11_RASTERIZER_DESC rasterizerDesc = {};
-    rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
-    rasterizerDesc.CullMode = D3D11_CULL_NONE;
-    rasterizerDesc.DepthClipEnable = true;
-    device->CreateRasterizerState(&rasterizerDesc, m_wireframeRasterizerState.GetAddressOf());
+	D3D11_RASTERIZER_DESC rasterizerDesc = {};
+	rasterizerDesc.FillMode = D3D11_FILL_WIREFRAME;
+	rasterizerDesc.CullMode = D3D11_CULL_NONE;
+	rasterizerDesc.DepthClipEnable = true;
+	device->CreateRasterizerState(&rasterizerDesc, m_wireframeRasterizerState.GetAddressOf());
 
 
 
-    //m_stencilState = userResources->GetCommonStates()->DepthDefault();
+	//m_stencilState = userResources->GetCommonStates()->DepthDefault();
 }
 
 void WIS::ModelComponent::OnPreUpdate(const float elapsedTime, UserResources* userResources) {}
 void WIS::ModelComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
 {
-    m_showWireframe = false;
+	m_showWireframe = false;
 }
 void WIS::ModelComponent::OnPostUpdate(const float elapsedTime, UserResources* userResources) {
 
@@ -286,39 +346,40 @@ void WIS::ModelComponent::OnPostUpdate(const float elapsedTime, UserResources* u
 
 void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& view, const Matrix& proj)
 {
-    if (!GetOwner()->CheckActive()) {
-        return;
-    }
+	if (!GetOwner()->CheckActive()) {
+		return;
+	}
 
-    if (!m_DrawModel)return;
+	if (!m_DrawModel)return;
 
-    auto state = userResources->GetCommonStates();
-    auto context = userResources->GetDeviceResources()->GetD3DDeviceContext();
-    auto primitiveBatch = userResources->GetPrimitiveBatch();
+	auto state = userResources->GetCommonStates();
+	auto context = userResources->GetDeviceResources()->GetD3DDeviceContext();
+	auto primitiveBatch = userResources->GetPrimitiveBatch();
+	
 
-    auto transformComp = GetOwner()->GetComponent<WIS::TransformComponent>();
-    if (!transformComp) return;
+	auto transformComp = GetOwner()->GetComponent<WIS::TransformComponent>();
+	if (!transformComp) return;
 
-    Matrix world = transformComp->GetWorldMatrix();
+	Matrix world = transformComp->GetWorldMatrix();
 
 
-    context->OMSetDepthStencilState(state->DepthDefault(), 0);
+	context->OMSetDepthStencilState(state->DepthDefault(), 0);
 
-    context->OMSetBlendState(state->Additive(), nullptr, 0xFFFFFFFF);
+	context->OMSetBlendState(state->Additive(), nullptr, 0xFFFFFFFF);
 
    // context->OMSetDepthStencilState(m_stencilState, 0);
 
-    // --- Main Model Rendering ---
-    for (size_t i = 0; i < m_modelVec.size(); i++)
-    {
-        if (m_showWireframe) context->RSSetState(m_wireframeRasterizerState.Get());
 
-        Matrix worldMatrix = m_localMatrices[i] * world;
-        m_modelVec[i]->Draw(context, *state, worldMatrix, view, proj, false, [&]() {
-            context->OMSetDepthStencilState(m_stencilState, 0);
-            });
+	// --- Main Model Rendering ---
+	for (size_t i = 0; i < m_modelVec.size(); i++)
+	{
+		if (m_showWireframe) context->RSSetState(m_wireframeRasterizerState.Get());
+		Matrix worldMatrix = m_localMatrices[i] * world;
+		m_modelVec[i]->Draw(context, *state, worldMatrix, view, proj, false, [&]() {
+			context->OMSetDepthStencilState(m_stencilState, 0);
+			});
 
-    }
+	}
 
 
 
@@ -329,13 +390,13 @@ void WIS::ModelComponent::OnRender(UserResources* userResources, const Matrix& v
 
 void WIS::ModelComponent::OnRelease()
 {
-    m_lineEffect.reset();
-    m_lineInputLayout.Reset();
-    m_wireframeRasterizerState.Reset();
-    m_modelVec.clear();
-    m_localMatrices.clear();
-    m_textureResources.clear();
-    m_vertexNormals.clear();
-    VertexList.clear();
-    IndexList.clear();
+	m_lineEffect.reset();
+	m_lineInputLayout.Reset();
+	m_wireframeRasterizerState.Reset();
+	m_modelVec.clear();
+	m_localMatrices.clear();
+	m_textureResources.clear();
+	m_vertexNormals.clear();
+	VertexList.clear();
+	IndexList.clear();
 }

@@ -2,6 +2,9 @@
 #include <memory> // std::shared_ptr, std::weak_ptr のため
 #include "SimpleMath.h"
 
+#include "Message/Message.h"
+#include <any>
+
 
 // 前方宣言
 namespace WIS {
@@ -33,6 +36,9 @@ namespace WIS{
 
         // 衝突イベント
         virtual void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) {}
+
+
+        virtual void OnMessageAccepted(Message::MessageID messageID, const std::any& value) {}
 
         // --- オーナーのセッター/ゲッター ---
         void SetOwner(std::shared_ptr<WIS::GameObject> owner)

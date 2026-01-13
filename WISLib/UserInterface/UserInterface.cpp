@@ -64,10 +64,16 @@ void kHorikawa::UserInterface::LoadTexture(const wchar_t* path)
 {
 	DirectX::CreateWICTextureFromFile(m_pDR->GetD3DDevice(), path, m_res.ReleaseAndGetAddressOf(), m_texture.ReleaseAndGetAddressOf());
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> tex;
+	
 	DX::ThrowIfFailed(m_res.As(&tex));
+
+
+
 
 	D3D11_TEXTURE2D_DESC desc;
 	tex->GetDesc(&desc);
+
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 
 	m_textureWidth = desc.Width;
 	m_textureHeight = desc.Height;

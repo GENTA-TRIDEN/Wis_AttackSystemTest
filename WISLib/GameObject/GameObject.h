@@ -57,6 +57,7 @@ namespace WIS {
         template<typename T>
         std::shared_ptr<T> GetComponent()
         {
+            
             for (const auto& component : m_components)
             {
                 // dynamic_pointer_cast‚ðŽg‚Á‚ÄˆÀ‘S‚ÉŒ^•ÏŠ·‚ðŽŽ‚Ý‚é

@@ -57,6 +57,9 @@ namespace WIS {
         void OnUpdate(const float elapsedTime, UserResources* userResources) override;
         void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj) override;
 
+        void OnRelease() override;
+
+            
         // Õ“Ëˆ—‚Í StateMachineComponent ‚É”C‚¹‚é‚½‚ßA‚±‚±‚Í‹ó‚à‚µ‚­‚Í‰½‚à‚µ‚È‚¢
         void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) override {}
 

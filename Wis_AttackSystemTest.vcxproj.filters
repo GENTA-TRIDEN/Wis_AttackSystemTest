@@ -41,8 +41,6 @@
     <ClInclude Include="WISLib\Common\CollisionManager.h" />
     <ClInclude Include="WISLib\GameObject\GameObject.h" />
     <ClInclude Include="WISLib\GameObject\ObjectManager.h" />
-    <ClInclude Include="Scene\StackTestMain.h" />
-    <ClInclude Include="Scene\StackTestStack.h" />
     <ClInclude Include="WISLib\UserInterface\BinaryFile.h" />
     <ClInclude Include="WISLib\UserInterface\Button.h" />
     <ClInclude Include="WISLib\UserInterface\Particle.h" />
@@ -60,37 +58,16 @@
     <ClInclude Include="WISLib\UserInterface\ParticleUtility.h" />
     <ClInclude Include="WISLib\UserInterface\HitEffect.h" />
     <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
-    <ClInclude Include="Scene\AttackScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Scene\EffectScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\EnemyScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Scene\ItemGetScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\PlayerTestScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\RenderTargetViewScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="Scene\ResultScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene\RigidBodyScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
     <ClInclude Include="ItoLib\SceneManager.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\SkyDomeScene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene\StageScene.h">
       <Filter>Scene</Filter>
     </ClInclude>
     <ClInclude Include="Scene\TitleScene.h">
@@ -155,6 +132,16 @@
     <ClInclude Include="InGameObject\Archetype\PartsArchetype.h" />
     <ClInclude Include="Scene\Stage1223Scene.h" />
     <ClInclude Include="WISLib\UserInterface\HPBar.h" />
+    <ClInclude Include="WISLib\UserInterface\TitleShading.h" />
+    <ClInclude Include="WISLib\UserInterface\BombEffect.h" />
+    <ClInclude Include="Message\Message.h" />
+    <ClInclude Include="Message\Messenger.h" />
+    <ClInclude Include="Scene\GamePadTestScene.h" />
+    <ClInclude Include="GameComponent\ItemComponent\GearItemComponent.h" />
+    <ClInclude Include="GameComponent\ItemComponent\BombItemComponent.h" />
+    <ClInclude Include="WISLib\GameObject\Component\InstantAttackComponent.h" />
+    <ClInclude Include="Factory.h" />
+    <ClInclude Include="InGameObject\ItemRequestManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -178,8 +165,6 @@
     <ClCompile Include="WISLib\Common\CollisionManager.cpp" />
     <ClCompile Include="WISLib\GameObject\GameObject.cpp" />
     <ClCompile Include="WISLib\GameObject\ObjectManager.cpp" />
-    <ClCompile Include="Scene\StackTestMain.cpp" />
-    <ClCompile Include="Scene\StackTestStack.cpp" />
     <ClCompile Include="WISLib\UserInterface\BinaryFile.cpp" />
     <ClCompile Include="WISLib\UserInterface\Button.cpp" />
     <ClCompile Include="WISLib\UserInterface\Particle.cpp" />
@@ -197,34 +182,13 @@
     <ClCompile Include="WISLib\UserInterface\ParticleUtility.cpp" />
     <ClCompile Include="WISLib\UserInterface\HitEffect.cpp" />
     <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
-    <ClCompile Include="Scene\AttackScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\EffectScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\EnemyScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Scene\ItemGetScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene\PlayerTestScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\RenderTargetViewScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
     <ClCompile Include="Scene\ResultScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\RigidBodyScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\SkyDomeScene.cpp">
-      <Filter>Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene\StageScene.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
     <ClCompile Include="Scene\TitleScene.cpp">
@@ -285,12 +249,114 @@
     <ClCompile Include="InGameObject\Archetype\PartsArchetype.cpp" />
     <ClCompile Include="Scene\Stage1223Scene.cpp" />
     <ClCompile Include="WISLib\UserInterface\HPBar.cpp" />
+    <ClCompile Include="WISLib\UserInterface\TitleShading.cpp" />
+    <ClCompile Include="WISLib\UserInterface\BombEffect.cpp" />
+    <ClCompile Include="Message\Messenger.cpp" />
+    <ClCompile Include="Scene\GamePadTestScene.cpp" />
+    <ClCompile Include="GameComponent\ItemComponent\GearItemComponent.cpp" />
+    <ClCompile Include="GameComponent\ItemComponent\BombItemComponent.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\InstantAttackComponent.cpp" />
+    <ClCompile Include="Factory.cpp" />
+    <ClCompile Include="InGameObject\ItemRequestManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="directx.ico">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\BOMBNum.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\BombSilhouette.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\bullet.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\GameStart.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\GameStartHover.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\GEARNum.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\GearSilhouette.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\GF_HPGage.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\GF_HPGageBackground.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\HoverButton.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\LeftArrowButton.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\maria_diffuse.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\maria_normal.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\maria_specular.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\NormalButton.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\PushButton.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\PushGameStart.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Result.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Result.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\ResultBackground.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Return.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\ReturnHover.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\ReturnPush.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\RightArrowButton.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\SelectButton.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Shadow.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\sky.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Stage.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Title.dds">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\Title.png">
+      <Filter>Assets</Filter>
+    </Image>
+    <Image Include="Resources\textures\TitleBackground.png">
       <Filter>Assets</Filter>
     </Image>
   </ItemGroup>
@@ -312,5 +378,8 @@
     <FxCompile Include="Resources\Shaders\UIGS.hlsl" />
     <FxCompile Include="Resources\Shaders\UIPS.hlsl" />
     <FxCompile Include="Resources\Shaders\UIVS.hlsl" />
+    <FxCompile Include="Resources\Shaders\TitlePS.hlsl" />
+    <FxCompile Include="Resources\Shaders\BombPS.hlsl" />
+    <FxCompile Include="Resources\Shaders\BombGS.hlsl" />
   </ItemGroup>
 </Project>

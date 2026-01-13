@@ -19,6 +19,7 @@ void WIS::ItemComponent::OnStart(UserResources* userResources)
 	auto CollisionComp=GetOwner()->GetComponent<WIS::CollisionComponent>();
 	auto ModelComp = GetOwner()->GetComponent<WIS::ModelComponent>();
 	auto CollisionTrans=GetOwner()->GetComponent<WIS::TransformComponent>();
+
 	if (!CollisionComp)
 	{
 		CollisionComp = GetOwner()->AddComponent<WIS::CollisionComponent>();
@@ -35,16 +36,17 @@ void WIS::ItemComponent::OnStart(UserResources* userResources)
 		ModelComp->SetScale(Handle, { 0.8f,0.8f,0.8f });
 	}
 
+	UniqueOnStart(userResources);
 
 }
 
 void WIS::ItemComponent::OnUpdate(const float elapsedTime, UserResources* userResources)
 {
-
+	UniqueUpdate(elapsedTime, userResources);
 	//その場で回転する
-	(void)elapsedTime; // C4100 警告対応
-	(void)userResources; // C4100 警告対応
 	auto TransformComp = GetOwner()->GetComponent<WIS::TransformComponent>();
+
+	m_timer += elapsedTime;
 
 	//2秒かけて一回転する
 	DirectX::SimpleMath::Quaternion rot = TransformComp->GetRotation();
@@ -53,16 +55,28 @@ void WIS::ItemComponent::OnUpdate(const float elapsedTime, UserResources* userRe
 	TransformComp->SetRotation(rot);
 
 
+
+
+}
+
+void WIS::ItemComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
+{
+	UniqueOnRender(userResources, view, proj);
 }
 
 void WIS::ItemComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
 {
+	UniqueOnCollision(otherObject);
 	auto player = otherObject->GetComponent<WIS::PlayerComponent>();
+
+	if (m_timer >= m_camGettingInterval) {
+
 
 	if (player) {
 		player->AddItem(m_itemType);
 		// アイテム取得時の処理（例: アイテムオブジェクトの削除）
 		this->GetOwner()->SetActive(false);
+	}
 
 	}
 

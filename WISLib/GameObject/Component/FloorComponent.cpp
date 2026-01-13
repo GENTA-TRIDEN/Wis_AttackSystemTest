@@ -42,7 +42,7 @@ void WIS::FloorComponent::SetModel()
 //リジッドボディと同様に計算
 float WIS::FloorComponent::GetHeight(DirectX::SimpleMath::Vector3 position)
 {
-    //
+
     auto transform = GetOwner()->GetComponent<TransformComponent>();
     auto modelComp = GetOwner()->GetComponent<ModelComponent>(); // モデルも取得
 

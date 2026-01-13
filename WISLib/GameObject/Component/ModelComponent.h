@@ -34,6 +34,9 @@ namespace WIS {
         bool m_showFaceNormals = false;
         bool m_showWireframe = true;
 
+        //Textureを適応するか
+		bool m_isUseTexture = false;
+
         std::wstring m_names;
 
         // Data and States
@@ -65,10 +68,10 @@ namespace WIS {
         void SetRotate(int index, const DirectX::SimpleMath::Vector3& rotate);
         void SetPosition(int index, const DirectX::SimpleMath::Vector3& position);
 
-        // テクスチャの設定 (既存のSRVを直接セットする場合)
+
         void SetTexture(int index, ID3D11ShaderResourceView* texture);
 
-        void SetColor(int index, DirectX::SimpleMath::Vector4 color);
+        void SetColors(int index, DirectX::SimpleMath::Vector4 color);
 
         void SetTextureFromFile(ID3D11Device* device, int index, const wchar_t* filePath);
 
@@ -108,6 +111,9 @@ namespace WIS {
         std::vector<DirectX::VertexPositionColor>& GetVertices() { return VertexList; }
         std::vector<uint16_t>& GetIndices() { return IndexList; }
 
+		//Textureを使用するかどうかの設定
+        void SetUseTexture(bool isUse,int index);
+
     public:
         void OnStart(UserResources* userResources) override;
         void OnPreUpdate(const float elapsedTime, UserResources* userResources) override;
@@ -117,5 +123,6 @@ namespace WIS {
             const DirectX::SimpleMath::Matrix& view,
             const DirectX::SimpleMath::Matrix& proj) override;
         void OnRelease() override;
+
     };
 }

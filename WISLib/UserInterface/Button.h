@@ -49,6 +49,7 @@ namespace WIS
 
 		DirectX::Keyboard::KeyboardStateTracker m_tracker;
 		DirectX::Mouse::ButtonStateTracker m_MouseState;
+		DirectX::GamePad::ButtonStateTracker m_GamePadState;
 
 		std::unordered_map<Button::STATE, const wchar_t*> StateTexturePath;
 
@@ -61,6 +62,7 @@ namespace WIS
 		//Click‚µ‚½‚Æ‚«‚Éˆê‰ñ‚¾‚¯Às‚³‚ê‚é
 		bool OnClick;
 
+		bool m_Isselected = false;
 		//	ŠÖ”
 	public:
 		Button();
@@ -77,6 +79,11 @@ namespace WIS
 
 		bool IsClick() {
 			return m_state == STATE::Push;
+		}
+
+
+		void Select() {
+			m_Isselected = true;
 		}
 
 

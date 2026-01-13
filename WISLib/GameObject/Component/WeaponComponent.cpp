@@ -58,6 +58,8 @@ void WeaponComponent::OnUpdate(const float elapsedTime, UserResources* userResou
             m_hasDealtDamageThisSwing = false; // 次の振りのためにリセット
         }
     }
+
+
 }
 
 void WIS::WeaponComponent::OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj)
@@ -90,16 +92,6 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
 
 
 
-            //  2. 各パーツの衝突時ロジックを実行 
-            for (auto& weakPart : m_AttachedParts) {
-                if (auto partObject = weakPart.lock()) {
-                    // PartStatsComponentを取得し、固有のヒット時効果を適用
-                    if (auto statsComp = partObject->GetComponent<WIS::PartStatsComponent>()) {
-                        // ターゲットオブジェクトを渡して、パーツ固有の処理を実行させる
-                        statsComp->ApplyOnHitEffect(otherObject,m_baseDamage);
-                    }
-                }
-            }
 
             auto enemyTrans = otherObject->GetComponent<WIS::TransformComponent>();
 
@@ -122,7 +114,24 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
                 DirectX::SimpleMath::Vector3 hitPos = enemyPos + (dir * 1.0f);
 
 
-                p_Effect->hit(hitPos);
+                for (size_t i = 0; i < 5; i++)
+                {
+                    p_Effect->hit(hitPos);
+                }
+
+
+                //  2. 各パーツの衝突時ロジックを実行 
+                for (auto& weakPart : m_AttachedParts) {
+                    if (auto partObject = weakPart.lock()) {
+                        // PartStatsComponentを取得し、固有のヒット時効果を適用
+                        if (auto statsComp = partObject->GetComponent<WIS::PartStatsComponent>()) {
+
+                            // ターゲットオブジェクトを渡して、パーツ固有の処理を実行させる
+                            statsComp->ApplyOnHitEffect(otherObject, m_baseDamage, hitPos);
+
+                        }
+                    }
+                }
             }
 
 
@@ -142,7 +151,7 @@ void WeaponComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObject)
             force.Normalize();
             force.y -= 2;
             force.Normalize();
-            force *=-10;
+            force *=-14;
 
 
 
@@ -223,17 +232,79 @@ void WeaponComponent::CalculateFinalStats()
 // 攻撃の実行を試みる関数
 bool WeaponComponent::TryAttack()
 {
-    if (m_canAttack) {
-        m_canAttack = false;
-        m_coolDownTimer = 0.0f;
+    //if (m_canAttack) {
+    //    m_canAttack = false;
+    //    m_coolDownTimer = 0.0f;
 
-        // 攻撃が成功したら、振りの状態を開始し、ヒット判定を有効にする
-        m_isSwinging = true;
-        m_swingTimer = 0.0f;
-        m_hasDealtDamageThisSwing = false; // 新しい振りの開始
+    //    // 攻撃が成功したら、振りの状態を開始し、ヒット判定を有効にする
+    //    m_isSwinging = true;
+    //    m_swingTimer = 0.0f;
+    //    m_hasDealtDamageThisSwing = false; // 新しい振りの開始
+
+    //    // 攻撃ヒットボックスの生成、アニメーション開始などのロジックをここに追加
+    //    return true;
+    //}
+    //return false;
+
+    if (m_canAttack) {
+		m_currentAttackType = AttackType::NORMAL;
+		m_canAttack = false;
+		m_coolDownTimer = 0.0f;
+		// 攻撃が成功したら、振りの状態を開始し、ヒット判定を有効にする
+		m_isSwinging = true;
+		m_swingTimer = 0.0f;
+		m_hasDealtDamageThisSwing = false; // 新しい振りの開始
+		// 攻撃ヒットボックスの生成、アニメーション開始などのロジックをここに追加
+		return true;
+
+    }
+	return false;
+
+}
+
+
+bool WIS::WeaponComponent::ChargeAttack(float elapsedTime)
+{
+	m_chargeTimer += elapsedTime;
+	m_currentAttackType = AttackType::HEAVY;
+	if (m_chargeTimer >= m_minChargeTime)
+	{
+		if (m_chargeTimer >= m_maxChargeTime)
+		{
+			m_chargeLevel = 2; // 大
+		}
+		else
+		{
+			m_chargeLevel = 1; // 中
+		}
+	}
+
+    return false;
+}
+
+bool WIS::WeaponComponent::TryAttackHeavy()
+{
+    
+
+    if (m_canAttack) {
+		m_canAttack = false;
+		m_coolDownTimer = 0.0f;
+		// チャージレベルに応じてクールダウン時間を調整
+		m_attackCoolDown *= m_chargeCoolDownMultiplier[m_chargeLevel];
+		// 攻撃が成功したら、振りの状態を開始し、ヒット判定を有効にする
+		m_isSwinging = true;
+		m_swingTimer = 0.0f;
+		m_hasDealtDamageThisSwing = false; // 新しい振りの開始
+		// チャージレベルに応じて攻撃力を調整
+		m_attackPower *= m_chargeDamageMultiplier[m_chargeLevel];
+		// チャージタイマーとレベルをリセット
+		m_chargeTimer = 0.0f;
+		m_chargeLevel = 0;
+
 
         // 攻撃ヒットボックスの生成、アニメーション開始などのロジックをここに追加
         return true;
     }
     return false;
+
 }

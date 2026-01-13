@@ -2,6 +2,7 @@
 #include "WISLib/GameObject/Component/ComponentBase.h"
 #include "WISLib/WISLibTags.h"
 #include "WISLib/Camera/CameraManager.h"
+#include "Message/Message.h"
 #include <unordered_map>
 #include <string>
 
@@ -20,8 +21,9 @@ namespace WIS {
 
 		std::string m_weaponName;
 		bool m_isAttack = false;
+		bool m_isChargeAttack = false;
 		float m_WeaponAttackTime = 0.0f;
-
+		
 		// •Ší‚Ì‰Šú‰ñ“]i‚¿•ûj‚ğ•Û‘¶‚·‚é•Ï”
 		DirectX::SimpleMath::Quaternion m_initialWeaponRotation;
 		bool m_hasCapturedRotation = false;
@@ -31,6 +33,11 @@ namespace WIS {
 		float m_nowRot;
 		//‰ñ“]‘¬“x‚Ì”{—¦
 		float m_rotSpeedMag =1.0f;
+		
+
+		DirectX::Keyboard::KeyboardStateTracker m_keyboardTracker;
+		DirectX::GamePad::ButtonStateTracker m_gamePadTracker;
+		DirectX::Mouse::ButtonStateTracker m_mouseTracker;
 	public:
 		PlayerComponent();
 		~PlayerComponent();
@@ -43,6 +50,9 @@ namespace WIS {
 			const DirectX::SimpleMath::Matrix& view,
 			const DirectX::SimpleMath::Matrix& proj) override;
 		void OnRelease() override;
+
+
+		void OnMessegeAccepted(Message::MessageID messageID, const std::any& value);
 
 
 		void AddItem(WIS::ItemKinds itemType) {

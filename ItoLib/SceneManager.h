@@ -328,7 +328,9 @@ namespace Ito
 		if (m_scene) m_scene->Render();
 
 		// スタックシーンの描画 (ベースの上に重ねる)
-		if (m_stackScene) m_stackScene->Render();
+		if (m_stackScene) {
+			m_stackScene->Render();
+		}
 	}
 
 

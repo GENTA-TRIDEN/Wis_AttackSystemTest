@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "EnemyComponent.h"
+#include <random>
+
 // 作成したステートマシンと初期ステートをインクルード
 #include "WISLib/GameObject/Component/StateMachineComponent.h"
 #include "GameComponent/EnemyState/EnemySearchState.h" 
@@ -11,6 +13,9 @@
 #include "UserResources.h"
 #include "GameComponent/PlayerComponent.h"
 
+
+//ItemRequestManager
+#include "InGameObject/ItemRequestManager.h"
 using namespace WIS;
 using namespace DirectX;
 using namespace SimpleMath;
@@ -308,3 +313,55 @@ void WIS::EnemyComponent::OnRender(UserResources* userResources, const Matrix& v
     primitiveBatch->End();
 #endif
 }
+
+void WIS::EnemyComponent::OnRelease()
+{
+
+    auto transform = GetOwner()->GetComponent<TransformComponent>();
+    if (!transform) return;
+
+
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    // 水平方向（-3.0 ～ 3.0 の範囲でランダムに飛ばす例）
+    std::uniform_real_distribution<float> distXZ(-3.0f, 3.0f);
+    // 上方向（5.0 ～ 10.0 の範囲でランダムに跳ね上げる例）
+    std::uniform_real_distribution<float> distY(4.0f, 6.0f);
+
+    std::uniform_int_distribution<int> randItem(0, 1);
+
+
+    for (size_t i = 0; i < 7; i++)
+    {
+        Vector3 randomImpact(
+            distXZ(gen), // X
+            distY(gen),  // Y (上に跳ねる)
+            distXZ(gen)  // Z
+        );
+
+
+        if (randItem(gen) == 0) {
+
+            WIS::ItemRequestManager::RequestDrop(
+                WIS::ItemKinds::BOMB,
+                transform->GetPosition(),
+                "DroppedItem",
+                randomImpact
+            );
+        }
+        else {
+            WIS::ItemRequestManager::RequestDrop(
+                WIS::ItemKinds::GEAR,
+                transform->GetPosition(),
+                "DroppedItem",
+                randomImpact
+            );
+        }
+
+    }
+
+
+}
+
+

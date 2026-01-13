@@ -76,6 +76,6 @@ private:
 	void Attack();
 
 
-	std::string ItemGenerate(DirectX::SimpleMath::Vector3 Pos,WIS::ItemKinds kinds);
+	//std::string ItemGenerate(DirectX::SimpleMath::Vector3 Pos,WIS::ItemKinds kinds);
 };
 

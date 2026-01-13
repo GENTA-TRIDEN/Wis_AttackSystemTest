@@ -81,4 +81,9 @@ namespace WIS
 		ARROW	=3,
 		GEAR	=4//Ž•ŽÔ
 	};
+
+	enum class AttackType {
+		NORMAL=0,
+		HEAVY = 1
+	};
 }

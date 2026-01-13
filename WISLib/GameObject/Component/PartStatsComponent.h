@@ -3,6 +3,9 @@
 #include "WISLib/WISLibTags.h"
 #include <memory>
 
+#include "WISLib/UserInterface/BombEffect.h"
+
+
 namespace WIS {
     class GameObject; // 前方宣言
     class CharacterComponent; // ApplyOnHitEffectのために必要
@@ -15,8 +18,14 @@ namespace WIS {
         float m_centerOfMassValue = 0.8f; // このパーツの重心位置（0.1:手元 ～ 1.0:先端） (WeaponComponentが計算に利用)
         int m_damageBonus = 5;            // このパーツがもたらす攻撃力ボーナス (WeaponComponentが計算に利用)
 
+		WIS::ItemKinds m_partType = WIS::ItemKinds::GEAR;
+
+		//BombEffect
+		std::unique_ptr<WIS::BombEffect> m_Bombeffect;
+
+
     public:
-        PartStatsComponent() = default;
+		PartStatsComponent(WIS::ItemKinds partType) :m_partType(partType) {}
         // ComponentBaseの純粋仮想関数を実装するためデストラクタは必要
         ~PartStatsComponent() override = default;
 
@@ -25,12 +34,13 @@ namespace WIS {
         float GetCenterOfMassValue() const { return m_centerOfMassValue; }
         int GetDamageBonus() const { return m_damageBonus; }
 
-        // ComponentBaseのオーバーライド（使用しないが定義は必要）
-        void OnStart(UserResources* userResources) override {}
-        void OnUpdate(const float elapsedTime, UserResources* userResources) override {}
+        // ComponentBaseのオーバーライド
+        void OnStart(UserResources* userResources) override;
+        void OnUpdate(const float elapsedTime, UserResources* userResources) override;
+		void OnRender(UserResources* userResources, const DirectX::SimpleMath::Matrix& view, const DirectX::SimpleMath::Matrix& proj) override;
         void OnCollision(std::shared_ptr<WIS::GameObject> otherObject) override {}
 
         // 衝突時にパーツ固有の特殊効果を適用する (WeaponComponent::OnCollision から呼び出される)
-        void ApplyOnHitEffect(std::shared_ptr<WIS::GameObject> hitTarget, float baseDamage);
+        void ApplyOnHitEffect(std::shared_ptr<WIS::GameObject> hitTarget, float baseDamage,DirectX::SimpleMath::Vector3 effectPos);
     };
 }

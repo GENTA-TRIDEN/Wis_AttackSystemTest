@@ -1,5 +1,6 @@
 #pragma once
 #include "WISLib/GameObject/Archetype/ArchetypeBase.h"
+
 #include <string>
 
 // 前方宣言（インクルード時間を短縮するため）
@@ -8,6 +9,7 @@ class UserResources;
 namespace WIS { class GameObject; }
 
 namespace WIS {
+	class ItemComponent;
 
     class PartsArchetype : public WIS::ArchetypeBase
     {
@@ -23,16 +25,15 @@ namespace WIS {
             int PartsModelNumconst,
             const std::vector <std::string>& m_itemNames,
             WIS::ItemKinds itemKinds,
-			DirectX::SimpleMath::Vector3 SpawnPos = { 0.0f,3.0f,0.0f }
+			DirectX::SimpleMath::Vector3 SpawnPos = { 0.0f,3.0f,0.0f },
+            DirectX::SimpleMath::Vector3 SpawnImpact = { 0.0f,0.0f,0.0f }
         );
 
 
     private:
 
-        const wchar_t* PartsModelPath = L"Resources/Models/Enemy.sdkmesh";
-
-
-        const wchar_t* GetItemModelPath(WIS::ItemKinds itemKinds);
+        std::shared_ptr<WIS::ItemComponent> AddItemComponent(std::shared_ptr<WIS::GameObject> obj,WIS::ItemKinds itemKinds);
+        
         DirectX::SimpleMath::Vector3 ModelPos = { 0.0f, 1.0f, 0.0f };
 		DirectX::SimpleMath::Vector3 Rotate = { 0.0f,0.0f,0.0f };
     };

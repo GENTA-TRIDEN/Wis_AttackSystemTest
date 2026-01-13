@@ -185,13 +185,21 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Factory.h" />
     <ClInclude Include="GameComponent\EnemyState\EnemyDamageState.h" />
+    <ClInclude Include="GameComponent\ItemComponent\BombItemComponent.h" />
+    <ClInclude Include="GameComponent\ItemComponent\GearItemComponent.h" />
+    <ClInclude Include="InGameObject\ItemRequestManager.h" />
+    <ClInclude Include="WISLib\GameObject\Component\InstantAttackComponent.h" />
+    <ClInclude Include="Scene\GamePadTestScene.h" />
     <ClInclude Include="InGameObject\Archetype\PartsArchetype.h" />
+    <ClInclude Include="Message\Message.h" />
+    <ClInclude Include="Message\Messenger.h" />
     <ClInclude Include="Scene\Stage1223Scene.h" />
+    <ClInclude Include="WISLib\UserInterface\BombEffect.h" />
+    <ClInclude Include="WISLib\UserInterface\TitleShading.h" />
     <ClInclude Include="WISLib\Common\Easing.h" />
     <ClInclude Include="WISLib\GameObject\Component\PolygonComponent.h" />
-    <ClInclude Include="Scene\SkyDomeScene.h" />
-    <ClInclude Include="Scene\StageScene.h" />
     <ClInclude Include="WISLib\UserInterface\HitEffect.h" />
     <ClInclude Include="Scene\EffectScene.h" />
     <ClInclude Include="GameComponent\EnemyState\EnemyAttackState.h" />
@@ -200,17 +208,13 @@
     <ClInclude Include="InGameObject\Archetype\FloorArchetype.h" />
     <ClInclude Include="InGameObject\Archetype\EnemyArchetype.h" />
     <ClInclude Include="InGameObject\Archetype\PlayerArchetype.h" />
-    <ClInclude Include="Scene\AttackScene.h" />
-    <ClInclude Include="Scene\EnemyScene.h" />
     <ClInclude Include="Scene\ItemGetScene.h" />
-    <ClInclude Include="Scene\PlayerTestScene.h" />
     <ClInclude Include="Scene\WeaponComponentTestScene.h" />
     <ClInclude Include="Scene\WeaponTestScene.h" />
     <ClInclude Include="WISLib\GameObject\State\State.h" />
     <ClInclude Include="WISLib\GameObject\Component\StateMachineComponent.h" />
     <ClInclude Include="WISLib\GameObject\Component\FloorComponent.h" />
     <ClInclude Include="GameComponent\EnemyComponent.h" />
-    <ClInclude Include="Scene\RigidBodyScene.h" />
     <ClInclude Include="WISLib\GameObject\Component\RigidBodyComponent.h" />
     <ClInclude Include="Scene\ResultScene.h" />
     <ClInclude Include="GameComponent\ItemComponent.h" />
@@ -222,9 +226,6 @@
     <ClInclude Include="WISLib\GameObject\Archetype\ArchetypeBase.h" />
     <ClInclude Include="Scene\WeaponCreateScene.h" />
     <ClInclude Include="GameComponent\PlayerComponent.h" />
-    <ClInclude Include="Scene\RenderTargetViewScene.h" />
-    <ClInclude Include="Scene\StackTestMain.h" />
-    <ClInclude Include="Scene\StackTestStack.h" />
     <ClInclude Include="InGameObject\Archetype\WeapoArchetype.h" />
     <ClInclude Include="WISLib\GameObject\Component\CharacterComponent.h" />
     <ClInclude Include="DeviceResources.h" />
@@ -262,12 +263,19 @@
     <ClInclude Include="WISLib\WISLibTags.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Factory.cpp" />
     <ClCompile Include="GameComponent\EnemyState\EnemyDamageState.cpp" />
+    <ClCompile Include="GameComponent\ItemComponent\BombItemComponent.cpp" />
+    <ClCompile Include="GameComponent\ItemComponent\GearItemComponent.cpp" />
+    <ClCompile Include="InGameObject\ItemRequestManager.cpp" />
+    <ClCompile Include="WISLib\GameObject\Component\InstantAttackComponent.cpp" />
+    <ClCompile Include="Scene\GamePadTestScene.cpp" />
     <ClCompile Include="InGameObject\Archetype\PartsArchetype.cpp" />
+    <ClCompile Include="Message\Messenger.cpp" />
     <ClCompile Include="Scene\Stage1223Scene.cpp" />
+    <ClCompile Include="WISLib\UserInterface\BombEffect.cpp" />
+    <ClCompile Include="WISLib\UserInterface\TitleShading.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\PolygonComponent.cpp" />
-    <ClCompile Include="Scene\SkyDomeScene.cpp" />
-    <ClCompile Include="Scene\StageScene.cpp" />
     <ClCompile Include="WISLib\UserInterface\HitEffect.cpp" />
     <ClCompile Include="Scene\EffectScene.cpp" />
     <ClCompile Include="GameComponent\EnemyState\EnemyAttackState.cpp" />
@@ -276,17 +284,13 @@
     <ClCompile Include="InGameObject\Archetype\FloorArchetype.cpp" />
     <ClCompile Include="InGameObject\Archetype\EnemyArchetype.cpp" />
     <ClCompile Include="InGameObject\Archetype\PlayerArchetype.cpp" />
-    <ClCompile Include="Scene\AttackScene.cpp" />
-    <ClCompile Include="Scene\EnemyScene.cpp" />
     <ClCompile Include="Scene\ItemGetScene.cpp" />
-    <ClCompile Include="Scene\PlayerTestScene.cpp" />
     <ClCompile Include="Scene\WeaponComponentTestScene.cpp" />
     <ClCompile Include="Scene\WeaponTestScene.cpp" />
     <ClCompile Include="WISLib\GameObject\State\State.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\StateMachineComponent.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\FloorComponent.cpp" />
     <ClCompile Include="GameComponent\EnemyComponent.cpp" />
-    <ClCompile Include="Scene\RigidBodyScene.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\RigidBodyComponent.cpp" />
     <ClCompile Include="Scene\ResultScene.cpp" />
     <ClCompile Include="GameComponent\ItemComponent.cpp" />
@@ -298,9 +302,6 @@
     <ClCompile Include="WISLib\GameObject\Archetype\ArchetypeBase.cpp" />
     <ClCompile Include="Scene\WeaponCreateScene.cpp" />
     <ClCompile Include="GameComponent\PlayerComponent.cpp" />
-    <ClCompile Include="Scene\RenderTargetViewScene.cpp" />
-    <ClCompile Include="Scene\StackTestMain.cpp" />
-    <ClCompile Include="Scene\StackTestStack.cpp" />
     <ClCompile Include="InGameObject\Archetype\WeapoArchetype.cpp" />
     <ClCompile Include="WISLib\GameObject\Component\CharacterComponent.cpp" />
     <ClCompile Include="DeviceResources.cpp" />
@@ -343,6 +344,37 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="directx.ico" />
+    <Image Include="Resources\textures\BOMBNum.png" />
+    <Image Include="Resources\textures\BombSilhouette.png" />
+    <Image Include="Resources\textures\bullet.png" />
+    <Image Include="Resources\textures\GameStart.png" />
+    <Image Include="Resources\textures\GameStartHover.png" />
+    <Image Include="Resources\textures\GEARNum.png" />
+    <Image Include="Resources\textures\GearSilhouette.png" />
+    <Image Include="Resources\textures\GF_HPGage.png" />
+    <Image Include="Resources\textures\GF_HPGageBackground.png" />
+    <Image Include="Resources\textures\HoverButton.png" />
+    <Image Include="Resources\textures\LeftArrowButton.png" />
+    <Image Include="Resources\textures\maria_diffuse.dds" />
+    <Image Include="Resources\textures\maria_normal.dds" />
+    <Image Include="Resources\textures\maria_specular.dds" />
+    <Image Include="Resources\textures\NormalButton.png" />
+    <Image Include="Resources\textures\PushButton.png" />
+    <Image Include="Resources\textures\PushGameStart.png" />
+    <Image Include="Resources\textures\Result.dds" />
+    <Image Include="Resources\textures\Result.png" />
+    <Image Include="Resources\textures\ResultBackground.png" />
+    <Image Include="Resources\textures\Return.png" />
+    <Image Include="Resources\textures\ReturnHover.png" />
+    <Image Include="Resources\textures\ReturnPush.png" />
+    <Image Include="Resources\textures\RightArrowButton.png" />
+    <Image Include="Resources\textures\SelectButton.png" />
+    <Image Include="Resources\textures\Shadow.dds" />
+    <Image Include="Resources\textures\sky.dds" />
+    <Image Include="Resources\textures\Stage.dds" />
+    <Image Include="Resources\textures\Title.dds" />
+    <Image Include="Resources\textures\Title.png" />
+    <Image Include="Resources\textures\TitleBackground.png" />
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest" />
@@ -354,6 +386,18 @@
     <None Include="Resources\Shaders\UI.hlsli" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="Resources\Shaders\BombGS.hlsl">
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources/Shaders/%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\BombPS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources/Shaders/%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
     <FxCompile Include="Resources\Shaders\ParticleGS.hlsl">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
@@ -377,6 +421,14 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources/Shaders/%(Filename).cso</ObjectFileOutput>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="Resources\Shaders\TitlePS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Resources/Shaders/%(Filename).cso</ObjectFileOutput>
     </FxCompile>
     <FxCompile Include="Resources\Shaders\UIGS.hlsl">
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Resources/Shaders/%(Filename).cso</ObjectFileOutput>

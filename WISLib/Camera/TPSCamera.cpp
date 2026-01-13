@@ -22,9 +22,14 @@ void WIS::TPSCamera::UniqueInitialize()
 void WIS::TPSCamera::UniqueUpdate(DirectX::SimpleMath::Vector3& position, DirectX::SimpleMath::Vector3& target, DirectX::SimpleMath::Vector3& up, const DirectX::Mouse::State& state)
 {
 
+	auto gamePad = DirectX::GamePad::Get().GetState(0);
+
 	float sensitivity = 0.002f; 
 	m_yaw += state.x * sensitivity;
 	m_pitch += state.y * sensitivity;
+
+	m_yaw += gamePad.thumbSticks.rightX * 20 * sensitivity;
+	m_pitch -= gamePad.thumbSticks.rightY*12* sensitivity;
 
 	float limit = DirectX::XM_PI / 2.0f - 0.01f;//90“x‚®‚ç‚¢
 	m_pitch = std::max(-limit, std::min(limit, m_pitch));

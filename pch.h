@@ -61,10 +61,13 @@
 //DirectXTK
 #include"Keyboard.h"
 #include"Mouse.h"
+
 #include"CommonStates.h"
 #include"DDSTextureLoader.h"
 #include"WICTextureLoader.h"
 #include"SimpleMath.h"
+
+#include <GamePad.h>
 
 //3d•`‰æ
 #include "DirectXHelpers.h"

@@ -6,6 +6,7 @@
 #include "WISLib/Camera/CameraManager.h"
 
 #include "WISLib/UserInterface/Button.h"
+#include "WISLib/UserInterface/TitleShading.h"
 
 class TitleScene :public Ito::Scene<UserResources>
 {
@@ -46,6 +47,8 @@ private:
 
 	std::unique_ptr<kHorikawa::UserInterface> Background;
 
+	std::unique_ptr<WIS::TitleShading> m_titleShading;
+	
 	float count;
 
 

@@ -87,7 +87,7 @@ void ItemGetScene::Initialize()
 
 	for (int i = 0; i < 5; i++) {
 
-		ItemGenerate({ static_cast<float>(rand() % 10 - 5),0.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
+		//ItemGenerate({ static_cast<float>(rand() % 10 - 5),0.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
 
 	}
 
@@ -104,6 +104,8 @@ void ItemGetScene::Initialize()
 	weaponColl->SetDebugColor(DirectX::Colors::Red);
 
 	int Handle = weaponModel->AddModel(device, context, L"Resources/Models/Weapon/stick.sdkmesh", fxFactory);
+
+
 	weaponModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
 	weaponModel->SetScale(Handle, { 2.3f,2.3f,2.3f });
 	WeaponTransform->SetParent(PlayerTransform);
@@ -305,32 +307,32 @@ void ItemGetScene::Attack()
 {
 }
 
-std::string ItemGetScene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::ItemKinds kinds)
-{
-	//Item‚Ì¶¬ˆ—
-	std::string name = "Item_" + std::to_string(m_itemNames.size());
-	m_itemNames.push_back(name);
-	auto item = m_objectManager->GenerateObject(name, WIS::SceneTag::GAMEPLAY_SCENE);
-	//Item‚ÌÝ’è
-
-	auto itemTransform = item->GetComponent<WIS::TransformComponent>();
-	auto itemColl = item->AddComponent<WIS::CollisionComponent>();
-	auto itemModel = item->AddComponent<WIS::ModelComponent>();
-
-	auto itemComp = item->AddComponent<WIS::ItemComponent>(WIS::ItemKinds::GEAR);
-	itemTransform->SetPosition(Pos);
-	itemComp->SetItemKinds(kinds);
-	itemColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
-
-	int Handle=itemModel->AddModel(GetUserResources()->GetDeviceResources()->GetD3DDevice(),
-		GetUserResources()->GetDeviceResources()->GetD3DDeviceContext(),
-		L"Resources/Models/Weapon/Gear.sdkmesh",
-		GetUserResources()->GetEffectFactory());
-	itemModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
-	itemModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
-
-
-
-	return name;
-}
+//std::string ItemGetScene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::ItemKinds kinds)
+//{
+//	//Item‚Ì¶¬ˆ—
+//	std::string name = "Item_" + std::to_string(m_itemNames.size());
+//	m_itemNames.push_back(name);
+//	auto item = m_objectManager->GenerateObject(name, WIS::SceneTag::GAMEPLAY_SCENE);
+//	//Item‚ÌÝ’è
+//
+//	auto itemTransform = item->GetComponent<WIS::TransformComponent>();
+//	auto itemColl = item->AddComponent<WIS::CollisionComponent>();
+//	auto itemModel = item->AddComponent<WIS::ModelComponent>();
+//
+//	auto itemComp = item->AddComponent<WIS::ItemComponent>(WIS::ItemKinds::GEAR);
+//	itemTransform->SetPosition(Pos);
+//	itemComp->SetItemKinds(kinds);
+//	itemColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
+//
+//	int Handle=itemModel->AddModel(GetUserResources()->GetDeviceResources()->GetD3DDevice(),
+//		GetUserResources()->GetDeviceResources()->GetD3DDeviceContext(),
+//		L"Resources/Models/Weapon/Gear.sdkmesh",
+//		GetUserResources()->GetEffectFactory());
+//	itemModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+//	itemModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
+//
+//
+//
+//	return name;
+//}
 

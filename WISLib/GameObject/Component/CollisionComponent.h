@@ -122,6 +122,10 @@ namespace WIS {
 			m_color = color;
 		}
 
+		void SetCollisionUniqueNumber(int number) {
+			CollisionUniqueNumber = number;
+		}
+
 		int GetCollisionUniqueNumber() {
 			return CollisionUniqueNumber;
 		}

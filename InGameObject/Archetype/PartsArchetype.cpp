@@ -10,12 +10,23 @@
 #include "WISLib/GameObject/Component/FloorComponent.h"
 #include "GameComponent/ItemComponent.h"
 
+//ItemComponent
+#include "GameComponent/ItemComponent/GearItemComponent.h"
+#include "GameComponent/ItemComponent/BombItemComponent.h"
 
 
 
 
-std::weak_ptr<WIS::GameObject> WIS::PartsArchetype::Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int PartsModelNumconst, const std::vector<std::string>& m_itemNames, WIS::ItemKinds itemKinds,
-	DirectX::SimpleMath::Vector3 SpawnPos)
+
+std::weak_ptr<WIS::GameObject> WIS::PartsArchetype::Create(
+	ObjectManager* p_objectManager,
+	UserResources* p_userResources,
+	const std::string& BaseName, 
+	int PartsModelNumconst, 
+	const std::vector<std::string>& m_itemNames,
+	WIS::ItemKinds itemKinds,
+	DirectX::SimpleMath::Vector3 SpawnPos,
+	DirectX::SimpleMath::Vector3 SpawnImpact)
 {
 	auto parts = p_objectManager->GenerateObject(BaseName, WIS::SceneTag::GAMEPLAY_SCENE);
 	std::string finalName = parts->GetName();
@@ -26,58 +37,56 @@ std::weak_ptr<WIS::GameObject> WIS::PartsArchetype::Create(ObjectManager* p_obje
 	auto partsColl = parts->AddComponent<WIS::CollisionComponent>();
 	auto partsModel = parts->AddComponent<WIS::ModelComponent>();
 	auto partsTransform = parts->GetComponent<WIS::TransformComponent>();
+	
 	//リジッドボディ
-	//auto partsRigid = parts->AddComponent<WIS::RigidBodyComponent>();
+	auto partsRigid = parts->AddComponent<WIS::RigidBodyComponent>();
 
-		
+	partsRigid->SetHeightOffset(0.7f);
+	
+	partsRigid->AddImpulse(SpawnImpact);
+
+
+	partsColl->SetCollisionTag(WIS::CollisionTag::DYNAMIC);
+
 	//Partskindの設定
-	auto itemComp = parts->AddComponent<WIS::ItemComponent>(itemKinds);
+	auto itemComp = AddItemComponent(parts, itemKinds);
+
 	//当たり判定の設定
 	partsColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
 
-	//モデル
 
-	int Handle = partsModel->AddModel(device, context, GetItemModelPath(itemKinds), fxFactory);
+
+	//モデル
+	int Handle = partsModel->AddModel(device, context, itemComp->GetItemModelPath(), fxFactory);
 
 	partsTransform->SetPosition(SpawnPos);
 		
 	partsModel->SetRotate(Handle, Rotate);
 	partsModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
+
+
 	//灰色
 	//partsModel->SetColor(Handle, { 2.0f / 255.0f,2.0f / 255.0f,2.0f / 255.0f,1.0f });
 	return parts;
 }
 
-
-//NONE = 0,
-//BLADE,//刃
-//SHIELD,//盾
-//BOMB,//爆弾
-//ARROW,
-//GEAR//歯車
-const wchar_t* WIS::PartsArchetype::GetItemModelPath(WIS::ItemKinds itemKinds)
+std::shared_ptr<WIS::ItemComponent> WIS::PartsArchetype::AddItemComponent(std::shared_ptr<WIS::GameObject> obj, WIS::ItemKinds itemKinds)
 {
-
 	switch (itemKinds)
 	{
 	case WIS::ItemKinds::BLADE:
-		return L"Resources/Models/Weapon/Blade.sdkmesh";
-
+		return obj->AddComponent<WIS::GearItemComponent>();
 	case WIS::ItemKinds::BOMB:
 		Rotate = { 0, DirectX::XMConvertToRadians(-90), 0 };
-
-		return L"Resources/Models/Weapon/Bomb.sdkmesh";
-
+		return obj->AddComponent<WIS::BombItemComponent>();
 	case WIS::ItemKinds::ARROW:
-		return L"Resources/Models/Weapon/Arrow.sdkmesh";
 
+		return obj->AddComponent<WIS::GearItemComponent>();
 	case WIS::ItemKinds::GEAR:
 		Rotate = { 0, 0, DirectX::XMConvertToRadians(-90) };
-		return L"Resources/Models/Weapon/Gear.sdkmesh";
-
+		return obj->AddComponent<WIS::GearItemComponent>();
 	default:
-		return L"Resources/Models/Weapon/Gear.sdkmesh";
+		return obj->AddComponent<WIS::GearItemComponent>();
 	}
-	return L"";
-
+	return nullptr;
 }

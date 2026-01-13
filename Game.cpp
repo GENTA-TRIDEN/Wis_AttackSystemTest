@@ -22,6 +22,7 @@
 
 #include "WISLib/GameObject/Component/CollisionComponent.h"
 
+#include "InGameObject/ItemRequestManager.h"
 
 
 extern void ExitGame() noexcept;
@@ -36,6 +37,7 @@ Game::Game() noexcept(false) :
     m_deviceResources = std::make_unique<DX::DeviceResources>();
     m_mouse = std::make_unique<DirectX::Mouse>();
     m_keyboard = std::make_unique<DirectX::Keyboard>();
+	m_gamePad = std::make_unique<DirectX::GamePad>(); 
     m_deviceResources->RegisterDeviceNotify(this);
 }
 
@@ -102,6 +104,7 @@ void Game::Update(DX::StepTimer const& timer)
     auto mouse_state = m_mouse->GetState();
     m_kbTracker.Update(m_keyboard->GetState());
     m_mouseTracker.Update(mouse_state);
+	m_gamePadTracker.Update(m_gamePad->GetState(0));
 
     // Update managers
     p_cameraManager->Update(mouse_state);
@@ -112,7 +115,7 @@ void Game::Update(DX::StepTimer const& timer)
     // Update the current scene
     m_sceneManager->Update(elapsedTime);
 
-
+    WIS::ItemRequestManager::ProcessRequests(m_objectManager.get(), m_userResources.get());
 
 }
 #pragma endregion
@@ -216,7 +219,7 @@ void Game::CreateDeviceDependentResources()
     // --- Register managers with UserResources ---
     m_userResources->SetObjectManager(m_objectManager.get());
     // Call CreateDeviceDependentResources for the current scene
-
+	m_userResources->SetCameraManager(WIS::CameraManager::GetInstance());
 
     m_sceneManager->SetUserResources(m_userResources.get());
 

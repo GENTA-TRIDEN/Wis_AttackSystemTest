@@ -68,6 +68,11 @@ namespace WIS {
         std::vector<std::weak_ptr<GameObject>> m_CollisionObjects;
 
         bool m_IsDrawCollision;
+
+
+    public:
+        
+
     };
 
 

@@ -13,6 +13,9 @@
 #include "WISLib/GameObject/Component/RigidBodyComponent.h"
 
 
+#include "WISLib/GameObject/Component/WeaponPartsComponent.h"
+
+
 #include "GameComponent/PlayerComponent.h"
 #include "GameComponent/ItemComponent.h"
 #include "InGameObject/Archetype/PartsArchetype.h"
@@ -29,6 +32,7 @@
 #include "InGameObject/Archetype/EnemyArchetype.h"
 #include "InGameObject/Archetype/FloorArchetype.h"
 #include "InGameObject/Archetype/WeapoArchetype.h"
+
 
 
 
@@ -60,6 +64,11 @@ void Stage1223Scene::Initialize()
 	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
+
+	WIS::FloorArchetype floorArchetype = WIS::FloorArchetype();
+	auto floor = floorArchetype.Create(m_objectManager, GetUserResources(), m_floorText, m_FloorModelHandle);
+	std::string floorName = floor.lock()->GetName();
+	m_floorText = floorName;
 
 
 	WIS::PlayerArchetype playerArchetype = WIS::PlayerArchetype();
@@ -93,7 +102,7 @@ void Stage1223Scene::Initialize()
 	m_skyDome->Start(GetUserResources());
 
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < 4; i++) {
 
 		//ItemGenerate({ static_cast<float>(rand() % 10 - 5),2.0f,static_cast<float>(rand() % 10 - 5) }, WIS::ItemKinds::GEAR);
 		//PartsArchetype
@@ -103,29 +112,40 @@ void Stage1223Scene::Initialize()
 			"Item_" + std::to_string(m_itemNames.size()),
 			0, m_itemNames, WIS::ItemKinds::GEAR,
 			DirectX::SimpleMath::Vector3{
-			static_cast<float>(rand() % 10 - 5),
+			static_cast<float>(rand() % 20 - 10),
 			2.0f,
-			static_cast<float>(rand() % 10 - 5)
+			static_cast<float>(rand() % 20 - 10)
 			}
 		);
 
 
+		partsArchetype = WIS::PartsArchetype();
+		partsArchetype.Create(m_objectManager,
+			GetUserResources(),
+			"Item_" + std::to_string(m_itemNames.size()),
+			0, m_itemNames, WIS::ItemKinds::BOMB,
+			DirectX::SimpleMath::Vector3{
+			static_cast<float>(rand() % 20 - 10),
+			2.0f,
+			static_cast<float>(rand() % 20 - 10)
+			}
+		);
+
 	}
 
-	WIS::FloorArchetype floorArchetype = WIS::FloorArchetype();
-	auto floor = floorArchetype.Create(m_objectManager, GetUserResources(), m_floorText, m_FloorModelHandle, m_PlayerText);
-	std::string floorName = floor.lock()->GetName();
-	m_floorText = floorName;
+
 
 
 	WIS::WeapoArchetype weaponArchetype = WIS::WeapoArchetype();
 	m_weaponName = weaponArchetype.Create(m_objectManager, GetUserResources(), m_weaponName, m_WeaponModelHandle, m_PlayerText).lock()->GetName();
 	m_effect->Create(GetUserResources()->GetDeviceResources());
+
 	m_objectManager->GetObject(m_weaponName)->GetComponent<WIS::WeaponComponent>()->SetEffect(m_effect.get());
 
 	if (player) {
 		auto pComp = player->GetComponent<WIS::PlayerComponent>();
 		if (pComp) {
+
 			pComp->SetWeaponName(m_weaponName);
 		}
 	}
@@ -159,6 +179,7 @@ void Stage1223Scene::Initialize()
 
 
 
+	m_SceneChangeTimer = 0.0f;
 
 
 	m_basicEffect->SetLightingEnabled(true);
@@ -173,8 +194,9 @@ void Stage1223Scene::Update(float elapsedTime)
 {
 	auto key_state = DirectX::Keyboard::Get().GetState();
 	auto key = GetUserResources()->GetKeyboardStateTracker();
-	
+	auto gamepad = DirectX::GamePad::Get().GetState(0);
 	auto mouse_state = DirectX::Mouse::Get().GetState();
+	m_SceneChangeTimer += elapsedTime;
 
 
 	if (key->released.P) {
@@ -193,11 +215,12 @@ void Stage1223Scene::Update(float elapsedTime)
 	}
 
 
-	if (key_state.Tab) {
+	if ((key_state.Tab||gamepad.buttons.y) && m_SceneChangeTimer > m_SceneChangeDelay){
 
 
 
-		this->StackScene<WeaponCreateScene>();
+		m_SceneChangeTimer = 0.0f;
+		StackScene<WeaponCreateScene>();
 
 
 	}
@@ -343,6 +366,29 @@ void Stage1223Scene::Render()
 			1.0f,
 			0
 		);
+
+
+		m_effect->CreateBillboard(
+			p_cameraManager->GetCamera()->GetDirection(),
+			p_cameraManager->GetCamera()->GetPosition(),
+			DirectX::SimpleMath::Vector3::Up
+		);
+		m_effect->Render(
+			*p_cameraManager->GetView(),
+			m_proj
+		);
+
+		auto playerCharacter = m_objectManager->GetObject(m_PlayerText)->GetComponent<WIS::CharacterComponent>();
+
+		playerCharacter->DrawShadow(
+			context,
+			GetUserResources()->GetCommonStates(),
+			m_objectManager->GetObject(m_PlayerText)->GetComponent<WIS::TransformComponent>()->GetPosition(),
+			2.0f,
+			*p_cameraManager->GetView(),
+			m_proj
+		);
+
 	}
 	else {
 
@@ -350,28 +396,10 @@ void Stage1223Scene::Render()
 
 
 
-
 	m_objectManager->Render(GetUserResources(), *p_cameraManager->GetView(), m_proj);
-	m_effect->CreateBillboard(
-		p_cameraManager->GetCamera()->GetDirection(),
-		p_cameraManager->GetCamera()->GetPosition(),
-		DirectX::SimpleMath::Vector3::Up
-	);
-	m_effect->Render(
-		*p_cameraManager->GetView(),
-		m_proj
-	);
 
-	auto playerCharacter = m_objectManager->GetObject(m_PlayerText)->GetComponent<WIS::CharacterComponent>();
 
-	playerCharacter->DrawShadow(
-		context,
-		GetUserResources()->GetCommonStates(),
-		m_objectManager->GetObject(m_PlayerText)->GetComponent<WIS::TransformComponent>()->GetPosition(),
-		2.0f,
-		*p_cameraManager->GetView(),
-		m_proj
-	);
+
 
 
 	context->OMSetRenderTargets(1, &oldRTV, oldDSV);
@@ -479,11 +507,12 @@ void Stage1223Scene::Render()
 		if (PlayerComp) 
 		{
 			//•‚Å
-			font->AddString((std::to_wstring(PlayerComp->GetItemCount(WIS::ItemKinds::BOMB))).c_str(), { 200.0f, 21.0f }, DirectX::Colors::Black, 2.0f);
-			font->AddString((std::to_wstring(PlayerComp->GetItemCount(WIS::ItemKinds::GEAR))).c_str(), { 200.0f, 90.0f }, DirectX::Colors::Black, 2.0f);
+			font->AddString((std::to_wstring(PlayerComp->GetItemCount(WIS::ItemKinds::GEAR))).c_str(), { 200.0f, 21.0f }, DirectX::Colors::Black, 2.0f);
+			font->AddString((std::to_wstring(PlayerComp->GetItemCount(WIS::ItemKinds::BOMB))).c_str(), { 200.0f, 90.0f }, DirectX::Colors::Black, 2.0f);
 		}
 
 	}
+
 
 	if (oldRTV) oldRTV->Release();
 	if (oldDSV) oldDSV->Release();
@@ -643,27 +672,27 @@ void Stage1223Scene::Attack()
 {
 }
 
-std::string Stage1223Scene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::ItemKinds kinds)
-{
-	std::string name = "Item_" + std::to_string(m_itemNames.size());
-	m_itemNames.push_back(name);
-	auto item = m_objectManager->GenerateObject(name, WIS::SceneTag::GAMEPLAY_SCENE);
-
-	auto itemTransform = item->GetComponent<WIS::TransformComponent>();
-	auto itemColl = item->AddComponent<WIS::CollisionComponent>();
-	auto itemModel = item->AddComponent<WIS::ModelComponent>();
-	item->AddComponent<WIS::RigidBodyComponent>();
-	auto itemComp = item->AddComponent<WIS::ItemComponent>(WIS::ItemKinds::GEAR);
-	itemTransform->SetPosition(Pos);
-	itemComp->SetItemKinds(kinds);
-	itemColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
-
-	int Handle = itemModel->AddModel(GetUserResources()->GetDeviceResources()->GetD3DDevice(),
-		GetUserResources()->GetDeviceResources()->GetD3DDeviceContext(),
-		L"Resources/Models/Weapon/Gear.sdkmesh",
-		GetUserResources()->GetEffectFactory());
-	itemModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
-	//itemModel->SetColor(Handle, { 2.0f / 255.0f,2.0f / 255.0f,2.0f / 255.0f,1.0f });
-	itemModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
-	return name;
-}
+//std::string Stage1223Scene::ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::ItemKinds kinds)
+//{
+//	std::string name = "Item_" + std::to_string(m_itemNames.size());
+//	m_itemNames.push_back(name);
+//	auto item = m_objectManager->GenerateObject(name, WIS::SceneTag::GAMEPLAY_SCENE);
+//
+//	auto itemTransform = item->GetComponent<WIS::TransformComponent>();
+//	auto itemColl = item->AddComponent<WIS::CollisionComponent>();
+//	auto itemModel = item->AddComponent<WIS::ModelComponent>();
+//	item->AddComponent<WIS::RigidBodyComponent>();
+//	auto itemComp = item->AddComponent<WIS::ItemComponent>(WIS::ItemKinds::GEAR);
+//	itemTransform->SetPosition(Pos);
+//	itemComp->SetItemKinds(kinds);
+//	itemColl->AddBoundingSphere(1.0f, { 0.0f,0.0f,0.0f });
+//
+//	int Handle = itemModel->AddModel(GetUserResources()->GetDeviceResources()->GetD3DDevice(),
+//		GetUserResources()->GetDeviceResources()->GetD3DDeviceContext(),
+//		L"Resources/Models/Weapon/Gear.sdkmesh",
+//		GetUserResources()->GetEffectFactory());
+//	itemModel->SetRotate(Handle, { 0,0,DirectX::XMConvertToRadians(-90) });
+//	//itemModel->SetColor(Handle, { 2.0f / 255.0f,2.0f / 255.0f,2.0f / 255.0f,1.0f });
+//	itemModel->SetScale(Handle, { 0.8f,0.8f,0.8f });
+//	return name;
+//}

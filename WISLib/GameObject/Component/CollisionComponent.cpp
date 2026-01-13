@@ -233,10 +233,12 @@ void CollisionComponent::OnPostUpdate(const float /*elapsedTime*/, UserResources
 // 衝突イベント発生時に呼ばれる
 void CollisionComponent::OnCollision(std::shared_ptr<GameObject> otherObject)
 {
+
 	// 具体的な処理は、このクラスを継承した PlayerComponent などで実装する
 	for (auto func : m_onCollisionCallbacks) {
 		func(otherObject);
 	}
+
 	IsHit = true;
 
 }

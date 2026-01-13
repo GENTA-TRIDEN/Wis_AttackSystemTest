@@ -6,6 +6,7 @@
 #include "WISLib/Camera/CameraManager.h"
 
 #include "WISLib/UserInterface/HitEffect.h"
+#include "WISLib/UserInterface/BombEffect.h"
 
 class EffectScene :public Ito::Scene<UserResources>
 {
@@ -50,8 +51,11 @@ private:
 
 
 
-	std::unique_ptr<WIS::HitEffect> m_effect;
+	std::unique_ptr<WIS::HitEffect> m_Hiteffect;
+	std::unique_ptr<WIS::BombEffect> m_Bombeffect;
 
+	bool m_isHitPushed = false;
+	bool m_isBombPushed = false;
 
 	int m_cameraHandle = -1;
 

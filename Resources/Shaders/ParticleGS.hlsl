@@ -24,7 +24,7 @@ void main(
 
 		float4 res = offset_array[i];
 
-		element.Pos = input[0].Pos + mul(offset_array[i], matWorld);
+        element.Pos = input[0].Pos + mul(offset_array[i], matWorld);
 
 		element.Pos = mul(element.Pos, matView);
 		element.Pos = mul(element.Pos, matProj);

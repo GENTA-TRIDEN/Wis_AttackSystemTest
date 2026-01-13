@@ -12,6 +12,8 @@
 #include "ItoLib/DebugFont.h"
 
 #include "WISLib/GameObject/ObjectManager.h"
+//カメラマネージャー
+#include "WISLib/Camera/CameraManager.h"
 
 // クラスの前方宣言
 namespace WIS {
@@ -44,7 +46,8 @@ private:
 
 	// --- マネージャーへのポインタ ---
 	WIS::ObjectManager* m_objectManager;
-	//WIS::BlueprintManager* m_blueprintManager;
+	WIS::CameraManager* p_cameraManager;
+// ;
 
 public:
 	// コンストラクタ
@@ -59,6 +62,7 @@ public:
 		, m_fxFactory(nullptr)
 		, m_primitiveBatch(nullptr)
 		, m_objectManager(nullptr)   // マネージャーポインタをnullptrで初期化
+		, p_cameraManager(nullptr)
 		//, m_blueprintManager(nullptr) // マネージャーポインタをnullptrで初期化
 	{
 	}
@@ -123,10 +127,12 @@ public:
 	void SetObjectManager(WIS::ObjectManager* manager) { m_objectManager = manager; }
 	WIS::ObjectManager* GetObjectManager() { return m_objectManager; }
 
+
 	// ------------------------------------------ //
-	// Blueprint Manager
+	// Camera Manager
 	// ------------------------------------------ //
-	//void SetBlueprintManager(WIS::BlueprintManager* manager) { m_blueprintManager = manager; }
-	//WIS::BlueprintManager* GetBlueprintManager() { return m_blueprintManager; }
+	void SetCameraManager(WIS::CameraManager* manager) { p_cameraManager = manager; }
+	WIS::CameraManager* GetCameraManager() { return p_cameraManager; }
+
 };
 

@@ -20,6 +20,7 @@ public:
 	/// <param name="FloorModelNumconst">FloorModel‚ÌHandle</param>
 	/// <param name="playerName">PlayerName</param>
 	/// <returns></returns>
+	std::weak_ptr<WIS::GameObject> Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int FloorModelNumconst/*, const std::string& playerName*/);
 	std::weak_ptr<WIS::GameObject> Create(ObjectManager* p_objectManager, UserResources* p_userResources, const std::string& BaseName, int FloorModelNumconst, const std::string& playerName);
 
 private:

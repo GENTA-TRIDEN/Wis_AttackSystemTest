@@ -51,25 +51,45 @@ private:
 	std::unique_ptr<DirectX::BasicEffect> m_basicEffect;
 
 
+
+	DirectX::GamePad::ButtonStateTracker m_GamePadState;
+
 	int m_cameraHandle;
 	//もとのSceneのカメラのHandle
 	int m_ReturnCameraHandle;
 
-	std::unique_ptr <WIS::Button> m_button;
-	std::unique_ptr <WIS::Button> m_BombButton;
+	//std::unique_ptr <WIS::Button> m_button;
+	//std::unique_ptr <WIS::Button> m_BombButton;
+	//std::unique_ptr<WIS::Button> m_UpButton;
+	//std::unique_ptr<WIS::Button> m_DownButton;
+	//std::unique_ptr<WIS::Button> m_RightButton;
+	//std::unique_ptr<WIS::Button> m_LeftButton;
+	//std::unique_ptr<WIS::Button> m_SelectButton;
+	enum Buttons
+	{
+		GEAR_BUTTON = 0,
+		BOMB_BUTTON,
+		UP_BUTTON,
+		DOWN_BUTTON,
+		RIGHT_BUTTON,
+		LEFT_BUTTON,
+		SELECT_BUTTON,
+		BUTTON_MAX
 
-	std::unique_ptr<WIS::Button> m_UpButton;
-	std::unique_ptr<WIS::Button> m_DownButton;
-	std::unique_ptr<WIS::Button> m_RightButton;
-	std::unique_ptr<WIS::Button> m_LeftButton;
+	};
+
+	Buttons m_currentButton;
 
 
-	std::unique_ptr<WIS::Button> m_SelectButton;
+	std::vector<std::unique_ptr<WIS::Button>> m_buttonList;
+
+
 
 	int clickCount = 0;
 	int WeaponPartsModelHandle = -1;
 
 	std::vector<std::string> WeaponPartsName;
+
 	bool isClick = false;
 
 	const std::string m_weaponText = "Weapon";
@@ -87,7 +107,7 @@ private:
 	void ChangeNextWeaponParts();
 
 
-
+	void AddWeaponPartsToWeapon(const wchar_t* path, WIS::ItemKinds itemKinds);
 
 	WIS::WeapoArchetype m_weaponArchetype;
 
@@ -97,6 +117,11 @@ private:
 private:
 	int m_DebugCountUp = 0;
 	const int m_DebugCountMax = 60;
+	//タブがシーンが始まってから変更できるようになるまでの時間
+	float m_SceneChangeDelay = 0.5f;
+	float m_SceneChangeTimer = 0.0f;
+
 
 };
+
 

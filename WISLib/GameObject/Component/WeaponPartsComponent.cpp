@@ -32,7 +32,7 @@ void WeaponPartsComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObj
 	if (auto parent = m_ParentWeaponObject.lock()) {
 		if (auto weaponComp = parent->GetComponent<WIS::WeaponComponent>()) {
 			// 親武器の再集計と再計算をトリガー
-			weaponComp->OnCollision(otherObject);
+			//weaponComp->OnCollision(otherObject);
 		}
 	}
 }
@@ -40,8 +40,6 @@ void WeaponPartsComponent::OnCollision(std::shared_ptr<WIS::GameObject> otherObj
 // 武器の重さを増やす
 void WeaponPartsComponent::AddWeight(float addedWeight)
 {
-	// この関数は主にWeaponComponent側のAggregateAndCalculateStats()内で処理されるため、
-	// ここでは特にアクションは不要。
 }
 
 // 武器の重心を設定

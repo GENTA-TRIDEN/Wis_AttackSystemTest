@@ -57,8 +57,8 @@ void EffectScene::Initialize()
 	SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 	m_objectManager->SetCurrentSceneTag(WIS::SceneTag::GAMEPLAY_SCENE);
 
-	m_effect->Create(GetUserResources()->GetDeviceResources());
-
+	m_Hiteffect->Create(GetUserResources()->GetDeviceResources());
+	m_Bombeffect->Create(GetUserResources()->GetDeviceResources());
 
 
 
@@ -69,10 +69,28 @@ void EffectScene::Update(float elapsedTime)
 {
 	auto key_state = DirectX::Keyboard::Get().GetState();
 	auto mouse_state = DirectX::Mouse::Get().GetState();
-	m_effect->Update(elapsedTime);
+	m_Hiteffect->Update(elapsedTime);
+	m_Bombeffect->Update(elapsedTime);
 
-	if (mouse_state.leftButton) {
-		m_effect->hit({ 0.0f, 0.0f, 0.0f });
+	if (mouse_state.leftButton&&!m_isHitPushed){
+		m_isHitPushed = true;
+		for (size_t i = 0; i < 5; i++)
+		{
+			m_Hiteffect->hit({ 0.0f, 0.0f, 0.0f });
+		}
+	}
+
+
+	if (mouse_state.rightButton&&!m_isBombPushed) {
+		m_isBombPushed = true;
+			m_Bombeffect->hit({ 0.0f, 0.0f, 0.0f });
+		
+	}
+	if (!mouse_state.leftButton) {
+		m_isHitPushed = false;
+	}
+	if (!mouse_state.rightButton) {
+		m_isBombPushed = false;
 	}
 
 
@@ -129,9 +147,13 @@ void EffectScene::Render()
 	);
 
 	auto cam = p_cameraManager->GetCamera();
-	m_effect->CreateBillboard(cam->GetDirection(), cam->GetPosition(), DirectX::SimpleMath::Vector3::Up);
+	m_Hiteffect->CreateBillboard(cam->GetDirection(), cam->GetPosition(), DirectX::SimpleMath::Vector3::Up);
 
-	m_effect->Render(*p_cameraManager->GetView(),
+	m_Hiteffect->Render(*p_cameraManager->GetView(),
+		m_proj);
+
+	m_Bombeffect->CreateBillboard(cam->GetDirection(), cam->GetPosition(), DirectX::SimpleMath::Vector3::Up);
+	m_Bombeffect->Render(*p_cameraManager->GetView(),
 		m_proj);
 
 	font->AddString(L"GamePlayScene(EffectScene):", { 0.0f, 0.0f });
@@ -169,8 +191,12 @@ void EffectScene::CreateDeviceDependentResources()
 		m_inputLayout.ReleaseAndGetAddressOf()
 	);
 
-	m_effect = std::make_unique<WIS::HitEffect>();
-	m_effect->Create(GetUserResources()->GetDeviceResources());
+	m_Hiteffect = std::make_unique<WIS::HitEffect>();
+	m_Hiteffect->Create(GetUserResources()->GetDeviceResources());
+
+		
+	m_Bombeffect = std::make_unique<WIS::BombEffect>();
+	m_Bombeffect->Create(GetUserResources()->GetDeviceResources());
 }
 
 void EffectScene::CreateWindowSizeDependentResources()

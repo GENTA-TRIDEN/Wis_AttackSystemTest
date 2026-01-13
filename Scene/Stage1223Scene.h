@@ -113,10 +113,15 @@ private:
 	std::unique_ptr<kHorikawa::UserInterface> m_HPGreen;
 	std::unique_ptr<kHorikawa::UserInterface> m_HPRed;
 
+
+	float m_SceneChangeDelay = 0.5f;
+	float m_SceneChangeTimer = 0.0f;
+
 private:
 	void Attack();
 
 
-	std::string ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::ItemKinds kinds);
+
+	//std::string ItemGenerate(DirectX::SimpleMath::Vector3 Pos, WIS::ItemKinds kinds);
 };
 

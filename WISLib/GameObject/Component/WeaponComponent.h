@@ -38,9 +38,32 @@ namespace WIS {
 		const float m_swingDuration = 0.8f;      // 振りの持続時間
 		float m_swingTimer = 0.0f;
 
+
+		//Chargeアタック管理
+		bool m_isCharging = false;
+		float m_chargeTimer = 0.0f;
+		const float m_maxChargeTime = 2.0f;
+		const float m_minChargeTime = 0.5f;
+
+
+
+		int m_chargeLevel = 0; //0:通常 1:中 2:大
+		const float m_chargeCoolDownMultiplier[3] = { 1.0f, 1.5f, 2.0f }; //チャージレベルごとのクールダウン倍率
+		const float m_chargeDamageMultiplier[3] = { 1.0f, 1.5f, 2.0f }; //チャージレベルごとのダメージ倍率
+
+
+		
+
 		//左右に振る
 		//
 		bool m_IsLeftToRight = true;
+
+
+
+		AttackType m_currentAttackType = AttackType::NORMAL;
+
+	
+
 
 
 		// 武器を構成するパーツオブジェクトのリスト (弱参照で循環参照を回避)
@@ -72,6 +95,10 @@ namespace WIS {
 		// 攻撃制御関数 
 		// 攻撃を試み、可能であれば実行してクールダウンを開始する
 		bool TryAttack();
+		
+		//3段階の溜めがある攻撃
+		bool ChargeAttack(float elapsedTime);
+		bool TryAttackHeavy();
 
 		// 最終ステータスを計算する
 		void CalculateFinalStats();
@@ -84,5 +111,10 @@ namespace WIS {
 		float GetBaseWeight() const {
 			return m_baseWeight;
 		}
+
+		WIS::AttackType GetCurrentAttackType() const {
+			return m_currentAttackType;
+		}
+
 	};
 }

@@ -89,11 +89,6 @@ namespace WIS {
         std::unordered_map<WIS::SceneTag, Objects> m_sceneTagToObjects;
 
 
-        //↓しないほうがいいため消す
-    ////シングルトン
-    //private:
-    //    //シングルトンにするためのunique_ptr
-    //    static std::unique_ptr<ObjectManager> s_objectManager;
 
     };
 

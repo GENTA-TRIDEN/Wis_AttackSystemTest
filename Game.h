@@ -16,6 +16,7 @@
 #include "WISLib/Camera/CameraManager.h"
 #include "WISLib/Common/CollisionManager.h"
 
+#include <GamePad.h>
 
 // A basic game implementation that creates a D3D11 device and
 // provides a game loop.
@@ -81,8 +82,11 @@ private:
 
     std::unique_ptr<DirectX::Keyboard>      m_keyboard;
     std::unique_ptr<DirectX::Mouse>         m_mouse;
+	std::unique_ptr<DirectX::GamePad>       m_gamePad;
     DirectX::Keyboard::KeyboardStateTracker m_kbTracker;
     DirectX::Mouse::ButtonStateTracker      m_mouseTracker;
+	DirectX::GamePad::ButtonStateTracker   m_gamePadTracker;
+
 
 
     // UserResources

@@ -234,22 +234,26 @@ void WIS::RigidBodyComponent::OnCollision(std::shared_ptr<WIS::GameObject> other
 	}
 
     // B. 床処理（接地）
-    if (hitGround)
-    {
-        // 地面の高さ
-        float groundY = downRayOrigin.y - nearestGroundDist;
+	if (hitGround)
+	{
+		// 地面の高さ（レイの衝突地点のY座標）
+		float groundY = downRayOrigin.y - nearestGroundDist;
 
-        // 接地判定（Y速度が下向き、かつ地面に近い）
-        if (m_velocity.y <= 0)
-        {
-            Vector3 newPos = currentPos;
-            newPos.y = groundY;
-            myTrans->SetPosition(newPos);
+		//調整用
+		float heightOffset = m_heightOffset;
+		float finalCharacterY = groundY + heightOffset;
 
-            m_velocity.y = 0; // 接地したので落下ストップ
-            m_isGrounded = true;
-        }
-    }
+		// 接地判定（Y速度が下向き、かつ地面に近い）
+		if (m_velocity.y <= 0)
+		{
+			Vector3 newPos = currentPos;
+			newPos.y = finalCharacterY; // 補正した高さを代入
+			myTrans->SetPosition(newPos);
+
+			m_velocity.y = 0;
+			m_isGrounded = true;
+		}
+	}
     else
     {
         m_isGrounded = false;
